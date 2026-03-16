@@ -8,7 +8,6 @@ namespace InternPortal.Domain.Enums
     {
         Pending,
         Approved,
-        Rejected,
-        adil
+        Rejected
     }
 }

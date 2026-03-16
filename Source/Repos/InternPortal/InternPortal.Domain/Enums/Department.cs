@@ -10,4 +10,4 @@ namespace InternPortal.Domain.Enums
         Electrical,
         Project
     }
-}   
+}       

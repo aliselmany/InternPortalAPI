@@ -9,7 +9,5 @@ namespace InternPortal.Application.Dtos
     {
         public string Token { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string Message { get; set; } = "Login Successful"; 
-
     }
 }    

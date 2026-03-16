@@ -10,4 +10,4 @@ namespace InternPortal.Domain.Enums
         Staff,
         Admin
     }
-}
+}       

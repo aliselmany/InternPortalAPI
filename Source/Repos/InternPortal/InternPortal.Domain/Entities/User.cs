@@ -14,4 +14,5 @@ public class User
 
     public UserRole Role { get; set; } = UserRole.Intern;
     public virtual Application? Application { get; set; }
+
 }

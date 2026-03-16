@@ -1,5 +1,6 @@
 C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\appsettings.Development.json
 C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\appsettings.json
+C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\libman.json
 C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\InternPortalAPI.staticwebassets.runtime.json
 C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\InternPortalAPI.staticwebassets.endpoints.json
 C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\InternPortalAPI.exe
@@ -12,7 +13,6 @@ C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\Azur
 C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\BCrypt.Net-Next.dll
 C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\Humanizer.dll
 C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
-C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\Microsoft.Bcl.Cryptography.dll
 C:\Users\ali\Source\Repos\InternPortal\InternPortal.WebUI\bin\Debug\net10.0\Microsoft.Build.Framework.dll

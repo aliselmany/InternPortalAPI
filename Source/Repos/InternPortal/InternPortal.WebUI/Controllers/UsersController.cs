@@ -1,5 +1,6 @@
-﻿using InternPortal.Application.Interfaces; 
-using InternPortal.Application.Dtos;
+﻿using InternPortal.Application.Dtos;
+using InternPortal.Application.Interfaces; 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InternPortal.WebUI.Controllers;
@@ -16,7 +17,6 @@ public class UsersController : ControllerBase
     {
         _userService = userService;
     }
-
 
     [HttpGet]
     public async Task<IActionResult> GetAllUsers()
@@ -51,5 +51,17 @@ public class UsersController : ControllerBase
         }
 
          return Ok(result.Data);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUser(Guid id)
+    {
+        var success = await _userService.DeleteUserAsync(id);
+        if (!success)
+        {
+            return NotFound(new { message = "User not found" });    
+        }
+        return Ok(new { message = "User deleted successfully" });
+
     }
 }

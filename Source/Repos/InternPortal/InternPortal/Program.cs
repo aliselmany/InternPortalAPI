@@ -41,7 +41,4 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
-app.UseAuthentication(); 
-app.UseAuthorization();  
-
 app.Run();
