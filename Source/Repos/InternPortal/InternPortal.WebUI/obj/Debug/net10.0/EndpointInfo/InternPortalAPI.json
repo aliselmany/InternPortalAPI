@@ -14,72 +14,54 @@
           "content": {
             "multipart/form-data": {
               "schema": {
+                "required": [
+                  "CvFile",
+                  "EndDate",
+                  "Grade",
+                  "InternshipType",
+                  "PhoneNumber",
+                  "SchoolName",
+                  "SelectedDepartment",
+                  "StartDate"
+                ],
                 "type": "object",
                 "properties": {
-                  "Id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "Status": {
-                    "type": "string"
-                  },
-                  "AppliedDate": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "UserId": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
                   "SchoolName": {
                     "type": "string"
                   },
                   "Grade": {
-                    "type": "integer",
-                    "format": "int32"
+                    "$ref": "#/components/schemas/InternPortal.Domain.Enums.StudentGrade"
                   },
                   "SelectedDepartment": {
-                    "type": "string"
+                    "$ref": "#/components/schemas/InternPortal.Domain.Enums.Department"
+                  },
+                  "InternshipType": {
+                    "$ref": "#/components/schemas/InternPortal.Domain.Enums.InternshipType"
                   },
                   "PhoneNumber": {
-                    "type": "string"
-                  },
-                  "CvUrl": {
+                    "maxLength": 10,
+                    "minLength": 10,
+                    "pattern": "^5\\d{9}$",
                     "type": "string"
                   },
                   "StartDate": {
                     "type": "string",
-                    "format": "date-time"
+                    "format": "date"
                   },
                   "EndDate": {
                     "type": "string",
-                    "format": "date-time"
+                    "format": "date"
                   },
                   "Description": {
                     "type": "string"
                   },
-                  "InternshipType": {
-                    "$ref": "#/components/schemas/InternshipType"
-                  },
-                  "cvFile": {
+                  "CvFile": {
                     "type": "string",
                     "format": "binary"
                   }
                 }
               },
               "encoding": {
-                "Id": {
-                  "style": "form"
-                },
-                "Status": {
-                  "style": "form"
-                },
-                "AppliedDate": {
-                  "style": "form"
-                },
-                "UserId": {
-                  "style": "form"
-                },
                 "SchoolName": {
                   "style": "form"
                 },
@@ -89,10 +71,10 @@
                 "SelectedDepartment": {
                   "style": "form"
                 },
-                "PhoneNumber": {
+                "InternshipType": {
                   "style": "form"
                 },
-                "CvUrl": {
+                "PhoneNumber": {
                   "style": "form"
                 },
                 "StartDate": {
@@ -104,10 +86,7 @@
                 "Description": {
                   "style": "form"
                 },
-                "InternshipType": {
-                  "style": "form"
-                },
-                "cvFile": {
+                "CvFile": {
                   "style": "form"
                 }
               }
@@ -154,17 +133,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateUserDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateUserDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateUserDto"
               }
             }
           }
@@ -185,17 +164,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.LoginRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.LoginRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.LoginRequest"
               }
             }
           }
@@ -233,7 +212,7 @@
   },
   "components": {
     "schemas": {
-      "CreateUserDto": {
+      "InternPortal.Application.Dtos.CreateUserDto": {
         "required": [
           "email",
           "password"
@@ -261,16 +240,7 @@
         },
         "additionalProperties": false
       },
-      "InternshipType": {
-        "enum": [
-          0,
-          1,
-          2
-        ],
-        "type": "integer",
-        "format": "int32"
-      },
-      "LoginRequest": {
+      "InternPortal.Application.Dtos.LoginRequest": {
         "type": "object",
         "properties": {
           "email": {
@@ -283,6 +253,34 @@
           }
         },
         "additionalProperties": false
+      },
+      "InternPortal.Domain.Enums.Department": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "InternPortal.Domain.Enums.InternshipType": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "InternPortal.Domain.Enums.StudentGrade": {
+        "enum": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
       }
     },
     "securitySchemes": {

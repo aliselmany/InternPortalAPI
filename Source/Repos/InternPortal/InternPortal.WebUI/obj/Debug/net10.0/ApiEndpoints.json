@@ -18,47 +18,27 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "Id",
-        "Type": "System.Guid",
-        "IsRequired": false
-      },
-      {
-        "Name": "Status",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "AppliedDate",
-        "Type": "System.DateTime",
-        "IsRequired": false
-      },
-      {
-        "Name": "UserId",
-        "Type": "System.Guid",
-        "IsRequired": false
-      },
-      {
         "Name": "SchoolName",
         "Type": "System.String",
         "IsRequired": false
       },
       {
         "Name": "Grade",
-        "Type": "System.Int32",
+        "Type": "InternPortal.Domain.Enums.StudentGrade",
         "IsRequired": false
       },
       {
         "Name": "SelectedDepartment",
-        "Type": "System.String",
+        "Type": "InternPortal.Domain.Enums.Department",
+        "IsRequired": false
+      },
+      {
+        "Name": "InternshipType",
+        "Type": "InternPortal.Domain.Enums.InternshipType",
         "IsRequired": false
       },
       {
         "Name": "PhoneNumber",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "CvUrl",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -78,12 +58,7 @@
         "IsRequired": false
       },
       {
-        "Name": "InternshipType",
-        "Type": "InternPortal.Domain.Enums.InternshipType",
-        "IsRequired": false
-      },
-      {
-        "Name": "cvFile",
+        "Name": "CvFile",
         "Type": "Microsoft.AspNetCore.Http.IFormFile",
         "IsRequired": false
       }

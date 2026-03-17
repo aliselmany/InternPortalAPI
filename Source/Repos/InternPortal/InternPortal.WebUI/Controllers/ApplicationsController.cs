@@ -21,7 +21,7 @@ public class ApplicationsController : ControllerBase
 
     [HttpPost("submit")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> SubmitApplication([FromForm] ApplicationDto dto, IFormFile cvFile)
+    public async Task<IActionResult> SubmitApplication([FromForm] ApplicationDto dto) 
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
         if (userIdClaim == null)
@@ -29,8 +29,8 @@ public class ApplicationsController : ControllerBase
 
         var userId = Guid.Parse(userIdClaim.Value);
 
-        
-        var result = await _applicationService.SubmitAsync(userId, dto, cvFile);
+     
+        var result = await _applicationService.SubmitAsync(userId, dto);
 
         if (!result.IsSuccess)
         {

@@ -28,6 +28,9 @@ namespace InternPortal.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("AppliedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("CvUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -38,7 +41,7 @@ namespace InternPortal.Infrastructure.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Grade")
+                    b.Property<int>("InternshipType")
                         .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
@@ -56,6 +59,9 @@ namespace InternPortal.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentGrade")
                         .HasColumnType("int");
 
                     b.Property<Guid>("UserId")
