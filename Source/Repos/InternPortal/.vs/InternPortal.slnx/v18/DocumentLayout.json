@@ -62,8 +62,7 @@
               "RelativeToolTip": "InternPortal.Application\\Dtos\\CreateUserDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-17T12:05:29.949Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-17T12:05:29.949Z"
             },
             {
               "$type": "Document",
@@ -75,8 +74,7 @@
               "RelativeToolTip": "InternPortal.Infrastructure\\Persistence\\AppDbContext.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAApwA4AAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-17T11:57:36.656Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-17T11:57:36.656Z"
             },
             {
               "$type": "Document",
@@ -86,7 +84,7 @@
               "RelativeDocumentMoniker": "InternPortal.Domain\\Enums\\InternshipType.cs",
               "ToolTip": "C:\\Users\\ali\\Source\\Repos\\InternPortal\\InternPortal.Domain\\Enums\\InternshipType.cs",
               "RelativeToolTip": "InternPortal.Domain\\Enums\\InternshipType.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-17T11:24:34.403Z",
               "EditorCaption": ""
