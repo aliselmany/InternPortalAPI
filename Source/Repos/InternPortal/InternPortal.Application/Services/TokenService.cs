@@ -16,17 +16,35 @@ public class TokenService : ITokenService
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim(ClaimTypes.Email, user.Email)
         };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+    
+        if (user.UserRoles != null)
+        {
+            foreach (var mapping in user.UserRoles)
+            {
+                
+                if (mapping.Role != null)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, mapping.Role.Name));
+                }
+            }
+        }
+       
+        var jwtKey = _config["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is missing in configuration.");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+       
+        if (!double.TryParse(_config["Jwt:DurationInMinutes"], out double duration))
+        {
+            duration = 60; 
+        }
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(double.Parse(_config["Jwt:DurationInMinutes"]!)),
+            Expires = DateTime.UtcNow.AddMinutes(duration),
             SigningCredentials = creds,
             Issuer = _config["Jwt:Issuer"],
             Audience = _config["Jwt:Audience"]

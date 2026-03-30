@@ -8,9 +8,6 @@ namespace InternPortal.Domain.Enums
     {
         Volundatory = 0,
         Mandatory = 1,
-        IMEP = 2
-
-
-            //deneme
+        IMEP = 2    
     }
 }

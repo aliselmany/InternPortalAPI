@@ -16,31 +16,29 @@
               "schema": {
                 "required": [
                   "CvFile",
+                  "Department",
                   "EndDate",
                   "Grade",
                   "InternshipType",
                   "PhoneNumber",
-                  "SchoolName",
-                  "SelectedDepartment",
-                  "StartDate"
+                  "StartDate",
+                  "University"
                 ],
                 "type": "object",
                 "properties": {
-                  "SchoolName": {
+                  "University": {
                     "type": "string"
                   },
                   "Grade": {
                     "$ref": "#/components/schemas/InternPortal.Domain.Enums.StudentGrade"
                   },
-                  "SelectedDepartment": {
+                  "Department": {
                     "$ref": "#/components/schemas/InternPortal.Domain.Enums.Department"
                   },
                   "InternshipType": {
                     "$ref": "#/components/schemas/InternPortal.Domain.Enums.InternshipType"
                   },
                   "PhoneNumber": {
-                    "maxLength": 10,
-                    "minLength": 10,
                     "pattern": "^5\\d{9}$",
                     "type": "string"
                   },
@@ -62,13 +60,13 @@
                 }
               },
               "encoding": {
-                "SchoolName": {
+                "University": {
                   "style": "form"
                 },
                 "Grade": {
                   "style": "form"
                 },
-                "SelectedDepartment": {
+                "Department": {
                   "style": "form"
                 },
                 "InternshipType": {
@@ -112,11 +110,118 @@
         }
       }
     },
-    "/api/Users": {
+    "/api/Applications/all": {
       "get": {
         "tags": [
-          "Users"
+          "Applications"
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Applications/{id}": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Applications/{id}/status": {
+      "put": {
+        "tags": [
+          "Applications"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Domain.Enums.ApplicationStatus"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Domain.Enums.ApplicationStatus"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Domain.Enums.ApplicationStatus"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roles/users/{id}/role": {
+      "put": {
+        "tags": [
+          "Roles"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -186,6 +291,18 @@
         }
       }
     },
+    "/api/Users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Users/{id}": {
       "delete": {
         "tags": [
@@ -208,10 +325,107 @@
           }
         }
       }
+    },
+    "/api/Users/update-staff-profile": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.StaffProfileUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.StaffProfileUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.StaffProfileUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/available-mentors": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "expertise",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/assign-mentor": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.AssignMentorRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.AssignMentorRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.AssignMentorRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "InternPortal.Application.Dtos.AssignMentorRequest": {
+        "type": "object",
+        "properties": {
+          "internId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "mentorId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
       "InternPortal.Application.Dtos.CreateUserDto": {
         "required": [
           "email",
@@ -254,39 +468,83 @@
         },
         "additionalProperties": false
       },
+      "InternPortal.Application.Dtos.SocialAccountDto": {
+        "type": "object",
+        "properties": {
+          "platformName": {
+            "type": "string",
+            "nullable": true
+          },
+          "profileUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InternPortal.Application.Dtos.StaffProfileUpdateDto": {
+        "type": "object",
+        "properties": {
+          "expertise": {
+            "type": "string",
+            "nullable": true
+          },
+          "biography": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxInternCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "socialAccounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternPortal.Application.Dtos.SocialAccountDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InternPortal.Domain.Enums.ApplicationStatus": {
+        "enum": [
+          "Pending",
+          "Approved",
+          "Rejected"
+        ],
+        "type": "string"
+      },
       "InternPortal.Domain.Enums.Department": {
         "enum": [
-          0,
-          1,
-          2
+          "Software",
+          "Electronics",
+          "Project"
         ],
-        "type": "integer",
-        "format": "int32"
+        "type": "string"
       },
       "InternPortal.Domain.Enums.InternshipType": {
         "enum": [
-          0,
-          1,
-          2
+          "Volundatory",
+          "Mandatory",
+          "IMEP"
         ],
-        "type": "integer",
-        "format": "int32"
+        "type": "string"
       },
       "InternPortal.Domain.Enums.StudentGrade": {
         "enum": [
-          1,
-          2,
-          3,
-          4
+          "FirstYear",
+          "SecondYear",
+          "ThirdYear",
+          "ForthYear"
         ],
-        "type": "integer",
-        "format": "int32"
+        "type": "string"
       }
     },
     "securitySchemes": {
       "Bearer": {
         "type": "http",
-        "description": "Lütfen sadece JWT token giriniz.",
+        "description": "Please enter only JWT tokens.",
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }

@@ -1,16 +1,22 @@
 ﻿using InternPortal.Application.Common;
 using InternPortal.Application.Dtos;
 
-namespace InternPortal.Application.Interfaces
+namespace InternPortal.Application.Interfaces;
+
+public interface IUserService
 {
-    public interface IUserService
-    {
-        Task<ServiceResult> RegisterAsync(CreateUserDto createUserDto);
-        Task<ServiceResult<LoginResponseDto>> LoginAsync(LoginRequest loginRequest);
+ 
+    Task<ServiceResult> RegisterAsync(CreateUserDto dto);
+    Task<ServiceResult<LoginResponseDto>> LoginAsync(LoginRequest request);
+    Task<List<UserDto>> GetAllUsersAsync();
+    Task<bool> DeleteUserAsync(Guid userId);
+    Task<bool> UpdateUserAsync(Guid userId, UpdateUserDto dto);
+    Task<ServiceResult<bool>> UpdateRoleAsync(Guid userId, string newRoleName);
 
-        Task<IEnumerable<UserDto>> GetAllUsersAsync();
+    
+    Task<List<AvailableMentorDto>> GetAvailableMentorsAsync(string? expertise);
+    Task<ServiceResult> AssignMentorAsync(Guid internId, Guid mentorId);
 
-        Task<bool> DeleteUserAsync(Guid userId);
-        Task<bool> UpdateUserAsync(Guid userId, UpdateUserDto dto);
-    }
+    
+    Task<bool> UpdateStaffProfileAsync(Guid staffId, StaffProfileUpdateDto dto);
 }

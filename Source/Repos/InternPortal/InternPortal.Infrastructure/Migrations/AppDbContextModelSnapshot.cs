@@ -35,34 +35,38 @@ namespace InternPortal.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("InternshipType")
-                        .HasColumnType("int");
+                    b.Property<string>("InternshipType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SchoolName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SelectedDepartment")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StudentGrade")
-                        .HasColumnType("int");
+                    b.Property<string>("StudentGrade")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("University")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -75,35 +79,116 @@ namespace InternPortal.Infrastructure.Migrations
                     b.ToTable("Applications");
                 });
 
+            modelBuilder.Entity("InternPortal.Domain.Entities.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("InternPortal.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Biography")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Department")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Expertise")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MaxInternCount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("MentorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Surname")
                         .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("University")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("MentorId");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("InternPortal.Domain.Entities.UserRoleMapping", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRoleMappings");
+                });
+
+            modelBuilder.Entity("InternPortal.Domain.Entities.UserSocialAccount", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PlatformName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfileUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserSocialAccounts");
                 });
 
             modelBuilder.Entity("InternPortal.Domain.Entities.Application", b =>
@@ -119,7 +204,58 @@ namespace InternPortal.Infrastructure.Migrations
 
             modelBuilder.Entity("InternPortal.Domain.Entities.User", b =>
                 {
+                    b.HasOne("InternPortal.Domain.Entities.User", "Mentor")
+                        .WithMany("Interns")
+                        .HasForeignKey("MentorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Mentor");
+                });
+
+            modelBuilder.Entity("InternPortal.Domain.Entities.UserRoleMapping", b =>
+                {
+                    b.HasOne("InternPortal.Domain.Entities.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InternPortal.Domain.Entities.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("InternPortal.Domain.Entities.UserSocialAccount", b =>
+                {
+                    b.HasOne("InternPortal.Domain.Entities.User", "User")
+                        .WithMany("SocialAccounts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("InternPortal.Domain.Entities.Role", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("InternPortal.Domain.Entities.User", b =>
+                {
                     b.Navigation("Application");
+
+                    b.Navigation("Interns");
+
+                    b.Navigation("SocialAccounts");
+
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,6 +1,7 @@
 ﻿using InternPortal.Application.Dtos;
 using InternPortal.Application.Interfaces;
 using InternPortal.Application.Common;
+using InternPortal.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -18,10 +19,10 @@ public class ApplicationsController : ControllerBase
     {
         _applicationService = applicationService;
     }
-
+    
     [HttpPost("submit")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> SubmitApplication([FromForm] ApplicationDto dto) 
+    public async Task<IActionResult> SubmitApplication([FromForm] ApplicationDto dto)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
         if (userIdClaim == null)
@@ -29,7 +30,6 @@ public class ApplicationsController : ControllerBase
 
         var userId = Guid.Parse(userIdClaim.Value);
 
-     
         var result = await _applicationService.SubmitAsync(userId, dto);
 
         if (!result.IsSuccess)
@@ -50,5 +50,39 @@ public class ApplicationsController : ControllerBase
         var applications = await _applicationService.GetByUserIdAsync(userId);
 
         return Ok(applications);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllApplications()
+    {
+        var applications = await _applicationService.GetAllAsync();
+        return Ok(applications);
+    }
+    
+    [Authorize(Roles = "Admin")]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetApplicationById(Guid id)
+    {
+        var application = await _applicationService.GetByIdAsync(id);
+
+        if (application == null)
+            return NotFound(new { message = "Application not found." });
+
+        return Ok(application);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] ApplicationStatus status)
+    {
+        var result = await _applicationService.UpdateStatusAsync(id, status);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Message });
+        }
+
+        return Ok(new { message = $"Application status updated to {status}." });
     }
 }

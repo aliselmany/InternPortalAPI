@@ -3640,23 +3640,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Ali\\.nuget\\packages\\": {},
+    "C:\\Users\\AliPc\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ali\\Source\\Repos\\InternPortal\\InternPortal.WebUI\\InternPortalAPI.csproj",
+      "projectUniqueName": "C:\\Users\\ALİ\\Source\\Repos\\InternPortal\\InternPortal.WebUI\\InternPortalAPI.csproj",
       "projectName": "InternPortalAPI",
-      "projectPath": "C:\\Users\\ali\\Source\\Repos\\InternPortal\\InternPortal.WebUI\\InternPortalAPI.csproj",
-      "packagesPath": "C:\\Users\\Ali\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ali\\Source\\Repos\\InternPortal\\InternPortal.WebUI\\obj\\",
+      "projectPath": "C:\\Users\\ALİ\\Source\\Repos\\InternPortal\\InternPortal.WebUI\\InternPortalAPI.csproj",
+      "packagesPath": "C:\\Users\\AliPc\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ALİ\\Source\\Repos\\InternPortal\\InternPortal.WebUI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Ali\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\AliPc\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3671,14 +3671,14 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\Users\\ali\\Source\\Repos\\InternPortal\\InternPortal.Application\\InternPortal.Application.csproj": {
-              "projectPath": "C:\\Users\\ali\\Source\\Repos\\InternPortal\\InternPortal.Application\\InternPortal.Application.csproj"
+            "C:\\Users\\ALİ\\Source\\Repos\\InternPortal\\InternPortal.Application\\InternPortal.Application.csproj": {
+              "projectPath": "C:\\Users\\ALİ\\Source\\Repos\\InternPortal\\InternPortal.Application\\InternPortal.Application.csproj"
             },
-            "C:\\Users\\ali\\Source\\Repos\\InternPortal\\InternPortal.Domain\\InternPortal.Domain.csproj": {
-              "projectPath": "C:\\Users\\ali\\Source\\Repos\\InternPortal\\InternPortal.Domain\\InternPortal.Domain.csproj"
+            "C:\\Users\\ALİ\\Source\\Repos\\InternPortal\\InternPortal.Domain\\InternPortal.Domain.csproj": {
+              "projectPath": "C:\\Users\\ALİ\\Source\\Repos\\InternPortal\\InternPortal.Domain\\InternPortal.Domain.csproj"
             },
-            "C:\\Users\\ali\\Source\\Repos\\InternPortal\\InternPortal.Infrastructure\\InternPortal.Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\ali\\Source\\Repos\\InternPortal\\InternPortal.Infrastructure\\InternPortal.Infrastructure.csproj"
+            "C:\\Users\\ALİ\\Source\\Repos\\InternPortal\\InternPortal.Infrastructure\\InternPortal.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\ALİ\\Source\\Repos\\InternPortal\\InternPortal.Infrastructure\\InternPortal.Infrastructure.csproj"
             }
           }
         }
@@ -3749,7 +3749,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

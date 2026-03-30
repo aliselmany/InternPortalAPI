@@ -1,15 +1,15 @@
 ﻿using BCrypt.Net;
+using InternPortal.Application.Common;
+using InternPortal.Application.Dtos;
 using InternPortal.Application.Interfaces;
 using InternPortal.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 using InternPortal.Infrastructure.Persistence;
-using InternPortal.Application.Dtos;
-using InternPortal.Application.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace InternPortal.Application.Services;
 
@@ -24,23 +24,171 @@ public class UserService : IUserService
         _configuration = configuration;
     }
 
-    public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
+    public async Task<List<UserDto>> GetAllUsersAsync()
     {
-        return await _context.Users
-            .Select(u => new UserDto
+        var users = await _context.Users
+            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .ToListAsync();
+
+        return users.Select(u => new UserDto
+        {
+            Id = u.Id,
+            Name = u.Name,
+            Surname = u.Surname,
+            Email = u.Email,
+            Role = u.UserRoles.FirstOrDefault()?.Role.Name ?? "No Role"
+        }).ToList();
+    }
+
+    public async Task<ServiceResult> RegisterAsync(CreateUserDto dto)
+    {
+        if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+            return ServiceResult.Failure("Email address is already in use.");
+
+        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+        var user = new User { Name = dto.Name, Surname = dto.Surname, Email = dto.Email, Password = hashedPassword };
+
+        var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
+        if (defaultRole != null) user.UserRoles.Add(new UserRoleMapping { RoleId = defaultRole.Id });
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+        return ServiceResult.Success();
+    }
+
+    public async Task<ServiceResult<LoginResponseDto>> LoginAsync(LoginRequest request)
+    {
+        var user = await _context.Users
+            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+        if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+            return ServiceResult<LoginResponseDto>.Failure("Invalid email or password.");
+
+        return ServiceResult<LoginResponseDto>.Success(new LoginResponseDto { Token = GenerateJwtToken(user), Email = user.Email });
+    }
+
+    public async Task<ServiceResult<bool>> UpdateRoleAsync(Guid userId, string newRoleName)
+    {
+        var user = await _context.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) return ServiceResult<bool>.Failure("User not found.");
+
+        var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == newRoleName);
+        if (role == null) return ServiceResult<bool>.Failure("Role not found.");
+
+        user.UserRoles.Clear();
+        user.UserRoles.Add(new UserRoleMapping { UserId = userId, RoleId = role.Id });
+        await _context.SaveChangesAsync();
+        return ServiceResult<bool>.Success(true);
+    }
+
+    public async Task<List<AvailableMentorDto>> GetAvailableMentorsAsync(string? expertise)
+    {
+        var query = _context.Users
+            .Include(u => u.SocialAccounts)
+            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .Include(u => u.Interns)
+            .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "Staff"));
+
+        if (!string.IsNullOrEmpty(expertise))
+            query = query.Where(u => u.Expertise != null && u.Expertise.Contains(expertise));
+
+        var mentors = await query.ToListAsync();
+
+        return mentors.Select(u => new AvailableMentorDto
+        {
+            Id = u.Id,
+            FullName = u.Name + " " + u.Surname,
+            Expertise = u.Expertise,
+            Biography = u.Biography,
+            MaxCapacity = u.MaxInternCount,
+            CurrentCount = u.Interns.Count,
+            SocialAccounts = u.SocialAccounts.Select(s => new SocialAccountDto
             {
-                Id = u.Id,
-                Name = u.Name,
-                Surname = u.Surname,
-                Email = u.Email
-            }).ToListAsync();
+                PlatformName = s.PlatformName,
+                ProfileUrl = s.ProfileUrl
+            }).ToList()
+        }).ToList();
+    }
+
+    public async Task<ServiceResult> AssignMentorAsync(Guid internId, Guid mentorId)
+    {
+        var mentor = await _context.Users.Include(u => u.Interns).Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Id == mentorId && u.UserRoles.Any(ur => ur.Role.Name == "Staff"));
+
+        if (mentor == null) return ServiceResult.Failure("Mentor not found.");
+        if (mentor.Interns.Count >= mentor.MaxInternCount) return ServiceResult.Failure("Capacity full.");
+
+        var intern = await _context.Users.FindAsync(internId);
+        if (intern == null || intern.MentorId != null) return ServiceResult.Failure("Invalid intern or already assigned.");
+
+        intern.MentorId = mentorId;
+        await _context.SaveChangesAsync();
+        return ServiceResult.Success();
+    }
+
+    public async Task<bool> UpdateStaffProfileAsync(Guid staffId, StaffProfileUpdateDto dto)
+    {
+        var staff = await _context.Users
+            .Include(u => u.SocialAccounts)
+            .FirstOrDefaultAsync(u => u.Id == staffId);
+
+        if (staff == null) return false;
+
+        staff.Expertise = dto.Expertise;
+        staff.Biography = dto.Biography;
+        staff.MaxInternCount = dto.MaxInternCount;
+
+      
+        var existingAccounts = _context.UserSocialAccounts.Where(x => x.UserId == staffId);
+        _context.UserSocialAccounts.RemoveRange(existingAccounts);
+
+
+        await _context.SaveChangesAsync();
+
+        if (dto.SocialAccounts != null && dto.SocialAccounts.Any())
+        {
+            foreach (var account in dto.SocialAccounts)
+            {
+               
+                _context.UserSocialAccounts.Add(new UserSocialAccount
+                {
+                    Id = Guid.NewGuid(),
+                    PlatformName = account.PlatformName,
+                    ProfileUrl = account.ProfileUrl,
+                    UserId = staffId
+                });
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    private string GenerateJwtToken(User user)
+    {
+        var claims = new List<Claim> {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email)
+        };
+        foreach (var mapping in user.UserRoles) claims.Add(new Claim(ClaimTypes.Role, mapping.Role.Name));
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var token = new JwtSecurityToken(
+            issuer: _configuration["Jwt:Issuer"],
+            audience: _configuration["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.Now.AddHours(3),
+            signingCredentials: creds);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     public async Task<bool> DeleteUserAsync(Guid userId)
     {
         var user = await _context.Users.FindAsync(userId);
         if (user == null) return false;
-
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
         return true;
@@ -50,84 +198,8 @@ public class UserService : IUserService
     {
         var user = await _context.Users.FindAsync(userId);
         if (user == null) return false;
-
-        if (await _context.Users.AnyAsync(u => u.Email == dto.Email && u.Id != userId))
-            return false;
-
-        user.Name = dto.Name;
-        user.Surname = dto.Surname;
-        user.Email = dto.Email;
-
-        _context.Users.Update(user);
+        user.Name = dto.Name; user.Surname = dto.Surname; user.Email = dto.Email;
         await _context.SaveChangesAsync();
         return true;
-    }
-
-    public async Task<ServiceResult> RegisterAsync(CreateUserDto dto)
-    {
-        if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
-            return ServiceResult.Failure("Email address is already in use.");
-
-        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Name = dto.Name,
-            Surname = dto.Surname,
-            Email = dto.Email,
-            Password = hashedPassword,
-            Role = InternPortal.Domain.Enums.UserRole.Intern
-        };
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-
-        return ServiceResult.Success();
-    }
-
-    public async Task<ServiceResult<LoginResponseDto>> LoginAsync(LoginRequest request)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-
-        if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
-            return ServiceResult<LoginResponseDto>.Failure("Invalid email or password.");
-
-        var token = GenerateJwtToken(user);
-
-        var response = new LoginResponseDto
-        {
-            Token = token,
-            Email = user.Email
-          
-        };
-
-        return ServiceResult<LoginResponseDto>.Success(response);
-    }
-
-    private string GenerateJwtToken(User user)
-    {
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
-        };
-
-        var jwtSection = _configuration.GetSection("Jwt");
-        var keyString = jwtSection["Key"] ?? throw new InvalidOperationException("JWT Key is not configured.");
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: jwtSection["Issuer"],
-            audience: jwtSection["Audience"],
-            claims: claims,
-            expires: DateTime.Now.AddHours(3),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

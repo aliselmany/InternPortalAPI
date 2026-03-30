@@ -7,7 +7,7 @@ namespace InternPortal.Domain.Enums
     public enum Department
     {
         Software  = 0,
-        Electrical = 1,
+        Electronics = 1,
         Project = 2,
     }
 }       

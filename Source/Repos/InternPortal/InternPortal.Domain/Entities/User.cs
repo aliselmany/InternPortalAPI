@@ -1,17 +1,49 @@
-﻿using InternPortal.Domain.Enums;
-
-using InternPortal.Domain.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InternPortal.Domain.Entities;
 
 public class User
 {
+    [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
-    public string Name { get; set; } = string.Empty;
-    public string Surname { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public UserRole Role { get; set; } = UserRole.Intern;
 
+    [Required(ErrorMessage = "Name is required.")]
+    [MaxLength(50)]
+    public string Name { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Surname is required.")]
+    [MaxLength(50)]
+    public string Surname { get; set; } = string.Empty;
+
+    [Required, EmailAddress]
+    public string Email { get; set; } = string.Empty;
+
+    [Required]
+    public string Password { get; set; } = string.Empty;
+
+    public string? Expertise { get; set; }      
+    public string? Biography { get; set; }      
+    public int MaxInternCount { get; set; } = 0; 
+
+    public string? University { get; set; }
+    public string? Department { get; set; }
+    public string? PhoneNumber { get; set; }     
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    
+   
+    public Guid? MentorId { get; set; }
+
+    [ForeignKey("MentorId")]
+    public virtual User? Mentor { get; set; }
+
+    public virtual ICollection<User> Interns { get; set; } = new List<User>();
+
+   
+    public virtual ICollection<UserSocialAccount> SocialAccounts { get; set; } = new List<UserSocialAccount>();
+
+ 
+    public virtual ICollection<UserRoleMapping> UserRoles { get; set; } = new List<UserRoleMapping>();
     public virtual Application? Application { get; set; }
 }

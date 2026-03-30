@@ -1,6 +1,53 @@
 [
   {
     "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
+    "Method": "GetApplicationById",
+    "RelativePath": "api/Applications/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
+    "Method": "UpdateStatus",
+    "RelativePath": "api/Applications/{id}/status",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "status",
+        "Type": "InternPortal.Domain.Enums.ApplicationStatus",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
+    "Method": "GetAllApplications",
+    "RelativePath": "api/Applications/all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
     "Method": "GetMyApplications",
     "RelativePath": "api/Applications/my-applications",
     "HttpMethod": "GET",
@@ -18,7 +65,7 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "SchoolName",
+        "Name": "University",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -28,7 +75,7 @@
         "IsRequired": false
       },
       {
-        "Name": "SelectedDepartment",
+        "Name": "Department",
         "Type": "InternPortal.Domain.Enums.Department",
         "IsRequired": false
       },
@@ -66,6 +113,27 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "InternPortal.WebUI.Controllers.RolesController",
+    "Method": "UpdateUserRole",
+    "RelativePath": "api/Roles/users/{id}/role",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "role",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "InternPortal.WebUI.Controllers.UsersController",
     "Method": "GetAllUsers",
     "RelativePath": "api/Users",
@@ -87,6 +155,38 @@
         "Name": "id",
         "Type": "System.Guid",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.UsersController",
+    "Method": "AssignMentor",
+    "RelativePath": "api/Users/assign-mentor",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "InternPortal.Application.Dtos.AssignMentorRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.UsersController",
+    "Method": "GetAvailableMentors",
+    "RelativePath": "api/Users/available-mentors",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "expertise",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -118,6 +218,22 @@
       {
         "Name": "createUserDto",
         "Type": "InternPortal.Application.Dtos.CreateUserDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.UsersController",
+    "Method": "UpdateStaffProfile",
+    "RelativePath": "api/Users/update-staff-profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "InternPortal.Application.Dtos.StaffProfileUpdateDto",
         "IsRequired": true
       }
     ],

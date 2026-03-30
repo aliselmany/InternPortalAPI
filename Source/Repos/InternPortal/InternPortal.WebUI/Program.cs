@@ -37,7 +37,14 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
-builder.Services.AddControllers();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+       
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
@@ -53,7 +60,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Lütfen sadece JWT token giriniz."
+        Description = "Please enter only JWT tokens."
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -81,7 +88,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
