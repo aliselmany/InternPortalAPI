@@ -363,21 +363,53 @@
         "tags": [
           "Users"
         ],
+        "parameters": [
+          {
+            "name": "targetUserId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/InternPortal.Application.Dtos.StaffProfileUpdateDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.Application.Dtos.StaffProfileUpdateDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.Application.Dtos.StaffProfileUpdateDto"
+                "type": "object",
+                "properties": {
+                  "Expertise": {
+                    "type": "string"
+                  },
+                  "Biography": {
+                    "type": "string"
+                  },
+                  "MaxInternCount": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "SocialAccounts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/InternPortal.Application.Dtos.SocialAccountDto"
+                    }
+                  }
+                }
+              },
+              "encoding": {
+                "Expertise": {
+                  "style": "form"
+                },
+                "Biography": {
+                  "style": "form"
+                },
+                "MaxInternCount": {
+                  "style": "form"
+                },
+                "SocialAccounts": {
+                  "style": "form"
+                }
               }
             }
           }
@@ -430,6 +462,70 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/InternPortal.Application.Dtos.AssignMentorRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/update-user-by-id/{id}": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Name": {
+                    "type": "string",
+                    "default": ""
+                  },
+                  "Surname": {
+                    "type": "string",
+                    "default": ""
+                  },
+                  "Email": {
+                    "type": "string",
+                    "default": ""
+                  },
+                  "Password": {
+                    "type": "string",
+                    "default": ""
+                  }
+                }
+              },
+              "encoding": {
+                "Name": {
+                  "style": "form"
+                },
+                "Surname": {
+                  "style": "form"
+                },
+                "Email": {
+                  "style": "form"
+                },
+                "Password": {
+                  "style": "form"
+                }
               }
             }
           }
@@ -509,31 +605,6 @@
           },
           "profileUrl": {
             "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "InternPortal.Application.Dtos.StaffProfileUpdateDto": {
-        "type": "object",
-        "properties": {
-          "expertise": {
-            "type": "string",
-            "nullable": true
-          },
-          "biography": {
-            "type": "string",
-            "nullable": true
-          },
-          "maxInternCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "socialAccounts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/InternPortal.Application.Dtos.SocialAccountDto"
-            },
             "nullable": true
           }
         },

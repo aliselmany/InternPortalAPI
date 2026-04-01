@@ -146,36 +146,48 @@ public class UserService : IUserService
     public async Task<bool> UpdateStaffProfileAsync(Guid staffId, StaffProfileUpdateDto dto)
     {
         var staff = await _context.Users
+            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
             .Include(u => u.SocialAccounts)
             .FirstOrDefaultAsync(u => u.Id == staffId);
 
         if (staff == null) return false;
 
-        staff.Expertise = dto.Expertise;
-        staff.Biography = dto.Biography;
-        staff.MaxInternCount = dto.MaxInternCount;
-
-        var existingAccounts = _context.UserSocialAccounts.Where(x => x.UserId == staffId);
-        _context.UserSocialAccounts.RemoveRange(existingAccounts);
-
-        await _context.SaveChangesAsync();
-
-        if (dto.SocialAccounts != null && dto.SocialAccounts.Any())
+        if (staff.UserRoles.Any(ur => ur.Role.Name == "Intern"))
         {
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.Expertise))
+            staff.Expertise = dto.Expertise;
+
+        if (!string.IsNullOrWhiteSpace(dto.Biography))
+            staff.Biography = dto.Biography;
+
+        if (dto.MaxInternCount.HasValue)
+            staff.MaxInternCount = dto.MaxInternCount.Value;
+
+        if (dto.SocialAccounts != null)
+        {
+ 
+            var existingAccounts = _context.UserSocialAccounts.Where(x => x.UserId == staffId);
+            _context.UserSocialAccounts.RemoveRange(existingAccounts);
+
             foreach (var account in dto.SocialAccounts)
             {
-                _context.UserSocialAccounts.Add(new UserSocialAccount
+                if (!string.IsNullOrWhiteSpace(account.PlatformName) && !string.IsNullOrWhiteSpace(account.ProfileUrl))
                 {
-                    Id = Guid.NewGuid(),
-                    PlatformName = account.PlatformName,
-                    ProfileUrl = account.ProfileUrl,
-                    UserId = staffId
-                });
+                    _context.UserSocialAccounts.Add(new UserSocialAccount
+                    {
+                        Id = Guid.NewGuid(),
+                        PlatformName = account.PlatformName,
+                        ProfileUrl = account.ProfileUrl,
+                        UserId = staffId
+                    });
+                }
             }
         }
 
-        await _context.SaveChangesAsync();
-        return true;
+        return await _context.SaveChangesAsync() > 0;
     }
 
     private string GenerateJwtToken(User user)
@@ -216,5 +228,26 @@ public class UserService : IUserService
         user.Email = dto.Email;
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<ServiceResult> UpdateUserByIdAsync(Guid userId, UpdateUserDto dto)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null) return ServiceResult.Failure("User not found.");
+
+        if (!string.IsNullOrWhiteSpace(dto.Name))
+            user.Name = dto.Name;
+
+        if (!string.IsNullOrWhiteSpace(dto.Surname))
+            user.Surname = dto.Surname;
+
+        if (!string.IsNullOrWhiteSpace(dto.Email))
+            user.Email = dto.Email;
+
+        if (!string.IsNullOrWhiteSpace(dto.Password))
+            user.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+        await _context.SaveChangesAsync();
+        return ServiceResult.Success();
     }
 }

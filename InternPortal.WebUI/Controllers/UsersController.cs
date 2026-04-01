@@ -1,7 +1,9 @@
-﻿using InternPortal.Application.Dtos;
+﻿using InternPortal.Application.Common;
+using InternPortal.Application.Dtos;
 using InternPortal.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace InternPortal.WebUI.Controllers;
@@ -32,13 +34,11 @@ public class UsersController : ControllerBase
         if (!result.IsSuccess) return Unauthorized(new { message = result.Message });
         return Ok(result.Data);
     }
-
     
     [Authorize(Roles = "Admin")]
     [HttpGet("all-users")]
     public async Task<IActionResult> GetAllUsers([FromQuery] GetUserFilterDto filter)
     {
-      
         var users = await _userService.GetAllUsersAsync(filter);
         return Ok(users);
     }
@@ -52,23 +52,43 @@ public class UsersController : ControllerBase
         return Ok(new { message = "User deleted successfully." });
     }
 
-    [Authorize(Roles = "Staff,Admin")]
+    [Authorize(Roles = "Admin,Staff")]
     [HttpPut("update-staff-profile")]
-    public async Task<IActionResult> UpdateStaffProfile([FromBody] StaffProfileUpdateDto dto)
+    public async Task<IActionResult> UpdateStaffProfile([FromForm] StaffProfileUpdateDto dto, [FromQuery] Guid? targetUserId = null)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null) return Unauthorized();
+  
+        var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-        var userId = Guid.Parse(userIdClaim.Value);
-        var result = await _userService.UpdateStaffProfileAsync(userId, dto);
+        if (currentUserIdClaim == null) return Unauthorized();
 
-        if (!result) return BadRequest(new { message = "Profile could not be updated." });
+        Guid idToUpdate;
+
+        if (currentUserRole == "Admin")
+        {
+     
+            if (!targetUserId.HasValue)
+            {
+                return BadRequest(new { message = "Admin must provide a targetUserId." });
+            }
+            idToUpdate = targetUserId.Value;
+        }
+        else
+        {
+            idToUpdate = Guid.Parse(currentUserIdClaim.Value);
+        }
+
+        var result = await _userService.UpdateStaffProfileAsync(idToUpdate, dto);
+
+        if (!result)
+            return BadRequest(new { message = "Profile could not be updated or user is an Intern." });
+
         return Ok(new { message = "Profile updated successfully." });
     }
 
     [Authorize]
     [HttpGet("available-mentors")]
-    public async Task<IActionResult> GetAvailableMentors([FromQuery] string? expertise)
+    public async Task<IActionResult> GetAvailableMentors([FromQuery] string? expertise)  
     {
         var mentors = await _userService.GetAvailableMentorsAsync(expertise);
         return Ok(mentors);
@@ -81,5 +101,27 @@ public class UsersController : ControllerBase
         var result = await _userService.AssignMentorAsync(request.InternId, request.MentorId);
         if (!result.IsSuccess) return BadRequest(new { message = result.Message });
         return Ok(new { message = "Mentor assigned successfully." });
+    }
+
+    [Authorize(Roles = "Admin,User")]
+    [HttpPut("update-user-by-id/{id}")]
+    public async Task<IActionResult> UpdateUserById(Guid id, [FromForm] UpdateUserDto dto)
+    {
+        var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var currentUserRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+
+        if (currentUserRole != "Admin" && currentUserId != id.ToString())
+        {
+            return Forbid();
+        }
+
+        var result = await _userService.UpdateUserByIdAsync(id, dto);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Message });
+        }
+
+        return Ok(new { message = "User updated successfully." });
     }
 }
