@@ -1,8 +1,0 @@
-C:\Users\ali\Source\Repos\InternPortal\InternPortal.Tests\bin\Debug\net10.0\.msCoverageSourceRootsMapping_InternPortal.Tests
-C:\Users\ali\Source\Repos\InternPortal\InternPortal.Tests\bin\Debug\net10.0\CoverletSourceRootsMapping_InternPortal.Tests
-C:\Users\ali\Source\Repos\InternPortal\InternPortal.Tests\obj\Debug\net10.0\InternPortal.Tests.csproj.AssemblyReference.cache
-C:\Users\ali\Source\Repos\InternPortal\InternPortal.Tests\obj\Debug\net10.0\InternPortal.Tests.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\ali\Source\Repos\InternPortal\InternPortal.Tests\obj\Debug\net10.0\InternPortal.Tests.AssemblyInfoInputs.cache
-C:\Users\ali\Source\Repos\InternPortal\InternPortal.Tests\obj\Debug\net10.0\InternPortal.Tests.AssemblyInfo.cs
-C:\Users\ali\Source\Repos\InternPortal\InternPortal.Tests\obj\Debug\net10.0\InternPortal.Tests.csproj.CoreCompileInputs.cache
-C:\Users\ali\Source\Repos\InternPortal\InternPortal.Tests\obj\Debug\net10.0\InternPortal.Tests.sourcelink.json
