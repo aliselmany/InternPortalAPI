@@ -1,8 +1,0 @@
-<Solution>
-  <Project Path="InternPortal.Application/InternPortal.Application.csproj" />
-  <Project Path="InternPortal.Domain/InternPortal.Domain.csproj" />
-  <Project Path="InternPortal.Infrastructure/InternPortal.Infrastructure.csproj" />
-  <Project Path="InternPortal.Tests/InternPortal.Tests.csproj" Id="45f23d88-c113-4245-a3b0-e276c38bbe3a" />
-  <Project Path="InternPortal.WebUI/InternPortalAPI.csproj" />
-  <Project Path="InternPortal/InternPortal.WebUI.csproj" />
-</Solution>
