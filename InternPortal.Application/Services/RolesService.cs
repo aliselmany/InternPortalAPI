@@ -1,7 +1,8 @@
 ﻿using InternPortal.Application.Interfaces;
-using InternPortal.Infrastructure.Persistence; 
+using InternPortal.Infrastructure.Persistence;
 using InternPortal.Domain.Entities;
 using InternPortal.Application.Common;
+using InternPortal.Application.Dtos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace InternPortal.Application.Services;
 public class RolesService : IRolesService
 {
     private readonly IConfiguration _config;
-    private readonly AppDbContext _context; 
+    private readonly AppDbContext _context;
 
     public RolesService(IConfiguration config, AppDbContext context)
     {
@@ -22,6 +23,39 @@ public class RolesService : IRolesService
         _context = context;
     }
 
+    public async Task<ServiceResult<IEnumerable<RoleResponse>>> GetAllRolesAsync()
+    {
+        var roles = await _context.Roles
+            .Select(r => new RoleResponse
+            {
+                Id = r.Id,
+                Name = r.Name
+            })
+            .ToListAsync();
+
+        return ServiceResult<IEnumerable<RoleResponse>>.Success(roles);
+    }
+
+    public async Task<ServiceResult<bool>> CreateRoleAsync(string roleName)
+    {
+        if (string.IsNullOrWhiteSpace(roleName))
+            return ServiceResult<bool>.Failure("Role name cannot be empty.");
+
+        var exists = await _context.Roles.AnyAsync(r => r.Name == roleName);
+        if (exists)
+            return ServiceResult<bool>.Failure("Role already exists.");
+
+        var role = new Role
+        {
+            Id = Guid.NewGuid(),
+            Name = roleName
+        };
+
+        await _context.Roles.AddAsync(role);
+        var result = await _context.SaveChangesAsync() > 0;
+            
+        return result ? ServiceResult<bool>.Success(true) : ServiceResult<bool>.Failure("Failed to create role.");
+    }
 
     public async Task<ServiceResult<bool>> UpdateUserRoleAsync(Guid userId, string roleName)
     {
@@ -41,6 +75,22 @@ public class RolesService : IRolesService
         return ServiceResult<bool>.Success(true);
     }
 
+    public async Task<ServiceResult<bool>> DeleteRoleAsync(Guid roleId)
+    {
+        var role = await _context.Roles
+            .Include(r => r.UserRoles)
+            .FirstOrDefaultAsync(r => r.Id == roleId);
+
+        if (role == null) return ServiceResult<bool>.Failure("Role not found.");
+
+        if (role.UserRoles != null && role.UserRoles.Any())
+            return ServiceResult<bool>.Failure("Cannot delete role. It is currently assigned to users.");
+
+        _context.Roles.Remove(role);
+        var result = await _context.SaveChangesAsync() > 0;
+
+        return result ? ServiceResult<bool>.Success(true) : ServiceResult<bool>.Failure("Failed to delete role.");
+    }
 
     public string GenerateToken(User user)
     {
@@ -83,5 +133,26 @@ public class RolesService : IRolesService
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
         return tokenHandler.WriteToken(token);
+    }
+
+    public async Task<ServiceResult<bool>> UpdateUserNameAsync(Guid userId, string firstName, string lastName)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+               return ServiceResult<bool>.Failure("User not found.");
+        }
+
+      
+        user.Name = firstName;
+
+        user.Surname = lastName;
+
+        var result = await _context.SaveChangesAsync() > 0;
+
+        return result
+            ? ServiceResult<bool>.Success(true)
+            : ServiceResult<bool>.Failure("Update failed or no changes detected.");
     }
 }

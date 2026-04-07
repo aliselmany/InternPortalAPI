@@ -57,10 +57,6 @@ public class UsersController : ControllerBase
 
         if (!result.IsSuccess) return Unauthorized(new { message = result.Message });
 
-
-
-        // Returns result.Data directly which contains the token
-
         return Ok(result.Data);
 
     }
@@ -117,7 +113,6 @@ public class UsersController : ControllerBase
 
 
 
-    // FIXED: Route changed to avoid Swagger 500 conflict
 
     [HttpGet("get-by-id/{id:guid}")]
 
@@ -135,7 +130,6 @@ public class UsersController : ControllerBase
 
 
 
-    // FIXED: Route changed to avoid Swagger 500 conflict
 
     [HttpGet("get-by-role/{roleIdentifier}")]
 

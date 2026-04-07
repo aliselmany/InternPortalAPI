@@ -114,6 +114,48 @@
   },
   {
     "ContainingType": "InternPortal.WebUI.Controllers.RolesController",
+    "Method": "DeleteRole",
+    "RelativePath": "api/Roles/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.RolesController",
+    "Method": "GetAllRoles",
+    "RelativePath": "api/Roles/all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.RolesController",
+    "Method": "CreateRole",
+    "RelativePath": "api/Roles/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "InternPortal.WebUI.Controllers.RolesController\u002BCreateRoleDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.RolesController",
     "Method": "UpdateUserRole",
     "RelativePath": "api/Roles/users/{id}/role",
     "HttpMethod": "PUT",
@@ -129,6 +171,27 @@
         "Name": "roleName",
         "Type": "System.String",
         "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.RolesController",
+    "Method": "UpdateUserName",
+    "RelativePath": "api/Roles/users/{id}/update-name",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "InternPortal.Application.Dtos.UpdateNameDto",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

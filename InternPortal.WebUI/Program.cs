@@ -43,15 +43,12 @@ builder.Services.AddControllersWithViews()
    });
 
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "InternPortal API", Version = "v1" });
-
     c.OperationFilter<RoleDropdownFilter>();
     c.CustomSchemaIds(type => type.FullName);
 
-    
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -59,7 +56,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Token is automatically injected after login."
+        Description = "Auth Login"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -72,10 +69,9 @@ builder.Services.AddSwaggerGen(c =>
             Array.Empty<string>()
         }
     });
-}); 
+});
 
 var app = builder.Build();
-
 
 if (app.Environment.IsDevelopment())
 {
@@ -84,16 +80,14 @@ if (app.Environment.IsDevelopment())
     {
         opt.SwaggerEndpoint("/swagger/v1/swagger.json", "InternPortal API V1");
         opt.RoutePrefix = "swagger";
-
         opt.InjectJavascript("/js/swagger-auth.js");
-
         opt.DefaultModelExpandDepth(2);
         opt.DefaultModelsExpandDepth(-1);
     });
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); 
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

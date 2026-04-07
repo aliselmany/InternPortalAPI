@@ -933,3 +933,4 @@ C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debu
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debug\net10.0\InternPortalAPI.pdb
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debug\net10.0\InternPortalAPI.genruntimeconfig.cache
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debug\net10.0\ref\InternPortalAPI.dll
+C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debug\net10.0\compressed\1iigthhpox-{0}-tmw6pkg48t-tmw6pkg48t.gz

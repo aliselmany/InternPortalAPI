@@ -14,7 +14,7 @@ public interface IUserService
     Task<ServiceResult> UpdateUserByIdAsync(Guid userId, UpdateUserDto dto);
     Task<ServiceResult<bool>> UpdateUserRoleAsync(Guid userId, string roleName);
     Task<bool> UpdateMentorProfileAsync(Guid staffId, MentorProfileUpdateDto dto);
-    Task<ServiceResult> AssignMentorAsync(Guid internId, Guid mentorId);
+    Task<ServiceResult> AssignMentorAsync(Guid internId, Guid mentorId); 
     Task<bool> DeleteUserAsync(Guid userId);
     Task<List<UserResponseDto>> GetUsersByRoleNameAsync(string roleName);
 }
