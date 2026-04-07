@@ -703,8 +703,8 @@ C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\Source\Repos\InternPortal\I
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\bin\Debug\net10.0\appsettings.Development.json
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\bin\Debug\net10.0\appsettings.json
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\bin\Debug\net10.0\libman.json
-C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\bin\Debug\net10.0\InternPortalAPI.staticwebassets.endpoints.json
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\bin\Debug\net10.0\InternPortalAPI.staticwebassets.runtime.json
+C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\bin\Debug\net10.0\InternPortalAPI.staticwebassets.endpoints.json
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\bin\Debug\net10.0\InternPortalAPI.exe
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\bin\Debug\net10.0\InternPortalAPI.deps.json
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\bin\Debug\net10.0\InternPortalAPI.runtimeconfig.json
@@ -862,7 +862,6 @@ C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debu
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debug\net10.0\scopedcss\bundle\InternPortalAPI.styles.css
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debug\net10.0\compressed\wpjfnq42ch-{0}-b9sayid5wm-b9sayid5wm.gz
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debug\net10.0\compressed\k1a62u0x0h-{0}-61n19gt1b8-61n19gt1b8.gz
-C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debug\net10.0\compressed\7erc6px6yt-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debug\net10.0\compressed\ltmdgj3y43-{0}-t1cqhe9u97-t1cqhe9u97.gz
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debug\net10.0\compressed\i5rlq4hpgf-{0}-c2jlpeoesf-c2jlpeoesf.gz
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\obj\Debug\net10.0\compressed\jpaqonv278-{0}-sejl45xvog-sejl45xvog.gz

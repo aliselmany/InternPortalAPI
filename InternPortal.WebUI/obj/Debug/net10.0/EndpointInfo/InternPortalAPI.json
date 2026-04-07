@@ -159,27 +159,15 @@
               "type": "string",
               "format": "uuid"
             }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.Domain.Enums.ApplicationStatus"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.Domain.Enums.ApplicationStatus"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.Domain.Enums.ApplicationStatus"
-              }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/InternPortal.Domain.Enums.ApplicationStatus"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -201,27 +189,20 @@
               "type": "string",
               "format": "uuid"
             }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "string"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "string"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "string"
-              }
+          },
+          {
+            "name": "roleName",
+            "in": "query",
+            "schema": {
+              "enum": [
+                "Admin",
+                "Intern",
+                "Staff"
+              ],
+              "type": "string"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -291,157 +272,6 @@
         }
       }
     },
-    "/api/Users/all-users": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "parameters": [
-          {
-            "name": "UserId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "RoleId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "Name",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Surname",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Users/{id}": {
-      "delete": {
-        "tags": [
-          "Users"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Users/update-staff-profile": {
-      "put": {
-        "tags": [
-          "Users"
-        ],
-        "parameters": [
-          {
-            "name": "targetUserId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "Expertise": {
-                    "type": "string"
-                  },
-                  "Biography": {
-                    "type": "string"
-                  },
-                  "MaxInternCount": {
-                    "type": "integer",
-                    "format": "int32"
-                  },
-                  "SocialAccounts": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/InternPortal.Application.Dtos.SocialAccountDto"
-                    }
-                  }
-                }
-              },
-              "encoding": {
-                "Expertise": {
-                  "style": "form"
-                },
-                "Biography": {
-                  "style": "form"
-                },
-                "MaxInternCount": {
-                  "style": "form"
-                },
-                "SocialAccounts": {
-                  "style": "form"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Users/available-mentors": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "parameters": [
-          {
-            "name": "expertise",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/Users/assign-mentor": {
       "post": {
         "tags": [
@@ -473,8 +303,93 @@
         }
       }
     },
-    "/api/Users/update-user-by-id/{id}": {
-      "put": {
+    "/api/Users/all-users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "RoleId",
+            "in": "query",
+            "schema": {
+              "enum": [
+                "Admin",
+                "Intern",
+                "Staff"
+              ],
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Surname",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/available-mentors": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "FullName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Expertise",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/get-by-id/{id}": {
+      "get": {
         "tags": [
           "Users"
         ],
@@ -489,47 +404,97 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/get-by-role/{roleIdentifier}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "roleIdentifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "Admin",
+                "Intern",
+                "Staff"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/update-mentor-profile": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "targetUserId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "Name": {
-                    "type": "string",
-                    "default": ""
-                  },
-                  "Surname": {
-                    "type": "string",
-                    "default": ""
-                  },
-                  "Email": {
-                    "type": "string",
-                    "default": ""
-                  },
-                  "Password": {
-                    "type": "string",
-                    "default": ""
-                  }
-                }
-              },
-              "encoding": {
-                "Name": {
-                  "style": "form"
-                },
-                "Surname": {
-                  "style": "form"
-                },
-                "Email": {
-                  "style": "form"
-                },
-                "Password": {
-                  "style": "form"
-                }
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.MentorProfileUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.MentorProfileUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.MentorProfileUpdateDto"
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/delete/{id}": {
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -596,6 +561,32 @@
         },
         "additionalProperties": false
       },
+      "InternPortal.Application.Dtos.MentorProfileUpdateDto": {
+        "type": "object",
+        "properties": {
+          "expertise": {
+            "type": "string",
+            "nullable": true
+          },
+          "biography": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxInternCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "socialAccounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternPortal.Application.Dtos.SocialAccountDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "InternPortal.Application.Dtos.SocialAccountDto": {
         "type": "object",
         "properties": {
@@ -647,7 +638,7 @@
     "securitySchemes": {
       "Bearer": {
         "type": "http",
-        "description": "Please enter only JWT tokens.",
+        "description": "Token is automatically injected after login.",
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }

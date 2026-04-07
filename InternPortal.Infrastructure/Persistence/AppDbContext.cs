@@ -11,14 +11,13 @@ public class AppDbContext : DbContext
     public DbSet<Role> Roles { get; set; }
     public DbSet<UserRoleMapping> UserRoleMappings { get; set; }
     public DbSet<InternPortal.Domain.Entities.Application> Applications { get; set; }
-
-    
     public DbSet<UserSocialAccount> UserSocialAccounts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<UserRoleMapping>().ToTable("UserRoleMappings");
 
         modelBuilder.Entity<UserRoleMapping>()
             .HasKey(ur => new { ur.UserId, ur.RoleId });
@@ -48,7 +47,7 @@ public class AppDbContext : DbContext
             .HasOne(s => s.User)
             .WithMany(u => u.SocialAccounts)
             .HasForeignKey(s => s.UserId)
-            .OnDelete(DeleteBehavior.Cascade); 
+            .OnDelete(DeleteBehavior.Cascade);
 
         var appEntity = modelBuilder.Entity<InternPortal.Domain.Entities.Application>();
         appEntity.Property(e => e.Status).HasConversion<string>();

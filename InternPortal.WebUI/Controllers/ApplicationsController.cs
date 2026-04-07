@@ -74,8 +74,9 @@ public class ApplicationsController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id}/status")]
-    public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] ApplicationStatus status)
+    public async Task<IActionResult> UpdateStatus(Guid id, [FromQuery] ApplicationStatus status)
     {
+     
         var result = await _applicationService.UpdateStatusAsync(id, status);
 
         if (!result.IsSuccess)
@@ -83,6 +84,6 @@ public class ApplicationsController : ControllerBase
             return BadRequest(new { message = result.Message });
         }
 
-        return Ok(new { message = $"Application status updated to {status}." });
+        return Ok(new { message = $"Application status updated to {status} successfully." });
     }
 }

@@ -10,7 +10,6 @@ C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\wwwroot\
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\wwwroot\lib\jquery\dist\jquery.js
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\wwwroot\lib\jquery\dist\jquery.min.js
-C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\wwwroot\js\site.js
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\wwwroot\lib\jquery-validation\LICENSE.md
@@ -62,7 +61,6 @@ C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\wwwroot\
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.WebUI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
-wwwroot\js\site.js
 wwwroot\lib\bootstrap\LICENSE
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map

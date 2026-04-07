@@ -1,24 +1,23 @@
 using InternPortal.Application.Interfaces;
 using InternPortal.Application.Services;
 using InternPortal.Infrastructure.Persistence;
+using InternPortal.Api.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
-    
 
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-
-builder.Services.AddScoped<IApplicationService,ApplicationService>();
+builder.Services.AddScoped<IRolesService, RolesService>();
+builder.Services.AddScoped<IApplicationService, ApplicationService>();
 
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -33,16 +32,15 @@ builder.Services.AddAuthentication(options => {
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });
 
-builder.Services.AddControllers() 
-    .AddJsonOptions(options =>
-    {
-       
-        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-    });
+builder.Services.AddControllersWithViews()
+   .AddJsonOptions(options =>
+   {
+       options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+   });
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -50,8 +48,10 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "InternPortal API", Version = "v1" });
 
+    c.OperationFilter<RoleDropdownFilter>();
     c.CustomSchemaIds(type => type.FullName);
 
+    
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -59,7 +59,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Please enter only JWT tokens."
+        Description = "Token is automatically injected after login."
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -72,9 +72,10 @@ builder.Services.AddSwaggerGen(c =>
             Array.Empty<string>()
         }
     });
-});
+}); 
 
 var app = builder.Build();
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -83,13 +84,23 @@ if (app.Environment.IsDevelopment())
     {
         opt.SwaggerEndpoint("/swagger/v1/swagger.json", "InternPortal API V1");
         opt.RoutePrefix = "swagger";
+
+        opt.InjectJavascript("/js/swagger-auth.js");
+
+        opt.DefaultModelExpandDepth(2);
+        opt.DefaultModelsExpandDepth(-1);
     });
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(); 
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Auth}/{action=Login}/{id?}");
 
 app.MapControllers();
 
