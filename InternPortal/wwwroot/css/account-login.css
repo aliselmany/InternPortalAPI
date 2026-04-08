@@ -1,0 +1,39 @@
+﻿@section Styles {
+    <link rel="stylesheet" href="~/css/account-login.css" asp-append-version="true" />
+}
+
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f2f5; 
+}
+
+.login-card {
+    border: none;
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 3rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.login-card h2 {
+        color: #1a1a1a;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+.btn-login {
+    background-color: #0d6efd;
+    border: none;
+    padding: 12px;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+    .btn-login:hover {
+        background-color: #0b5ed7;
+    }

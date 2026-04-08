@@ -144,7 +144,6 @@ public class RolesService : IRolesService
                return ServiceResult<bool>.Failure("User not found.");
         }
 
-      
         user.Name = firstName;
 
         user.Surname = lastName;

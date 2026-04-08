@@ -1,0 +1,87 @@
+﻿@model RegisterViewModel
+@{
+    ViewData["Title"] = "Kayıt Ol";
+    ViewData["HideNavbar"] = true;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth-portal.css" asp-append-version="true" />
+}
+
+@* Tema Değiştirme Butonu *@
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Tema Değiştir">
+    <i class="bi bi-sun-fill"></i>
+</button>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="text-center mb-5">
+            <div class="icon-circle">
+                <i class="bi bi-person-plus fs-2"></i>
+            </div>
+            <h2 class="fw-bold" style="letter-spacing: -2px; font-size: 3rem;">Aramıza Katılın</h2>
+            <p class="text-muted" style="font-size: 1.15rem;">Staj başvurunuzu başlatmak için kurumsal hesabınızı oluşturun.</p>
+        </div>
+
+        <form asp-action="Register" method="post">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label">Ad</label>
+                    <input asp-for="Name" class="form-control form-control-lg" placeholder="Ali Selman">
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Surname" class="form-label">Soyad</label>
+                        <input asp-for="Surname" class="form-control form-control-lg" placeholder="Yılmaz">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label asp-for="Email" class="form-label">E-Posta Adresi</label>
+                        <input asp-for="Email" type="email" class="form-control form-control-lg" placeholder="ornek@eposta.com">
+                        </div>
+
+                        <div class="mt-4">
+                            <label asp-for="Password" class="form-label">Şifre</label>
+                            @* Tekli şifre alanı - Swagger API yapısıyla uyumlu hale getirildi *@
+                            <input asp-for="Password" type="password" class="form-control form-control-lg" placeholder="••••••••">
+                            </div>
+
+                            <button type="submit" class="btn-auth">Hesap Oluştur</button>
+
+                            <div class="text-center mt-4">
+                                <span class="text-muted">Zaten hesabınız var mı?</span>
+                                <a asp-action="Login" class="text-primary-portal text-decoration-none ms-1">Giriş Yap</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                @section Scripts {
+                    <script>
+                        const themeBtn = document.getElementById('themeBtn');
+                        const themeIcon = themeBtn.querySelector('i');
+
+                        function applyTheme(theme) {
+                            if (theme === 'dark') {
+                                document.documentElement.setAttribute('data-bs-theme', 'dark');
+                                themeIcon.className = 'bi bi-moon-fill';
+                            } else {
+                                document.documentElement.setAttribute('data-bs-theme', 'light');
+                                themeIcon.className = 'bi bi-sun-fill';
+                            }
+                        }
+
+                        function toggleTheme() {
+                            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                            applyTheme(newTheme);
+                            localStorage.setItem('portal-theme', newTheme);
+                        }
+
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const savedTheme = localStorage.getItem('portal-theme') || 'light';
+                            applyTheme(savedTheme);
+                        });
+                    </script>
+                }

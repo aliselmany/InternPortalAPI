@@ -150,9 +150,7 @@ C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net1
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\scopedcss\bundle\InternPortal.WebUI.styles.css
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\scopedcss\projectbundle\InternPortal.WebUI.bundle.scp.css
-C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\dqcz20b9hn-{0}-b9sayid5wm-b9sayid5wm.gz
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\ub4z5don32-{0}-61n19gt1b8-61n19gt1b8.gz
-C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\h94z3iy0vc-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\xttulorimx-{0}-t1cqhe9u97-t1cqhe9u97.gz
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\b2d173guq2-{0}-c2jlpeoesf-c2jlpeoesf.gz
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\jxajuu2m3c-{0}-sejl45xvog-sejl45xvog.gz
@@ -226,3 +224,6 @@ C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net1
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\InternPortal.WebUI.pdb
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\InternPortal.WebUI.genruntimeconfig.cache
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\ref\InternPortal.WebUI.dll
+C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\hnqi6ajq6i-{0}-2spjxbzlu4-2spjxbzlu4.gz
+C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\swdosym98r-{0}-04hnv3g9pa-04hnv3g9pa.gz
+C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\l8iv9qdnoe-{0}-3s204g98qa-3s204g98qa.gz
