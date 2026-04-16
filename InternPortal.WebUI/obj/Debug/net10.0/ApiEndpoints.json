@@ -1,118 +1,5 @@
 [
   {
-    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
-    "Method": "GetApplicationById",
-    "RelativePath": "api/Applications/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
-    "Method": "UpdateStatus",
-    "RelativePath": "api/Applications/{id}/status",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      },
-      {
-        "Name": "status",
-        "Type": "InternPortal.Domain.Enums.ApplicationStatus",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
-    "Method": "GetAllApplications",
-    "RelativePath": "api/Applications/all",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
-    "Method": "GetMyApplications",
-    "RelativePath": "api/Applications/my-applications",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
-    "Method": "SubmitApplication",
-    "RelativePath": "api/Applications/submit",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "University",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Grade",
-        "Type": "InternPortal.Domain.Enums.StudentGrade",
-        "IsRequired": false
-      },
-      {
-        "Name": "Department",
-        "Type": "InternPortal.Domain.Enums.Department",
-        "IsRequired": false
-      },
-      {
-        "Name": "InternshipType",
-        "Type": "InternPortal.Domain.Enums.InternshipType",
-        "IsRequired": false
-      },
-      {
-        "Name": "PhoneNumber",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "StartDate",
-        "Type": "System.DateTime",
-        "IsRequired": false
-      },
-      {
-        "Name": "EndDate",
-        "Type": "System.DateTime",
-        "IsRequired": false
-      },
-      {
-        "Name": "Description",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "CvFile",
-        "Type": "Microsoft.AspNetCore.Http.IFormFile",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "InternPortal.WebUI.Controllers.RolesController",
     "Method": "DeleteRole",
     "RelativePath": "api/Roles/{id}",
@@ -365,6 +252,154 @@
       {
         "Name": "targetUserId",
         "Type": "System.Nullable\u00601[[System.Guid, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
+    "Method": "GetApplicationById",
+    "RelativePath": "Applications/api/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
+    "Method": "UpdateStatus",
+    "RelativePath": "Applications/api/{id}/status",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "status",
+        "Type": "InternPortal.Domain.Enums.ApplicationStatus",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
+    "Method": "GetAllApplications",
+    "RelativePath": "Applications/api/all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
+    "Method": "GetMyApplications",
+    "RelativePath": "Applications/api/my-applications",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.ApplicationsController",
+    "Method": "SubmitApplication",
+    "RelativePath": "Applications/api/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "University",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Grade",
+        "Type": "InternPortal.Domain.Enums.StudentGrade",
+        "IsRequired": false
+      },
+      {
+        "Name": "Department",
+        "Type": "InternPortal.Domain.Enums.Department",
+        "IsRequired": false
+      },
+      {
+        "Name": "InternshipType",
+        "Type": "InternPortal.Domain.Enums.InternshipType",
+        "IsRequired": false
+      },
+      {
+        "Name": "PhoneNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "StartDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "EndDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CvFile",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "TranscriptFile",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "CvPath",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TranscriptPath",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Status",
+        "Type": "InternPortal.Domain.Enums.ApplicationStatus",
+        "IsRequired": false
+      },
+      {
+        "Name": "Reference",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ReferenceGsm",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ReferenceClosenessStatus",
+        "Type": "System.String",
         "IsRequired": false
       }
     ],

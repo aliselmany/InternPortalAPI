@@ -13,6 +13,6 @@ public interface IApplicationService
     Task<List<ApplicationDto>> GetAllAsync();
 
     Task<ApplicationDto?> GetByIdAsync(Guid id);
-
+    
     Task<ServiceResult<bool>> UpdateStatusAsync(Guid applicationId, ApplicationStatus newStatus);
 }

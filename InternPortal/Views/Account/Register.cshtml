@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="~/css/auth-portal.css" asp-append-version="true" />
 }
 
-@* Tema Değiştirme Butonu *@
+@* Tema butonu - onclick eklendi ve id korundu *@
 <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Tema Değiştir">
     <i class="bi bi-sun-fill"></i>
 </button>
@@ -16,72 +16,116 @@
 <div class="auth-wrapper">
     <div class="auth-card">
         <div class="text-center mb-5">
-            <div class="icon-circle">
-                <i class="bi bi-person-plus fs-2"></i>
+            <div class="mb-4">
+                <img id="authLogo" src="~/assets/trex-logo-dark.png" alt="Logo" style="max-width: 160px; height: auto;">
             </div>
+            
             <h2 class="fw-bold" style="letter-spacing: -2px; font-size: 3rem;">Aramıza Katılın</h2>
             <p class="text-muted" style="font-size: 1.15rem;">Staj başvurunuzu başlatmak için kurumsal hesabınızı oluşturun.</p>
         </div>
 
-        <form asp-action="Register" method="post">
+        <div id="errorMessage" class="text-danger small mb-3 text-center fw-bold"></div>
+
+        <form id="registerForm">
             <div class="row g-4">
                 <div class="col-md-6">
                     <label asp-for="Name" class="form-label">Ad</label>
-                    <input asp-for="Name" class="form-control form-control-lg" placeholder="Ali Selman">
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="Surname" class="form-label">Soyad</label>
-                        <input asp-for="Surname" class="form-control form-control-lg" placeholder="Yılmaz">
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <label asp-for="Email" class="form-label">E-Posta Adresi</label>
-                        <input asp-for="Email" type="email" class="form-control form-control-lg" placeholder="ornek@eposta.com">
-                        </div>
-
-                        <div class="mt-4">
-                            <label asp-for="Password" class="form-label">Şifre</label>
-                            @* Tekli şifre alanı - Swagger API yapısıyla uyumlu hale getirildi *@
-                            <input asp-for="Password" type="password" class="form-control form-control-lg" placeholder="••••••••">
-                            </div>
-
-                            <button type="submit" class="btn-auth">Hesap Oluştur</button>
-
-                            <div class="text-center mt-4">
-                                <span class="text-muted">Zaten hesabınız var mı?</span>
-                                <a asp-action="Login" class="text-primary-portal text-decoration-none ms-1">Giriş Yap</a>
-                            </div>
-                        </form>
-                    </div>
+                    <input asp-for="Name" name="Name" class="form-control form-control-lg" placeholder="Ali Selman" required>
                 </div>
+                <div class="col-md-6">
+                    <label asp-for="Surname" class="form-label">Soyad</label>
+                    <input asp-for="Surname" name="Surname" class="form-control form-control-lg" placeholder="Yılmaz" required>
+                </div>
+            </div>
 
-                @section Scripts {
-                    <script>
-                        const themeBtn = document.getElementById('themeBtn');
-                        const themeIcon = themeBtn.querySelector('i');
+            <div class="mt-4">
+                <label asp-for="Email" class="form-label">E-Posta Adresi</label>
+                <input asp-for="Email" name="Email" type="email" class="form-control form-control-lg" placeholder="E-Mail" required>
+            </div>
 
-                        function applyTheme(theme) {
-                            if (theme === 'dark') {
-                                document.documentElement.setAttribute('data-bs-theme', 'dark');
-                                themeIcon.className = 'bi bi-moon-fill';
-                            } else {
-                                document.documentElement.setAttribute('data-bs-theme', 'light');
-                                themeIcon.className = 'bi bi-sun-fill';
-                            }
-                        }
+            <div class="mt-4">
+                <label asp-for="Password" class="form-label">Şifre</label>
+                <input asp-for="Password" name="Password" type="password" class="form-control form-control-lg" placeholder="••••••••" required>
+            </div>
 
-                        function toggleTheme() {
-                            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-                            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            <button type="submit" id="btnSubmit" class="btn-auth">Hesap Oluştur</button>
 
-                            applyTheme(newTheme);
-                            localStorage.setItem('portal-theme', newTheme);
-                        }
+            <div class="text-center mt-4">
+                <span class="text-muted">Zaten hesabınız var mı?</span>
+                <a asp-action="Login" class="text-primary-portal text-decoration-none ms-1">Giriş Yap</a>
+            </div>
+        </form>
+    </div>
+</div>
 
-                        document.addEventListener('DOMContentLoaded', () => {
-                            const savedTheme = localStorage.getItem('portal-theme') || 'light';
-                            applyTheme(savedTheme);
-                        });
-                    </script>
+@section Scripts {
+    <script>
+        
+        function applyTheme(theme) {
+            const themeBtn = document.getElementById('themeBtn');
+            const themeIcon = themeBtn ? themeBtn.querySelector('i') : null;
+            const authLogo = document.getElementById('authLogo');
+            const version = new Date().getTime();
+
+            document.documentElement.setAttribute('data-bs-theme', theme);
+
+            if (theme === 'dark') {
+                if (themeIcon) themeIcon.className = 'bi bi-moon-fill';
+                if (authLogo) authLogo.src = '/assets/trex-logo-light.png?v=' + version;
+            } else {
+                if (themeIcon) themeIcon.className = 'bi bi-sun-fill';
+                if (authLogo) authLogo.src = '/assets/trex-logo-dark.png?v=' + version;
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+            localStorage.setItem('portal-theme', newTheme);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('portal-theme') || 'light';
+            applyTheme(savedTheme);
+        });
+
+      
+        document.getElementById('registerForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('btnSubmit');
+            const errorDiv = document.getElementById('errorMessage');
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            btn.disabled = true;
+            btn.textContent = "İşleniyor...";
+            errorDiv.textContent = "";
+
+            try {
+                const response = await fetch('https://localhost:7166/api/Users/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                
+                    this.reset();
+                    
+                } else {
+                    const result = await response.json();
+                    errorDiv.textContent = result.message || "Kayıt başarısız.";
                 }
+            } catch (error) {
+                console.error("Bağlantı Hatası:", error);
+                errorDiv.textContent = "Sunucuya bağlanılamadı (Port: 7166).";
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Hesap Oluştur";
+            }
+        });
+    </script>
+}

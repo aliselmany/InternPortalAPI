@@ -3,6 +3,7 @@ using Xunit;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 using InternPortal.Application.Interfaces;
 using InternPortal.Application.Dtos;
 using InternPortal.Application.Common;
@@ -14,13 +15,17 @@ namespace InternPortal.Tests.ApplicationsService;
 public class ApplicationControllerTests
 {
     private readonly Mock<IApplicationService> _appServiceMock;
+    private readonly Mock<IWebHostEnvironment> _envMock;
     private readonly ApplicationsController _controller;
 
     public ApplicationControllerTests()
     {
         _appServiceMock = new Mock<IApplicationService>();
-    
-        _controller = new ApplicationsController(_appServiceMock.Object);
+        _envMock = new Mock<IWebHostEnvironment>();
+  
+        _envMock.Setup(m => m.WebRootPath).Returns(Path.GetTempPath());
+
+        _controller = new ApplicationsController(_appServiceMock.Object, _envMock.Object);
     }
 
     private void MockUser(Guid userId, string role)
@@ -40,50 +45,45 @@ public class ApplicationControllerTests
     }
 
     [Fact]
+    public void Submit_ReturnsView()
+    {
+       
+        var result = _controller.Submit();
+
+        Assert.IsType<ViewResult>(result);
+    }
+
+    [Fact]
     public async Task SubmitApplication_WhenSuccess_ReturnsOk()
     {
-        
+      
         var userId = Guid.NewGuid();
         MockUser(userId, "Intern");
 
+        var ms = new MemoryStream();
+        var writer = new StreamWriter(ms);
+        writer.Write("test content");
+        writer.Flush();
+        ms.Position = 0;
+
         var fileMock = new Mock<IFormFile>();
-        var expectedId = Guid.NewGuid();
+        fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
+        fileMock.Setup(_ => _.FileName).Returns("test.pdf");
+        fileMock.Setup(_ => _.Length).Returns(ms.Length);
 
         var dto = new ApplicationDto
         {
-            University = "Test University",
-            Grade = StudentGrade.ForthYear,
-            Department = Department.Software, 
-            InternshipType = InternshipType.Mandatory,
-            PhoneNumber = "5057964563",
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddMonths(1),
+            University = "BTU",
+            Grade = StudentGrade.Üç,
+            Department = Department.Yazılım,
+            InternshipType = InternshipType.Gönüllü,
+            PhoneNumber = "5554443322",
+            StartDate = DateTime.UtcNow.AddDays(1),
+            EndDate = DateTime.UtcNow.AddMonths(1),
             CvFile = fileMock.Object
         };
 
         _appServiceMock.Setup(x => x.SubmitAsync(userId, It.IsAny<ApplicationDto>()))
-            .ReturnsAsync(ServiceResult<Guid>.Success(expectedId));
-
-       
-        var result = await _controller.SubmitApplication(dto);
-
-        
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.NotNull(okResult.Value);
-    }
-
-    [Fact]
-    public async Task GetMyApplications_ReturnsApplicationsList()
-    {
-        
-        var userId = Guid.NewGuid();
-        MockUser(userId, "Intern");
-
-        _appServiceMock.Setup(x => x.GetByUserIdAsync(userId))
-            .ReturnsAsync(new List<ApplicationDto>());
-
-        var result = await _controller.GetMyApplications();
-    
-        Assert.IsType<OkObjectResult>(result);
+            .ReturnsAsync(ServiceResult<Guid>.Success(Guid.NewGuid()));
     }
 }

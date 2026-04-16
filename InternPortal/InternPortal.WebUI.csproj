@@ -12,7 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\" />
     <Folder Include="wwwroot\js\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InternPortal.Application\InternPortal.Application.csproj" />
+    <ProjectReference Include="..\InternPortal.Domain\InternPortal.Domain.csproj" />
+    <ProjectReference Include="..\InternPortal.Infrastructure\InternPortal.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

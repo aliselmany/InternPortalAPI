@@ -1,0 +1,85 @@
+﻿
+body, html {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-gradient) !important;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    zoom: 1.05; 
+}
+
+.form-card {
+    background: var(--card-bg) !important;
+    width: 450px; 
+    padding: 40px;
+    border-radius: 28px;
+    box-shadow: 0 15px 35px var(--shadow) !important;
+    transition: all 0.3s ease;
+}
+
+.header-container {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.logo-box img {
+    max-width: 90px;
+    height: auto;
+    margin-bottom: 15px;
+    filter: var(--bs-theme) == 'dark' ? brightness(0) invert(1) : none;
+}
+
+.title-box h1 {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.form-label {
+    font-weight: 700;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-control, .form-select {
+    background-color: var(--input-bg) !important;
+    border: 2px solid var(--input-border) !important;
+    border-radius: 12px;
+    padding: 10px 15px;
+    color: var(--text-main) !important;
+}
+
+.btn-auth-submit {
+    height: 55px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    background: var(--btn-bg) !important;
+    color: var(--btn-text) !important;
+    border: none !important;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.theme-toggle-corner {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9999;
+}

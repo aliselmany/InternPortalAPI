@@ -6,8 +6,8 @@ namespace InternPortal.Domain.Enums
 {
     public enum Department
     {
-        Software  = 0,
-        Electronics = 1,
-        Project = 2,
+        Yazılım  = 0,
+        Elektronik = 1,
+        Proje = 2
     }
 }       

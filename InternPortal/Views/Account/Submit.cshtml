@@ -1,0 +1,391 @@
+﻿@using InternPortal.Domain.Enums
+@using InternPortal.Application.Dtos
+@model ApplicationDto
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Staj Başvuru Formu</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/auth-portal.css" asp-append-version="true" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        html, body {
+        overflow-y: auto !important;
+        height: auto !important;
+        background: var(--bg-gradient) !important;
+        margin: 0;
+        padding: 0;
+        }
+
+        .container-fluid {
+        padding: 40px 8%;
+        padding-bottom: 120px;
+        }
+
+        .header-container {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 40px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--input-border);
+        }
+
+        .logo-box img {
+        max-width: 120px;
+        height: auto;
+        }
+
+        .title-box h1 {
+        color: var(--text-main);
+        font-weight: 600;
+        font-size: 1.8rem;
+        margin: 0;
+        }
+
+        .title-box p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        }
+
+        .section-title {
+        color: var(--text-main);
+        font-size: 1rem;
+        font-weight: 700;
+        margin-top: 20px;
+        margin-bottom: 15px;
+        border-left: 4px solid var(--text-muted);
+        padding-left: 15px;
+        text-transform: uppercase;
+        }
+
+        .form-label {
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+        }
+
+        .form-control, .form-select {
+        background-color: var(--input-bg) !important;
+        border: 2px solid var(--input-border) !important;
+        color: var(--text-main) !important;
+        border-radius: 12px;
+        padding: 12px;
+        transition: all 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+        border-color: var(--text-muted) !important;
+        box-shadow: none;
+        background-color: var(--card-bg) !important;
+        }
+
+        .file-upload-wrapper {
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 50px;
+        }
+
+        .real-file-input {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+        }
+
+        .file-upload-text {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-right: 10px;
+        }
+
+        .file-upload-icon {
+        color: var(--text-muted);
+        font-size: 1.2rem;
+        }
+
+        .btn-submit {
+        background: var(--btn-bg) !important;
+        color: var(--btn-text) !important;
+        height: 60px;
+        border-radius: 15px;
+        font-weight: 700;
+        width: 100%;
+        border: none;
+        box-shadow: 0 10px 20px var(--shadow);
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+        }
+
+        .theme-toggle {
+        position: fixed;
+        top: 25px;
+        right: 25px;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        width: 50px;
+        height: 50px;
+        border-radius: 15px;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 1000;
+        box-shadow: 0 5px 15px var(--shadow);
+        }
+    </style>
+</head>
+<body>
+
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+        <i class="bi bi-sun-fill" id="themeIcon"></i>
+    </button>
+
+    <div class="container-fluid">
+        <div class="header-container">
+            <div class="logo-box">
+                <img src="/assets/trex-logo-dark.png" id="portalLogo" alt="Logo" />
+            </div>
+            <div class="title-box">
+                <h1>Staj Başvuru Formu</h1>
+                <p>Lütfen bilgilerinizi eksiksiz doldurun.</p>
+            </div>
+        </div>
+
+        <form id="applicationForm" enctype="multipart/form-data">
+            <div class="row g-4">
+                
+                <div class="col-12">
+                    <div class="section-title">Stajyer Kişisel Bilgileri</div>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="University" class="form-label">ÜNİVERSİTE/BÖLÜM</label>
+                    <input asp-for="University" name="University" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Grade" class="form-label">SINIF</label>
+                    <select asp-for="Grade" name="Grade" class="form-select" asp-items="Html.GetEnumSelectList<StudentGrade>()"></select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Department" class="form-label">DEPARTMAN</label>
+                    <select asp-for="Department" name="Department" class="form-select" asp-items="Html.GetEnumSelectList<Department>()"></select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="PhoneNumber" class="form-label">TELEFON NUMARASI</label>
+                    <input asp-for="PhoneNumber" name="PhoneNumber" class="form-control" placeholder="5XXXXXXXXX" type="tel" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="InternshipType" class="form-label">STAJ TÜRÜ</label>
+                    <select asp-for="InternshipType" name="InternshipType" class="form-select" asp-items="Html.GetEnumSelectList<InternshipType>()"></select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="StartDate" class="form-label">BAŞLANGIÇ TARİHİ</label>
+                    <input asp-for="StartDate" name="StartDate" type="date" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="EndDate" class="form-label">BİTİŞ TARİHİ</label>
+                    <input asp-for="EndDate" name="EndDate" type="date" class="form-control" required>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label">KENDİNİZDEN BAHSEDİN</label>
+                    <textarea asp-for="Description" name="Description" class="form-control" rows="3" placeholder="Projelerinizden veya hedeflerinizden bahsedebilirsiniz..."></textarea>
+                </div>
+
+                <div class="col-12">
+                    <div class="section-title">Şirket İçi Referans Bilgileri</div>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Reference" class="form-label">REFERANS AD SOYAD</label>
+                    <input asp-for="Reference" name="Reference" class="form-control" placeholder="Ad Soyad">
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="ReferenceGsm" class="form-label">REFERANS TELEFON</label>
+                    <input asp-for="ReferenceGsm" name="ReferenceGsm" class="form-control" placeholder="5XXXXXXXXX">
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="ReferenceClosenessStatus" class="form-label">YAKINLIK DERECESİ</label>
+                    <select asp-for="ReferenceClosenessStatus" name="ReferenceClosenessStatus" class="form-select">
+                        <option value="">Seçiniz...</option>
+                        <option value="Colleague">İş Arkadaşı</option>
+                        <option value="Academic">Akademisyen</option>
+                        <option value="Family">Aile Yakını</option>
+                        <option value="Other">Diğer</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <div class="section-title">Belgeler</div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" style="color:#ff6b6b">ÖZGEÇMİŞ (PDF, WORD) *</label>
+                    <div class="file-upload-wrapper form-control">
+                        <input asp-for="CvFile" name="CvFile" type="file" class="real-file-input" accept=".pdf,.doc,.docx" required>
+                        <span class="file-upload-text">Dosya seçilmedi</span>
+                        <i class="bi bi-cloud-arrow-up-fill file-upload-icon"></i>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" style="color: #ff6b6b;">TRANSKRİPT (PDF, WORD) *</label>
+                    <div class="file-upload-wrapper form-control">
+                        <input asp-for="TranscriptFile" name="TranscriptFile" type="file" class="real-file-input" accept=".pdf,.doc,.docx" required>
+                        <span class="file-upload-text">Dosya seçilmedi</span>
+                        <i class="bi bi-cloud-arrow-up-fill file-upload-icon"></i>
+                    </div>
+                </div>
+
+                <div class="col-md-4 offset-md-8 mt-5">
+                    <button type="submit" id="btnSubmit" class="btn-submit">BAŞVURUYU GÖNDER</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function updateUI(theme) {
+        const logo = document.getElementById('portalLogo');
+        const icon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+        html.setAttribute('data-bs-theme', theme);
+        if (theme === 'dark') {
+        logo.src = "/assets/trex-logo-light.png";
+        icon.className = 'bi bi-moon-fill';
+        } else {
+        logo.src = "/assets/trex-logo-dark.png";
+        icon.className = 'bi bi-sun-fill';
+        }
+        }
+
+        function toggleTheme() {
+        const current = localStorage.getItem('theme') || 'light';
+        const target = current === 'light' ? 'dark' : 'light';
+        localStorage.setItem('theme', target);
+        updateUI(target);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        updateUI(savedTheme);
+        });
+
+        document.querySelectorAll('.real-file-input').forEach(input => {
+        input.addEventListener('change', function() {
+        const textSpan = this.parentElement.querySelector('.file-upload-text');
+        const icon = this.parentElement.querySelector('.file-upload-icon');
+        if (this.files && this.files.length > 0) {
+        textSpan.textContent = this.files[0].name;
+        textSpan.style.color = "var(--text-main)";
+        icon.className = "bi bi-check-circle-fill file-upload-icon text-success";
+        } else {
+        textSpan.textContent = "Dosya seçilmedi";
+        textSpan.style.color = "var(--text-muted)";
+        icon.className = "bi bi-cloud-arrow-up-fill file-upload-icon";
+        }
+        });
+        });
+
+        document.getElementById('applicationForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+                    
+        const btn = document.getElementById('btnSubmit');
+        const formData = new FormData(this);
+
+        btn.disabled = true;
+        btn.textContent = "GÖNDERİLİYOR...";
+
+        try {
+    
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+        Swal.fire('Erişim Reddedildi!', 'Oturum süreniz dolmuş veya giriş yapmamışsınız. Lütfen tekrar giriş yapın.', 'warning')
+        .then(() => { window.location.href = "/Account/Login"; });
+        return; 
+        }
+
+   
+        const response = await fetch('/Applications/api/submit', {
+        method: 'POST',
+        headers: {
+        'Authorization': `Bearer ${token}` 
+        },
+        body: formData
+        });
+
+      
+        let result;
+        try {
+        result = await response.json();
+        } catch (err) {
+        result = { message: "Sunucudan beklenmeyen bir yanıt geldi." };
+        }
+
+        if (response.ok) {
+        Swal.fire({
+        title: 'Başarılı!',
+        text: 'Başvurunuz sisteme kaydedildi.',
+        icon: 'success',
+        confirmButtonColor: '#3085d6'
+        }).then(() => {
+        window.location.href = "/Applications/MyApplication";
+        });
+        } else if (response.status === 401) {
+        
+        Swal.fire('Yetkisiz Erişim!', 'Oturumunuz geçersiz. Lütfen tekrar giriş yapın.', 'error')
+        .then(() => { window.location.href = "/Account/Login"; });
+        } else {
+        Swal.fire('Hata!', result.message || 'Bir sorun oluştu.', 'error');
+        }
+
+        } catch (error) {
+        console.error("Bağlantı Hatası:", error);
+        Swal.fire('Hata!', 'Sunucuya bağlanılamadı. Lütfen bağlantınızı kontrol edin.', 'error');
+        } finally {
+        btn.disabled = false;
+        btn.textContent = "BAŞVURUYU GÖNDER";
+        }
+        });
+    </script>
+</body>
+</html> 

@@ -11,13 +11,25 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowWebUI", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
+
 
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -36,6 +48,7 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
+
 builder.Services.AddControllersWithViews()
    .AddJsonOptions(options =>
    {
@@ -47,7 +60,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "InternPortal API", Version = "v1" });
     c.OperationFilter<RoleDropdownFilter>();
-    c.CustomSchemaIds(type => type.FullName);
+    c.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -56,7 +69,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Auth Login"
+        Description = "Buraya sadece Token değerini giriniz."
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -89,13 +102,19 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseRouting();
+
+
+app.UseCors("AllowWebUI");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
+
+app.MapControllers(); 
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Auth}/{action=Login}/{id?}");
-
-app.MapControllers();
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();

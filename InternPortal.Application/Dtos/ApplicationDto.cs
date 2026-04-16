@@ -32,12 +32,26 @@ public class ApplicationDto : IValidatableObject
 
     public string? Description { get; set; }
 
-    [Required(ErrorMessage = "Please upload your CV.")]
-    public required IFormFile CvFile { get; set; }
+    // DİKKAT: required anahtar kelimesi mapping'de hata veriyorsa kaldırılabilir 
+    // veya ApplicationService içinde 'CvFile = null!' şeklinde geçilebilir.
+    public IFormFile CvFile { get; set; } = null!;
+
+    public IFormFile? TranscriptFile { get; set; }
+
+    public string? CvPath { get; set; }
+    public string? TranscriptPath { get; set; }
+
+    public ApplicationStatus Status { get; set; }
+
+    public string? Reference { get; set; } = string.Empty;
+
+    [RegularExpression(@"^5\d{9}$", ErrorMessage = "Reference phone must be 10 digits and start with 5.")]
+    public string? ReferenceGsm { get; set; } = string.Empty;
+
+    public string? ReferenceClosenessStatus { get; set; } = string.Empty;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-      
         if (EndDate <= StartDate)
         {
             yield return new ValidationResult(

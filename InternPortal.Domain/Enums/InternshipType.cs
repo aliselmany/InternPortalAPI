@@ -6,8 +6,8 @@ namespace InternPortal.Domain.Enums
 {
     public enum InternshipType
     {
-        Volundatory = 0,
-        Mandatory = 1,
+        Gönüllü = 0,
+        Zorunlu = 1,
         IMEP = 2    
     }
 }

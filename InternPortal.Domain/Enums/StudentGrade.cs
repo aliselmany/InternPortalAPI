@@ -7,9 +7,10 @@ namespace InternPortal.Domain.Enums
 {
     public enum StudentGrade
     {
-        FirstYear = 1,
-        SecondYear = 2,
-        ThirdYear = 3,
-        ForthYear = 4,
+        Bir = 1,
+        İki = 2,
+        Üç = 3,
+        Dört = 4,
+        
     }
 }

@@ -19,32 +19,32 @@ public class ApplicationService : IApplicationService
 
     public async Task<ServiceResult<Guid>> SubmitAsync(Guid userId, ApplicationDto dto)
     {
-        var lastApplication = await _context.Applications
+          var lastApplication = await _context.Applications
             .Where(x => x.UserId == userId)
             .OrderByDescending(x => x.AppliedDate)
             .FirstOrDefaultAsync();
 
         if (lastApplication != null)
         {
-            if (lastApplication.Status == ApplicationStatus.Pending)
+            if (lastApplication.Status == ApplicationStatus.Beklemede)
             {
-                return ServiceResult<Guid>.Failure("You already have a pending application. Please wait for the result.");
+                return ServiceResult<Guid>.Failure("Beklemede olan bir başvurunuz zaten var. Lütfen sonuçlanmasını bekleyin.");
             }
 
-            if (lastApplication.Status == ApplicationStatus.Approved)
+            if (lastApplication.Status == ApplicationStatus.Onaylandı)
             {
                 if (DateTime.UtcNow <= lastApplication.EndDate)
                 {
-                    return ServiceResult<Guid>.Failure($"Your current internship is active until {lastApplication.EndDate:yyyy-MM-dd}. You can apply after this date.");
+                    return ServiceResult<Guid>.Failure($"Aktif stajınız {lastApplication.EndDate:yyyy-MM-dd} tarihine kadar devam ediyor.");
                 }
             }
         }
-
+ 
         var user = await _context.Users
             .Include(u => u.UserRoles)
             .FirstOrDefaultAsync(u => u.Id == userId);
 
-        if (user == null) return ServiceResult<Guid>.Failure("User not found.");
+        if (user == null) return ServiceResult<Guid>.Failure("Kullanıcı bulunamadı.");
 
         if (user.UserRoles == null || !user.UserRoles.Any())
         {
@@ -56,31 +56,6 @@ public class ApplicationService : IApplicationService
                     UserId = userId,
                     RoleId = internRole.Id
                 });
-            }
-        }
-
-        string savedFileName = string.Empty;
-        if (dto.CvFile != null && dto.CvFile.Length > 0)
-        {
-            var extension = Path.GetExtension(dto.CvFile.FileName).ToLower();
-            string[] allowedExtensions = { ".pdf", ".docx", ".doc" };
-
-            if (!allowedExtensions.Contains(extension))
-                return ServiceResult<Guid>.Failure("Only .pdf, .doc, and .docx files are allowed.");
-
-            if (dto.CvFile.Length > 5 * 1024 * 1024)
-                return ServiceResult<Guid>.Failure("File size cannot exceed 5MB.");
-
-            savedFileName = $"{Guid.NewGuid()}{extension}";
-            var uploadFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "cvs");
-
-            if (!Directory.Exists(uploadFolderPath))
-                Directory.CreateDirectory(uploadFolderPath);
-
-            var filePath = Path.Combine(uploadFolderPath, savedFileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await dto.CvFile.CopyToAsync(stream);
             }
         }
 
@@ -96,9 +71,13 @@ public class ApplicationService : IApplicationService
             StartDate = dto.StartDate,
             EndDate = dto.EndDate,
             Description = dto.Description,
-            CvUrl = savedFileName,
+            CvUrl = dto.CvPath ?? string.Empty,
+            TranscriptFile = dto.TranscriptPath ?? string.Empty,
             AppliedDate = DateTime.UtcNow,
-            Status = ApplicationStatus.Pending
+            Status = ApplicationStatus.Beklemede,
+            Reference = dto.Reference,
+            ReferenceGsm = dto.ReferenceGsm,
+            ReferenceClosenessStatus = dto.ReferenceClosenessStatus
         };
 
         user.University = dto.University;
@@ -120,17 +99,14 @@ public class ApplicationService : IApplicationService
                 .ThenInclude(u => u.UserRoles)
             .FirstOrDefaultAsync(a => a.Id == applicationId);
 
-        if (application == null)
-        {
-            return ServiceResult<bool>.Failure("Application not found.");
-        }
+        if (application == null) return ServiceResult<bool>.Failure("Başvuru bulunamadı.");
 
-        if (newStatus == ApplicationStatus.Approved && application.User != null && !application.User.UserRoles.Any())
+        if (newStatus == ApplicationStatus.Onaylandı && application.User != null && !application.User.UserRoles.Any())
         {
             var internRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Intern");
             if (internRole != null)
             {
-                application.User.UserRoles.Add(new UserRoleMapping
+                _context.UserRoleMappings.Add(new UserRoleMapping
                 {
                     UserId = application.UserId,
                     RoleId = internRole.Id
@@ -140,7 +116,6 @@ public class ApplicationService : IApplicationService
 
         application.Status = newStatus;
         var saved = await _context.SaveChangesAsync() > 0;
-
         return ServiceResult<bool>.Success(saved);
     }
 
@@ -148,6 +123,7 @@ public class ApplicationService : IApplicationService
     {
         var applications = await _context.Applications
             .Where(x => x.UserId == userId)
+            .OrderByDescending(x => x.AppliedDate)
             .ToListAsync();
 
         return applications.Select(MapToDto).ToList();
@@ -180,7 +156,14 @@ public class ApplicationService : IApplicationService
             StartDate = x.StartDate,
             EndDate = x.EndDate,
             Description = x.Description,
-            CvFile = null!
+            CvPath = x.CvUrl,
+            TranscriptPath = x.TranscriptFile,
+            Reference = x.Reference,
+            ReferenceGsm = x.ReferenceGsm,
+            ReferenceClosenessStatus = x.ReferenceClosenessStatus,
+            Status = x.Status, 
+            CvFile = null!,   
+            TranscriptFile = null!
         };
     }
 }

@@ -18,7 +18,6 @@ public class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<UserRoleMapping>().ToTable("UserRoleMappings");
-
         modelBuilder.Entity<UserRoleMapping>()
             .HasKey(ur => new { ur.UserId, ur.RoleId });
 
@@ -32,17 +31,21 @@ public class AppDbContext : DbContext
             .WithMany(r => r.UserRoles)
             .HasForeignKey(ur => ur.RoleId);
 
+      
         modelBuilder.Entity<User>()
             .HasOne(u => u.Mentor)
             .WithMany(m => m.Interns)
             .HasForeignKey(u => u.MentorId)
             .OnDelete(DeleteBehavior.Restrict);
 
+   
         modelBuilder.Entity<InternPortal.Domain.Entities.Application>()
             .HasOne(a => a.User)
             .WithOne(u => u.Application)
-            .HasForeignKey<InternPortal.Domain.Entities.Application>(a => a.UserId);
+            .HasForeignKey<InternPortal.Domain.Entities.Application>(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade); 
 
+     
         modelBuilder.Entity<UserSocialAccount>()
             .HasOne(s => s.User)
             .WithMany(u => u.SocialAccounts)
@@ -50,9 +53,20 @@ public class AppDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         var appEntity = modelBuilder.Entity<InternPortal.Domain.Entities.Application>();
-        appEntity.Property(e => e.Status).HasConversion<string>();
-        appEntity.Property(e => e.StudentGrade).HasConversion<string>();
-        appEntity.Property(e => e.Department).HasConversion<string>();
-        appEntity.Property(e => e.InternshipType).HasConversion<string>();
+
+      
+        appEntity.Property(e => e.Status).HasConversion<string>().HasMaxLength(20);
+        appEntity.Property(e => e.StudentGrade).HasConversion<string>().HasMaxLength(30);
+        appEntity.Property(e => e.Department).HasConversion<string>().HasMaxLength(50);
+        appEntity.Property(e => e.InternshipType).HasConversion<string>().HasMaxLength(30);
+
+        appEntity.Property(e => e.University).IsRequired().HasMaxLength(150);
+        appEntity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(15);
+        appEntity.Property(e => e.Reference).HasMaxLength(100);
+        appEntity.Property(e => e.ReferenceGsm).HasMaxLength(15);
+        appEntity.Property(e => e.ReferenceClosenessStatus).HasMaxLength(50);
+
+       
+        appEntity.Property(e => e.Description).HasMaxLength(1000);
     }
 }

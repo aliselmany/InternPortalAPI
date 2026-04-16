@@ -44,21 +44,16 @@ public class UsersController : ControllerBase
     }
 
 
-
     [HttpPost("login")]
-
     [AllowAnonymous]
-
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
-
     {
-
         var result = await _userService.LoginAsync(loginRequest);
 
-        if (!result.IsSuccess) return Unauthorized(new { message = result.Message });
+        if (!result.IsSuccess)
+            return Unauthorized(new { message = result.Message });
 
-        return Ok(result.Data);
-
+        return Ok(new { token = result.Data, message = "Giriş başarılı" });
     }
 
 
@@ -199,9 +194,7 @@ public class UsersController : ControllerBase
     [Authorize(Roles = "Admin")]
 
     public async Task<IActionResult> DeleteUser(Guid id)
-
     {
-
         var success = await _userService.DeleteUserAsync(id);
 
         if (!success) return NotFound(new { message = "User not found." });
@@ -209,5 +202,4 @@ public class UsersController : ControllerBase
         return Ok(new { message = "User deleted successfully." });
 
     }
-
 }

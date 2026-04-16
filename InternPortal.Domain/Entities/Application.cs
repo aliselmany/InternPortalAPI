@@ -25,6 +25,9 @@ namespace InternPortal.Domain.Entities
         [Required]
         public string CvUrl { get; set; } = string.Empty;
 
+        [Required]
+        public string TranscriptFile { get; set; } = string.Empty;
+
         public string? Description { get; set; }
 
         [Required]
@@ -35,9 +38,13 @@ namespace InternPortal.Domain.Entities
 
         public DateTime AppliedDate { get; set; } = DateTime.UtcNow;
 
-        public ApplicationStatus Status { get; set; } = ApplicationStatus.Pending;
+        public ApplicationStatus Status { get; set; } = ApplicationStatus.Beklemede;
 
         public Guid UserId { get; set; }
         public virtual User User { get; set; } = null!;
+
+        public string Reference { get; set; } = string.Empty;
+        public string ReferenceGsm { get; set; } = string.Empty;
+        public string ReferenceClosenessStatus { get; set; } = string.Empty;
     }
 }
