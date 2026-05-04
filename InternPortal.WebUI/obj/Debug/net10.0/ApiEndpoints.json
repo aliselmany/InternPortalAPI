@@ -323,13 +323,38 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "University",
+        "Name": "EducationLevel",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      },
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Surname",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SchoolName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DepartmentOfStudy",
         "Type": "System.String",
         "IsRequired": false
       },
       {
         "Name": "Grade",
-        "Type": "InternPortal.Domain.Enums.StudentGrade",
+        "Type": "System.String",
         "IsRequired": false
       },
       {

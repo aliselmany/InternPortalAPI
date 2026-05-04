@@ -32,8 +32,10 @@ public class UserService : IUserService
         string hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
         var user = new User { Name = dto.Name, Surname = dto.Surname, Email = dto.Email, Password = hashedPassword };
 
-        var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
-        if (defaultRole != null) user.UserRoles.Add(new UserRoleMapping { RoleId = defaultRole.Id });
+        // FIX: Assigning "Intern" immediately upon registration instead of "User"
+        var internRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Intern");
+        if (internRole != null)
+            user.UserRoles.Add(new UserRoleMapping { RoleId = internRole.Id });
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
@@ -47,7 +49,7 @@ public class UserService : IUserService
             .FirstOrDefaultAsync(u => u.Email == request.Email);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
-            return ServiceResult<LoginResponseDto>.Failure("Invalid email or password.");
+            return ServiceResult<LoginResponseDto>.Failure("Yanlış parola yada e-mail");
 
         return ServiceResult<LoginResponseDto>.Success(new LoginResponseDto { Token = GenerateJwtToken(user), Email = user.Email });
     }

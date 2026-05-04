@@ -56,11 +56,11 @@ public class AppDbContext : DbContext
 
       
         appEntity.Property(e => e.Status).HasConversion<string>().HasMaxLength(20);
-        appEntity.Property(e => e.StudentGrade).HasConversion<string>().HasMaxLength(30);
+        appEntity.Property(e => e.Grade).HasConversion<string>().HasMaxLength(30);
         appEntity.Property(e => e.Department).HasConversion<string>().HasMaxLength(50);
         appEntity.Property(e => e.InternshipType).HasConversion<string>().HasMaxLength(30);
 
-        appEntity.Property(e => e.University).IsRequired().HasMaxLength(150);
+        appEntity.Property(e => e.SchoolName).IsRequired().HasMaxLength(150);
         appEntity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(15);
         appEntity.Property(e => e.Reference).HasMaxLength(100);
         appEntity.Property(e => e.ReferenceGsm).HasMaxLength(15);

@@ -1,0 +1,515 @@
+﻿@{
+    Layout = null; 
+}
+
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yönetim Paneli - InternPortal</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+
+    <link href="https://cdn.jsdelivr.net/npm/@@sweetalert2/theme-dark@@5/dark.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/auth-portal.css" />
+    
+    <style>
+        html, body {
+            margin: 0 !important; padding: 0 !important;
+            width: 100vw !important; height: 100vh !important;
+            overflow-x: hidden !important; zoom: 1 !important;
+            background: var(--bg-gradient) !important;
+        }
+
+        .admin-nav {
+            width: 100% !important; padding: 1rem 3rem;
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); border-bottom: 1px solid var(--input-border);
+        }
+
+        .btn-theme-white {
+            background: var(--btn-bg) !important; color: var(--btn-text) !important;
+            border: 1px solid var(--input-border); font-weight: 700; border-radius: 12px;
+            padding: 8px 25px; transition: 0.2s;
+        }
+
+        .content-spread { width: 100% !important; padding: 2rem 3rem !important; }
+        
+        .table-custom { width: 100% !important; table-layout: fixed; border-collapse: separate; border-spacing: 0 10px; }
+        
+        .table-custom th { 
+            padding: 1rem 1.5rem; 
+            color: var(--text-muted); 
+            font-size: 0.8rem; 
+            text-transform: uppercase; 
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .table-custom tbody tr { background-color: var(--card-bg); transition: 0.2s; }
+        
+        .table-custom td { 
+            padding: 1.2rem 1.5rem; 
+            border-top: 1px solid var(--input-border); 
+            border-bottom: 1px solid var(--input-border); 
+            vertical-align: middle;
+        }
+        
+        .table-custom td:first-child { border-left: 1px solid var(--input-border); border-radius: 12px 0 0 12px; }
+        .table-custom td:last-child { border-right: 1px solid var(--input-border); border-radius: 0 12px 12px 0; }
+
+        .modal-content { background-color: var(--card-bg) !important; border: 1px solid var(--input-border) !important; border-radius: 28px !important; }
+        .modal-body { padding: 2.5rem; max-height: 85vh; overflow-y: auto; }
+        .form-view-group { margin-bottom: 1.5rem; }
+        .form-view-label { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block; }
+
+        .form-view-control { 
+            background: var(--input-bg); border: 2px solid var(--input-border); 
+            border-radius: 12px; padding: 12px 15px; color: var(--text-main); 
+            min-height: 50px; display: flex; align-items: center; 
+        }
+        select.form-view-control { cursor: pointer; appearance: auto; }
+        input.form-view-control::placeholder { color: var(--text-muted); opacity: 0.7; }
+        .dropdown-menu { border-radius: 12px !important; margin-top: 15px !important; }
+        .dropdown-item { font-weight: 500; transition: 0.2s; }
+        .dropdown-item:hover, .dropdown-item:focus { background-color: var(--input-bg) !important; color: var(--primary-portal) !important; }
+    </style>
+</head>
+<body>
+
+    <nav class="admin-nav">
+        <img id="authLogo" src="" alt="Logo" style="height: 45px;" />
+        <div class="d-flex align-items-center gap-4">
+            <span id="totalBadge" class="badge rounded-pill px-4 py-2 fs-6 border" style="background: var(--btn-bg); color: var(--btn-text);">Yükleniyor...</span>
+            
+            <div class="theme-toggle-btn" onclick="toggleTheme()" style="cursor:pointer; font-size: 1.5rem;">
+                <i class="bi bi-sun-fill" id="themeIcon"></i>
+            </div>
+     
+            <div class="dropdown">
+                <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                    <i class="bi bi-person-circle fs-3 text-secondary" id="profileIcon"></i>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="background-color: var(--card-bg); border-color: var(--input-border);">
+         
+                    <li><a class="dropdown-item d-flex align-items-center gap-3 py-2 text-light" href="#" onclick="showProfile()"><i class="bi bi-person fs-5"></i> Profil</a></li>
+                    <li><a class="dropdown-item d-flex align-items-center gap-3 py-2 text-light" href="#" onclick="showEditProfile()"><i class="bi bi-pencil-square fs-5"></i> Düzenle</a></li>
+                    <li><hr class="dropdown-divider" style="border-color: var(--input-border);"></li>
+                    <li><a class="dropdown-item d-flex align-items-center gap-3 py-2 text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-right fs-5"></i> Çıkış Yap</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-spread" id="mainWrapper">
+  
+        <div class="row mb-4 px-3">
+            <div class="col-md-3 mb-2">
+                <input type="text" id="filterName" class="form-control form-view-control w-100" placeholder="Stajyer Ara..." onkeyup="applyFilters()">
+            </div>
+            <div class="col-md-3 mb-2">
+                <input type="text" id="filterSchool" class="form-control form-view-control w-100" placeholder="Üniversite Ara..." onkeyup="applyFilters()">
+            </div>
+            <div class="col-md-2 mb-2">
+                <input type="text" id="filterDept" class="form-control form-view-control w-100" placeholder="Bölüm Ara..." onkeyup="applyFilters()">
+            </div>
+            <div class="col-md-2 mb-2">
+                <select id="filterType" class="form-select form-view-control w-100" onchange="applyFilters()">
+                    <option value="">Staj Türü (Tümü)</option>
+                    <option value="0">Zorunlu</option>
+                    <option value="1">Gönüllü</option>
+                </select>
+            </div>
+            <div class="col-md-2 mb-2">
+                <select id="filterStatus" class="form-select form-view-control w-100" onchange="applyFilters()">
+                    <option value="">Durum (Tümü)</option>
+                    <option value="Beklemede">Beklemede</option>
+                    <option value="Onaylandı">Onaylandı</option>
+                    <option value="Reddedildi">Reddedildi</option>
+                </select>
+            </div>
+        </div>
+
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th style="width: 25%" class="text-start">Stajyer</th>
+                    <th style="width: 25%" class="text-start">Üniversite</th>
+                    <th style="width: 15%" class="text-start">Bölüm</th>
+                    <th style="width: 10%" class="text-center">Staj Türü</th>
+                    <th style="width: 10%" class="text-center">Durum</th>             
+                    <th style="width: 15%" class="text-end">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody id="appBody"></tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="inspectModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content shadow-lg text-start">
+                <div class="modal-header border-0 px-4 pt-4">
+                    <h4 class="fw-bold mb-0">Başvuru Formu İncelemesi</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6"><div class="form-view-group"><label class="form-view-label">Ad Soyad</label><div class="form-view-control" id="fDetFullName">-</div></div></div>
+                        <div class="col-md-6"><div class="form-view-group"><label class="form-view-label">Telefon</label><div class="form-view-control" id="fDetPhone">-</div></div></div>
+                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Eğitim</label><div class="form-view-control" id="fDetEduLevel">-</div></div></div>
+                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Üniversite</label><div class="form-view-control" id="fDetSchool">-</div></div></div>
+                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Bölüm/Sınıf</label><div class="form-view-control" id="fDetDeptGrade">-</div></div></div>
+                    </div>
+                    <div class="row border-top pt-4 mt-2">
+                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Departman</label><div class="form-view-control" id="fDetTargetDept">-</div></div></div>
+                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Staj Türü</label><div class="form-view-control" id="fDetInternType">-</div></div></div>
+                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Tarihler</label><div class="form-view-control" id="fDetDates">-</div></div></div>
+                        <div class="col-12"><div class="form-view-group"><label class="form-view-label">Açıklama</label><div class="form-view-control" id="fDetDesc" style="min-height: 100px; align-items: flex-start;">-</div></div></div>
+                    </div>
+                    <div class="row border-top pt-4 mt-2">
+                        <div class="col-md-6">
+                            <label class="form-view-label">Referans</label>
+                            <div class="p-3 rounded-4 border"><div id="fDetRefInfo" class="fw-bold">-</div><div id="fDetRefGsm" class="small text-muted">-</div></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-view-label">Dosyalar</label>
+                            <div class="d-flex gap-2">
+                                <a id="fDetCv" href="#" target="_blank" class="btn btn-theme-white flex-grow-1">CV Görüntüle</a>
+                                <a id="fDetTranscript" href="#" target="_blank" class="btn btn-theme-white flex-grow-1">Transkript</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 gap-3">
+                    <button class="btn btn-outline-danger rounded-pill px-5 fw-bold" onclick="updateStatus(2)">REDDET</button>
+                    <button class="btn btn-success rounded-pill px-5 fw-bold" onclick="updateStatus(1)">ONAYLA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+<script>
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            window.location.href = '/';
+        }
+
+        let currentAppId = null;
+        let myModal = null;
+        
+        let allApplications = [];
+
+        let currentUser = {
+            name: "Admin",
+            surname: "Kullanıcı",
+            email: "admin@internportal.com",
+            phone: "0555 555 55 55"
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+       
+            if (!localStorage.getItem('token')) {
+                window.location.href = '/';
+                return;
+            }
+
+            const modalElement = document.getElementById('inspectModal');
+            if (modalElement) {
+                myModal = new bootstrap.Modal(modalElement);
+            }
+
+            applyTheme(localStorage.getItem('portal-theme') || 'dark');
+            fetchApplications();
+        });
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            const authLogo = document.getElementById('authLogo');
+            const themeIcon = document.getElementById('themeIcon');
+            const version = new Date().getTime();
+            
+            if (theme === 'dark') {
+                if(themeIcon) themeIcon.className = 'bi bi-moon-fill';
+                if(authLogo) authLogo.src = `/assets/trex-logo-light.png?v=${version}`;
+            } else {
+                if(themeIcon) themeIcon.className = 'bi bi-sun-fill';
+                if(authLogo) authLogo.src = `/assets/trex-logo-dark.png?v=${version}`;
+            }
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-bs-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('portal-theme', target);
+            applyTheme(target);
+        }
+   
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/'; 
+        }
+
+        function showProfile() {
+            Swal.fire({
+                title: 'Profil Bilgileri',
+                html: `
+                    <div class="text-start mt-3" style="font-size: 1.1rem;">
+                        <div class="mb-2"><strong class="text-muted">Ad Soyad:</strong> <span class="ms-2">${currentUser.name} ${currentUser.surname}</span></div>
+                        <div class="mb-2"><strong class="text-muted">E-posta:</strong> <span class="ms-2">${currentUser.email}</span></div>
+                        <div class="mb-2"><strong class="text-muted">Telefon:</strong> <span class="ms-2">${currentUser.phone}</span></div>
+                        <hr style="border-color: var(--input-border);">
+                        <span class="badge bg-secondary px-3 py-2">Sistem Yöneticisi</span>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Kapat',
+                confirmButtonColor: '#ffc107',
+                background: 'var(--card-bg)',
+                color: 'var(--text-main)'
+            });
+        }
+
+        function showEditProfile() {
+            Swal.fire({
+                title: 'Profili Düzenle',
+                html: `
+                    <div class="text-start mt-3">
+                        <label class="form-label text-muted small fw-bold">Ad</label>
+                        <input id="swal-input-name" class="form-control mb-3" value="${currentUser.name}" style="background: var(--input-bg); color: var(--text-main); border: 1px solid var(--input-border);">
+                        
+                        <label class="form-label text-muted small fw-bold">Soyad</label>
+                        <input id="swal-input-surname" class="form-control mb-3" value="${currentUser.surname}" style="background: var(--input-bg); color: var(--text-main); border: 1px solid var(--input-border);">
+                        
+                        <label class="form-label text-muted small fw-bold">Telefon</label>
+                        <input id="swal-input-phone" class="form-control mb-3" value="${currentUser.phone}" style="background: var(--input-bg); color: var(--text-main); border: 1px solid var(--input-border);">
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Kaydet',
+                cancelButtonText: 'İptal',
+                confirmButtonColor: '#198754', 
+                cancelButtonColor: '#dc3545',  
+                background: 'var(--card-bg)',
+                color: 'var(--text-main)',
+                preConfirm: () => {
+                    return {
+                        name: document.getElementById('swal-input-name').value,
+                        surname: document.getElementById('swal-input-surname').value,
+                        phone: document.getElementById('swal-input-phone').value
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {        
+                    currentUser.name = result.value.name;
+                    currentUser.surname = result.value.surname;
+                    currentUser.phone = result.value.phone;
+                    
+                    Swal.fire({
+                        title: 'Başarılı!',
+                        text: 'Profil bilgileriniz güncellendi.',
+                        icon: 'success',
+                        background: 'var(--card-bg)',
+                        color: 'var(--text-main)',
+                        confirmButtonColor: '#ffc107'
+                    });
+                }
+            });
+        }
+
+        async function fetchApplications() {
+            try {
+                const response = await fetch('https://localhost:7166/Applications/api/all', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        logout(); 
+                    }
+                    return;
+                }
+                
+                allApplications = await response.json();
+                applyFilters(); 
+            } catch (err) { console.error("Veri çekme hatası:", err); }
+        }
+
+        function applyFilters() {
+            const fName = document.getElementById('filterName').value.toLowerCase();
+            const fSchool = document.getElementById('filterSchool').value.toLowerCase();
+            const fDept = document.getElementById('filterDept').value.toLowerCase();
+            const fType = document.getElementById('filterType').value;
+            const fStatus = document.getElementById('filterStatus').value.toLowerCase();
+
+            const filteredData = allApplications.filter(app => {
+                const fullName = `${app.name} ${app.surname}`.toLowerCase();
+                const school = (app.schoolName || '').toLowerCase();
+                const dept = (app.departmentOfStudy || '').toLowerCase();
+                
+                const typeVal = app.internshipType === 0 ? "0" : "1";
+                const statusVal = (app.status || 'beklemede').toLowerCase();
+
+                const matchName = fullName.includes(fName);
+                const matchSchool = school.includes(fSchool);
+                const matchDept = dept.includes(fDept);
+                const matchType = fType === "" || typeVal === fType;
+                const matchStatus = fStatus === "" || statusVal === fStatus;
+
+                return matchName && matchSchool && matchDept && matchType && matchStatus;
+            });
+
+            renderTable(filteredData);
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('appBody');
+            document.getElementById('totalBadge').textContent = `Toplam ${data.length} Başvuru`;
+            tbody.innerHTML = '';
+            
+            data.forEach(app => {
+                const appId = app.id || app.Id; 
+                const typeText = app.internshipType === 0 ? 'Zorunlu' : 'Gönüllü';
+                const statusText = app.status || 'Beklemede';
+                
+                let badgeClass = "bg-warning text-dark";
+                if(statusText === "Onaylandı") badgeClass = "bg-success text-white";
+                if(statusText === "Reddedildi") badgeClass = "bg-danger text-white";
+                
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td class="fw-bold text-start">${app.name} ${app.surname}</td>
+                        <td class="text-start">${app.schoolName || '-'}</td>
+                        <td class="text-start">${app.departmentOfStudy || '-'}</td>
+                        <td class="text-center">${typeText}</td>
+                        <td class="text-center"><span class="badge rounded-pill ${badgeClass} px-3 py-2">${statusText}</span></td>
+                        <td class="text-end">
+                            <button class="btn btn-theme-white shadow-sm" onclick="viewDetails('${appId}')">İncele</button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        async function viewDetails(id) {
+            if (!id || id === 'undefined') return;
+            currentAppId = id;
+            
+            try {
+                const res = await fetch(`https://localhost:7166/Applications/api/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (res.status === 401) {
+                    logout();
+                    return;
+                }
+                
+                if (!res.ok) return;
+                const app = await res.json();
+                
+                document.getElementById('fDetFullName').textContent = `${app.name} ${app.surname}`;
+                document.getElementById('fDetPhone').textContent = app.phoneNumber || '-';
+                document.getElementById('fDetEduLevel').textContent = app.educationLevel || '-';
+                document.getElementById('fDetSchool').textContent = app.schoolName || '-';
+                document.getElementById('fDetDeptGrade').textContent = `${app.departmentOfStudy || '-'} / ${app.grade || '-'}`;
+                document.getElementById('fDetTargetDept').textContent = app.department || '-';
+                document.getElementById('fDetInternType').textContent = app.internshipType === 0 ? 'Zorunlu' : 'Gönüllü';
+                document.getElementById('fDetDates').textContent = `${new Date(app.startDate).toLocaleDateString()} - ${new Date(app.endDate).toLocaleDateString()}`;
+                document.getElementById('fDetDesc').textContent = app.description || 'Not yok.';
+                document.getElementById('fDetRefInfo').textContent = `${app.reference || '-'} (${app.referenceClosenessStatus || '-'})`;
+                document.getElementById('fDetRefGsm').textContent = app.referenceGsm || '-';
+                document.getElementById('fDetCv').href = app.cvPath || '#';
+                
+                const tBtn = document.getElementById('fDetTranscript');
+                if(app.transcriptPath) { 
+                    tBtn.href = app.transcriptPath; 
+                    tBtn.style.display = 'block'; 
+                } else { 
+                    tBtn.style.display = 'none'; 
+                }
+                if(myModal) myModal.show();
+            } catch (err) { console.error("Detay hatası:", err); }
+        }
+        
+        async function updateStatus(statusCode) {
+            if (!currentAppId) {
+                Swal.fire({ icon: 'error', title: 'Hata', text: 'Geçerli bir başvuru seçilmedi.' });
+                return;
+            }
+
+            let enumStringValue = "";
+            let confirmMessage = "";
+            let successColor = "";
+
+            if (statusCode === 1) {
+                enumStringValue = "Onaylandı";
+                confirmMessage = "Bu başvuruyu ONAYLAMAK istediğinize emin misiniz?";
+                successColor = "#198754"; 
+            } else if (statusCode === 2) {
+                enumStringValue = "Reddedildi";
+                confirmMessage = "Bu başvuruyu REDDETMEK istediğinize emin misiniz?";
+                successColor = "#dc3545";
+            } else {
+                return; 
+            }
+
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: confirmMessage,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: successColor,
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Evet, Güncelle',
+                cancelButtonText: 'İptal',
+                background: 'var(--card-bg)',
+                color: 'var(--text-main)'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const res = await fetch(`https://localhost:7166/Applications/api/${currentAppId}/status`, {
+                            method: 'PUT',
+                            headers: { 
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json' 
+                            },
+                     
+                            body: JSON.stringify(enumStringValue) 
+                        });
+
+                        if (res.ok) {
+                            Swal.fire({
+                                title: 'Başarılı!',
+                                text: `Başvuru durumu '${enumStringValue}' olarak güncellendi.`,
+                                icon: 'success',
+                                background: 'var(--card-bg)',
+                                color: 'var(--text-main)',
+                                confirmButtonColor: '#ffc107'
+                            });
+                            
+                            if (myModal) myModal.hide(); 
+                            fetchApplications(); 
+                            
+                        } else {
+                            const errorData = await res.json();
+                            Swal.fire({ icon: 'error', title: 'Hata', text: errorData.message || 'Güncelleme başarısız oldu.', background: 'var(--card-bg)', color: 'var(--text-main)' });
+                        }
+                    } catch (err) {
+                        console.error("Status update error:", err);
+                        Swal.fire({ icon: 'error', title: 'Bağlantı Hatası', text: 'Sunucuya ulaşılamıyor.', background: 'var(--card-bg)', color: 'var(--text-main)' });
+                    }
+                }
+            });
+        }
+    </script>
+
+
+</body>
+</html>

@@ -15,21 +15,40 @@
             "multipart/form-data": {
               "schema": {
                 "required": [
+                  "CvFile",
                   "Department",
+                  "DepartmentOfStudy",
+                  "EducationLevel",
                   "EndDate",
                   "Grade",
                   "InternshipType",
                   "PhoneNumber",
-                  "StartDate",
-                  "University"
+                  "SchoolName",
+                  "StartDate"
                 ],
                 "type": "object",
                 "properties": {
-                  "University": {
+                  "EducationLevel": {
+                    "type": "string"
+                  },
+                  "Id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "Name": {
+                    "type": "string"
+                  },
+                  "Surname": {
+                    "type": "string"
+                  },
+                  "SchoolName": {
+                    "type": "string"
+                  },
+                  "DepartmentOfStudy": {
                     "type": "string"
                   },
                   "Grade": {
-                    "$ref": "#/components/schemas/InternPortal.Domain.Enums.StudentGrade"
+                    "type": "string"
                   },
                   "Department": {
                     "$ref": "#/components/schemas/InternPortal.Domain.Enums.Department"
@@ -82,7 +101,22 @@
                 }
               },
               "encoding": {
-                "University": {
+                "EducationLevel": {
+                  "style": "form"
+                },
+                "Id": {
+                  "style": "form"
+                },
+                "Name": {
+                  "style": "form"
+                },
+                "Surname": {
+                  "style": "form"
+                },
+                "SchoolName": {
+                  "style": "form"
+                },
+                "DepartmentOfStudy": {
                   "style": "form"
                 },
                 "Grade": {
@@ -799,15 +833,6 @@
           "Gönüllü",
           "Zorunlu",
           "IMEP"
-        ],
-        "type": "string"
-      },
-      "InternPortal.Domain.Enums.StudentGrade": {
-        "enum": [
-          "Bir",
-          "İki",
-          "Üç",
-          "Dört"
         ],
         "type": "string"
       },

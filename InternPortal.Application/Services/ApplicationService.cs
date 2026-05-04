@@ -19,7 +19,7 @@ public class ApplicationService : IApplicationService
 
     public async Task<ServiceResult<Guid>> SubmitAsync(Guid userId, ApplicationDto dto)
     {
-          var lastApplication = await _context.Applications
+        var lastApplication = await _context.Applications
             .Where(x => x.UserId == userId)
             .OrderByDescending(x => x.AppliedDate)
             .FirstOrDefaultAsync();
@@ -39,7 +39,7 @@ public class ApplicationService : IApplicationService
                 }
             }
         }
- 
+
         var user = await _context.Users
             .Include(u => u.UserRoles)
             .FirstOrDefaultAsync(u => u.Id == userId);
@@ -63,8 +63,12 @@ public class ApplicationService : IApplicationService
         {
             Id = Guid.NewGuid(),
             UserId = userId,
-            University = dto.University,
-            StudentGrade = dto.Grade,
+
+            EducationLevel = dto.EducationLevel,
+            SchoolName = dto.SchoolName,
+            DepartmentOfStudy = dto.DepartmentOfStudy,
+
+            Grade = dto.Grade,
             Department = dto.Department,
             InternshipType = dto.InternshipType,
             PhoneNumber = dto.PhoneNumber,
@@ -72,7 +76,9 @@ public class ApplicationService : IApplicationService
             EndDate = dto.EndDate,
             Description = dto.Description,
             CvUrl = dto.CvPath ?? string.Empty,
-            TranscriptFile = dto.TranscriptPath ?? string.Empty,
+
+            TranscriptFile = dto.TranscriptPath,
+
             AppliedDate = DateTime.UtcNow,
             Status = ApplicationStatus.Beklemede,
             Reference = dto.Reference,
@@ -80,14 +86,7 @@ public class ApplicationService : IApplicationService
             ReferenceClosenessStatus = dto.ReferenceClosenessStatus
         };
 
-        user.University = dto.University;
-        user.Department = dto.Department.ToString();
-        user.StartDate = dto.StartDate;
-        user.EndDate = dto.EndDate;
-
         _context.Applications.Add(application);
-        _context.Users.Update(user);
-
         await _context.SaveChangesAsync();
         return ServiceResult<Guid>.Success(application.Id);
     }
@@ -122,6 +121,7 @@ public class ApplicationService : IApplicationService
     public async Task<List<ApplicationDto>> GetByUserIdAsync(Guid userId)
     {
         var applications = await _context.Applications
+            .Include(x => x.User)
             .Where(x => x.UserId == userId)
             .OrderByDescending(x => x.AppliedDate)
             .ToListAsync();
@@ -132,6 +132,7 @@ public class ApplicationService : IApplicationService
     public async Task<List<ApplicationDto>> GetAllAsync()
     {
         var applications = await _context.Applications
+            .Include(x => x.User)
             .OrderByDescending(x => x.AppliedDate)
             .ToListAsync();
 
@@ -140,16 +141,26 @@ public class ApplicationService : IApplicationService
 
     public async Task<ApplicationDto?> GetByIdAsync(Guid id)
     {
-        var application = await _context.Applications.FirstOrDefaultAsync(x => x.Id == id);
+        var application = await _context.Applications
+            .Include(x => x.User)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
         return application == null ? null : MapToDto(application);
     }
 
     private static ApplicationDto MapToDto(InternPortal.Domain.Entities.Application x)
     {
         return new ApplicationDto
-        {
-            University = x.University,
-            Grade = x.StudentGrade,
+        {   
+            Id = x.Id,
+
+            Name = x.User?.Name ?? "İsimsiz",
+            Surname = x.User?.Surname ?? "Aday",
+
+            EducationLevel = x.EducationLevel,
+            SchoolName = x.SchoolName,
+            DepartmentOfStudy = x.DepartmentOfStudy,
+            Grade = x.Grade,
             Department = x.Department,
             InternshipType = x.InternshipType,
             PhoneNumber = x.PhoneNumber,
@@ -161,9 +172,9 @@ public class ApplicationService : IApplicationService
             Reference = x.Reference,
             ReferenceGsm = x.ReferenceGsm,
             ReferenceClosenessStatus = x.ReferenceClosenessStatus,
-            Status = x.Status, 
-            CvFile = null!,   
-            TranscriptFile = null!
+            Status = x.Status,
+            CvFile = null!,
+            TranscriptFile = null
         };
     }
 }

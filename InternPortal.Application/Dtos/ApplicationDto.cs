@@ -6,36 +6,46 @@ namespace InternPortal.Application.Dtos;
 
 public class ApplicationDto : IValidatableObject
 {
-    [Required(ErrorMessage = "University name is required.")]
-    public string University { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Lütfen eğitim seviyenizi seçiniz.")]
+    public string EducationLevel { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Please select your grade.")]
-    public StudentGrade Grade { get; set; }
+    public Guid Id { get; set; }
+        
+    public string Name { get; set; } = string.Empty;
+    public string Surname { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Please select a department.")]
+    [Required(ErrorMessage = "Lütfen okul adını giriniz.")]
+    public string SchoolName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Lütfen bölümünüzü veya alanınızı giriniz.")]
+    public string DepartmentOfStudy { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Lütfen sınıfınızı seçiniz.")]
+    public string Grade { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Lütfen staj departmanını seçiniz.")]
     public Department Department { get; set; }
 
-    [Required(ErrorMessage = "Please select internship type.")]
+    [Required(ErrorMessage = "Lütfen staj türünü seçiniz.")]
     public InternshipType InternshipType { get; set; }
 
-    [Required(ErrorMessage = "Phone number is required.")]
-    [RegularExpression(@"^5\d{9}$", ErrorMessage = "Phone number must be 10 digits and start with 5.")]
+    [Required(ErrorMessage = "Telefon numarası zorunludur.")]
+    [RegularExpression(@"^5\d{9}$", ErrorMessage = "Telefon numarası 5 ile başlamalı ve 10 haneli olmalıdır.")]
     public string PhoneNumber { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Start date is required.")]
+    [Required(ErrorMessage = "Başlangıç tarihi zorunludur.")]
     [DataType(DataType.Date)]
     public DateTime StartDate { get; set; }
 
-    [Required(ErrorMessage = "End date is required.")]
+    [Required(ErrorMessage = "Bitiş tarihi zorunludur.")]
     [DataType(DataType.Date)]
     public DateTime EndDate { get; set; }
 
     public string? Description { get; set; }
 
-    // DİKKAT: required anahtar kelimesi mapping'de hata veriyorsa kaldırılabilir 
-    // veya ApplicationService içinde 'CvFile = null!' şeklinde geçilebilir.
+    [Required(ErrorMessage = "Lütfen özgeçmiş (CV) dosyanızı yükleyiniz.")]
     public IFormFile CvFile { get; set; } = null!;
-
+   
     public IFormFile? TranscriptFile { get; set; }
 
     public string? CvPath { get; set; }
@@ -45,7 +55,7 @@ public class ApplicationDto : IValidatableObject
 
     public string? Reference { get; set; } = string.Empty;
 
-    [RegularExpression(@"^5\d{9}$", ErrorMessage = "Reference phone must be 10 digits and start with 5.")]
+    [RegularExpression(@"^5\d{9}$", ErrorMessage = "Referans telefonu 5 ile başlamalı ve 10 haneli olmalıdır.")]
     public string? ReferenceGsm { get; set; } = string.Empty;
 
     public string? ReferenceClosenessStatus { get; set; } = string.Empty;
@@ -55,14 +65,14 @@ public class ApplicationDto : IValidatableObject
         if (EndDate <= StartDate)
         {
             yield return new ValidationResult(
-                "End date must be later than start date.",
+                "Bitiş tarihi başlangıç tarihinden sonra olmalıdır.",
                 new[] { nameof(EndDate) });
         }
 
         if (StartDate.Date < DateTime.UtcNow.Date)
         {
             yield return new ValidationResult(
-                "Start date cannot be in the past.",
+                "Başlangıç tarihi geçmiş bir tarih olamaz.",
                 new[] { nameof(StartDate) });
         }
 
@@ -70,7 +80,7 @@ public class ApplicationDto : IValidatableObject
         if (totalDays < 10)
         {
             yield return new ValidationResult(
-                "Internship duration must be at least 10 days.",
+                "Staj süresi en az 10 gün olmalıdır.",
                 new[] { nameof(EndDate) });
         }
     }

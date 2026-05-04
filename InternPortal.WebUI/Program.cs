@@ -25,7 +25,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
-
+builder.Services.AddHttpClient(); 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
@@ -47,7 +47,6 @@ builder.Services.AddAuthentication(options => {
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });
-
 
 builder.Services.AddControllersWithViews()
    .AddJsonOptions(options =>

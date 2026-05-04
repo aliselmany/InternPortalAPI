@@ -8,10 +8,16 @@ namespace InternPortal.Domain.Entities
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
-        public string University { get; set; } = string.Empty;
+        public string EducationLevel { get; set; } = string.Empty;
 
         [Required]
-        public StudentGrade StudentGrade { get; set; }
+        public string SchoolName { get; set; } = string.Empty;
+
+        [Required]
+        public string DepartmentOfStudy { get; set; } = string.Empty;
+
+        [Required]
+        public string Grade { get; set; } = string.Empty;
 
         [Required]
         public Department Department { get; set; }
@@ -25,16 +31,16 @@ namespace InternPortal.Domain.Entities
         [Required]
         public string CvUrl { get; set; } = string.Empty;
 
-        [Required]
-        public string TranscriptFile { get; set; } = string.Empty;
+        
+        public string? TranscriptFile { get; set; }
 
         public string? Description { get; set; }
 
         [Required]
-        public DateTime StartDate { get; set; } 
+        public DateTime StartDate { get; set; }
 
         [Required]
-        public DateTime EndDate { get; set; } 
+        public DateTime EndDate { get; set; }
 
         public DateTime AppliedDate { get; set; } = DateTime.UtcNow;
 
@@ -43,8 +49,8 @@ namespace InternPortal.Domain.Entities
         public Guid UserId { get; set; }
         public virtual User User { get; set; } = null!;
 
-        public string Reference { get; set; } = string.Empty;
-        public string ReferenceGsm { get; set; } = string.Empty;
-        public string ReferenceClosenessStatus { get; set; } = string.Empty;
+        public string? Reference { get; set; }
+        public string? ReferenceGsm { get; set; }
+        public string? ReferenceClosenessStatus { get; set; }
     }
 }

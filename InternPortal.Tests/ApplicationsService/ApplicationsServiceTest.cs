@@ -73,8 +73,8 @@ public class ApplicationControllerTests
 
         var dto = new ApplicationDto
         {
-            University = "BTU",
-            Grade = StudentGrade.Üç,
+            SchoolName = "BTU",
+            Grade = "3.Sınıf",
             Department = Department.Yazılım,
             InternshipType = InternshipType.Gönüllü,
             PhoneNumber = "5554443322",

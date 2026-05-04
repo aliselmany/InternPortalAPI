@@ -56,85 +56,133 @@
 </div>
 
 @section Scripts {
-    <script>
-        function applyTheme(theme) {
-            const authLogo = document.getElementById('authLogo');
-            const themeBtn = document.getElementById('themeBtn');
-            if (!themeBtn) return;
-            const themeIcon = themeBtn.querySelector('i');
-            const version = new Date().getTime();
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            if (theme === 'dark') {
-                document.documentElement.setAttribute('data-bs-theme', 'dark');
-                themeIcon.className = 'bi bi-moon-fill';
-                if (authLogo) authLogo.src = `/assets/trex-logo-light.png?v=${version}`;
-            } else {
-                document.documentElement.setAttribute('data-bs-theme', 'light');
-                themeIcon.className = 'bi bi-sun-fill';
-                if (authLogo) authLogo.src = `/assets/trex-logo-dark.png?v=${version}`;
-            }
+    <script>
+        localStorage.removeItem('token');
+
+        function applyTheme(theme) {
+        const authLogo = document.getElementById('authLogo');
+        const themeBtn = document.getElementById('themeBtn');
+        if (!themeBtn) return;
+        const themeIcon = themeBtn.querySelector('i');
+        const version = new Date().getTime();
+
+        if (theme === 'dark') {
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        themeIcon.className = 'bi bi-moon-fill';
+        if (authLogo) authLogo.src = `/assets/trex-logo-light.png?v=${version}`;
+        } else {
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+        themeIcon.className = 'bi bi-sun-fill';
+        if (authLogo) authLogo.src = `/assets/trex-logo-dark.png?v=${version}`;
+        }
         }
 
         function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            applyTheme(newTheme);
-            localStorage.setItem('portal-theme', newTheme);
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+        localStorage.setItem('portal-theme', newTheme);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('portal-theme') || 'light';
-            applyTheme(savedTheme);
+        const savedTheme = localStorage.getItem('portal-theme') || 'light';
+        applyTheme(savedTheme);
         });
+
+        function showThemedAlert(title, text, icon, timer = null, redirectUrl = null) {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const isDark = currentTheme === 'dark';
+
+        Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        timer: timer,
+        showConfirmButton: !timer,
+        confirmButtonText: 'Tamam',
+        background: isDark ? '#2b3035' : '#ffffff',
+        color: isDark ? '#f8f9fa' : '#212529',
+        confirmButtonColor: isDark ? '#0d6efd' : '#000000'
+        }).then(() => {
+        if (redirectUrl) {
+        window.location.href = redirectUrl;
+        }
+        });
+        }
 
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-           
-            const btn = document.getElementById('btnSubmit');
-            const errorDiv = document.getElementById('errorMessage');
+        e.preventDefault();
+            
+        const btn = document.getElementById('btnSubmit');
+        const errorDiv = document.getElementById('errorMessage');
         
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
 
+        data.RememberMe = formData.get('RememberMe') === 'on' || formData.get('RememberMe') === 'true';
 
-            data.RememberMe = formData.get('RememberMe') === 'on' || formData.get('RememberMe') === 'true';
+        btn.disabled = true;
+        btn.textContent = "Giriş Yapılıyor...";
+        errorDiv.textContent = "";
 
-            btn.disabled = true;
-            btn.textContent = "Giriş Yapılıyor...";
-            errorDiv.textContent = "";
-
-            try {
-           
-                           
+        try {
         const response = await fetch('https://localhost:7166/api/Users/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
         });
 
-                const result = await response.json();
+        const result = await response.json();
 
-                if (response.ok) {
-               
-                    const token = result.token || result.data || result;
-                    localStorage.setItem('token', token);
-                   
-             
-                    window.location.href = "/Applications/Submit";
-                } else {
-                 
-                    errorDiv.textContent = result.message || "Giriş başarısız. Bilgilerinizi kontrol edin.";
-                }
-            } catch (error) {
-           
-                console.error("Giriş Hatası:", error);
-                errorDiv.textContent = "Giriş servisine şu an ulaşılamıyor. (Lütfen F12 Console sekmesine bakın)";
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Giriş Yap";
-            }
+        if (response.ok) {
+
+        localStorage.setItem('token', result.token);
+                    
+        let redirectTarget = '/Applications/Submit';
+                    
+        try {
+        const payload = JSON.parse(atob(result.token.split('.')[1]));
+        const userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role;
+                        
+        if (userRole === 'Admin') {
+        redirectTarget = '/Admin/Dashboard';
+        }
+        } catch (decodeError) {
+        console.error("Token decode error:", decodeError);
+        }
+     
+        showThemedAlert(
+        'Başarılı!',
+        'Giriş başarılı, yönlendiriliyorsunuz...',
+        'success',
+        1500,
+        redirectTarget
+        );
+        } else {
+        showThemedAlert(
+        'Hata!',
+        result.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.',
+        'error'
+        );
+        }
+        
+        } catch (error) {
+        showThemedAlert('Bağlantı Hatası!', 'Sunucuya bağlanılamadı.', 'error');
+        } finally {
+        btn.disabled = false;
+        btn.textContent = "Giriş Yap";
+        }
+        });
+
+    </script>
+
+    <script>
+           document.addEventListener('DOMContentLoaded', function() {
+           localStorage.removeItem('token');
         });
     </script>
 }

@@ -8,8 +8,6 @@ using System.Security.Claims;
 namespace InternPortal.WebUI.Controllers
 {
     [Authorize]
-    // DİKKAT: Buradaki [Route] etiketini TAMAMEN SİLDİK. 
-    // .NET'in kendi standart yönlendirmesine bırakıyoruz.
     public class ApplicationsController : Controller
     {
         private readonly IApplicationService _applicationService;
@@ -22,56 +20,48 @@ namespace InternPortal.WebUI.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet] 
+        [HttpGet]
         public IActionResult Submit()
         {
-
-            // return View();
-            return Content("çalışıyor");
+            return Redirect("https://localhost:7050/Applications/Submit");
         }
 
         [HttpGet]
         public async Task<IActionResult> MyApplication()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null) return RedirectToAction("Login", "Account");
+            if (userIdClaim == null)
+                return Redirect("https://localhost:7050/Account/Login");
 
-            var userId = Guid.Parse(userIdClaim.Value);
-            var applications = await _applicationService.GetByUserIdAsync(userId);
-            var myApp = applications?.FirstOrDefault();
-
-            if (myApp == null) return RedirectToAction("Submit");
-
-            return View(myApp);
+            return Redirect("https://localhost:7050/Applications/MyApplication");
         }
-
-        
 
         [HttpPost("Applications/api/submit")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> SubmitApplication([FromForm] ApplicationDto dto)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null) return Unauthorized(new { message = "User identity not found." });
+            if (userIdClaim == null) return Unauthorized(new { message = "Kullanıcı kimliği bulunamadı." });
 
             var userId = Guid.Parse(userIdClaim.Value);
 
             try
-            {
+            {   
                 if (dto.CvFile != null) dto.CvPath = await SaveFileAsync(dto.CvFile, "cvs");
                 if (dto.TranscriptFile != null) dto.TranscriptPath = await SaveFileAsync(dto.TranscriptFile, "transcripts");
 
                 var result = await _applicationService.SubmitAsync(userId, dto);
                 if (!result.IsSuccess) return BadRequest(new { message = result.Message });
 
-                return Ok(new { message = "Application submitted successfully.", id = result.Data });
+   
+                return Ok(new { message = "Başvuru başarıyla kaydedildi.", id = result.Data });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Hata oluştu", error = ex.Message });
+                return StatusCode(500, new { message = "Sunucu tarafında bir hata oluştu", error = ex.Message });
             }
         }
-
+        
         [HttpGet("Applications/api/my-applications")]
         public async Task<IActionResult> GetMyApplications()
         {
@@ -90,7 +80,7 @@ namespace InternPortal.WebUI.Controllers
             var result = await _applicationService.GetAllAsync();
             return Ok(result);
         }
-
+                
         [HttpGet("Applications/api/{id}")]
         public async Task<IActionResult> GetApplicationById(Guid id)
         {
@@ -116,7 +106,10 @@ namespace InternPortal.WebUI.Controllers
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
             var filePath = Path.Combine(folderPath, fileName);
 
-            using (var stream = new FileStream(filePath, FileMode.Create)) { await file.CopyToAsync(stream); }
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
             return $"/uploads/{subFolder}/{fileName}";
         }
     }
