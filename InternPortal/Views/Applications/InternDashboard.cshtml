@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Stajyer Paneli";
+    ViewData["HideNavbar"] = true;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth-portal.css" asp-append-version="true" />
+}
+
+<partial name="_AdminNavbarPartial" />
+
+<div class="auth-wrapper" style="overflow-y: auto; padding: 2rem 0; flex-direction: column; justify-content: flex-start; align-items: center;">
+</div>
+
+@section Scripts {
+    <partial name="_ThemeScriptsPartial" />
+
+    <script>
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace('/Account/Login');
+        }
+    </script>
+}

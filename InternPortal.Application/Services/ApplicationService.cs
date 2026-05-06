@@ -6,175 +6,217 @@ using InternPortal.Domain.Entities;
 using InternPortal.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace InternPortal.Application.Services;
-
-public class ApplicationService : IApplicationService
+namespace InternPortal.Application.Services
 {
-    private readonly AppDbContext _context;
-
-    public ApplicationService(AppDbContext context)
+    public class ApplicationService : IApplicationService
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public async Task<ServiceResult<Guid>> SubmitAsync(Guid userId, ApplicationDto dto)
-    {
-        var lastApplication = await _context.Applications
-            .Where(x => x.UserId == userId)
-            .OrderByDescending(x => x.AppliedDate)
-            .FirstOrDefaultAsync();
-
-        if (lastApplication != null)
+        public ApplicationService(AppDbContext context)
         {
-            if (lastApplication.Status == ApplicationStatus.Beklemede)
-            {
-                return ServiceResult<Guid>.Failure("Beklemede olan bir başvurunuz zaten var. Lütfen sonuçlanmasını bekleyin.");
-            }
+            _context = context;
+        }
 
-            if (lastApplication.Status == ApplicationStatus.Onaylandı)
+        public async Task<ServiceResult<Guid>> SubmitAsync(Guid userId, ApplicationDto dto)
+        {
+            var lastApplication = await _context.Applications
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.AppliedDate)
+                .FirstOrDefaultAsync();
+
+            if (lastApplication != null)
             {
-                if (DateTime.UtcNow <= lastApplication.EndDate)
+                if (lastApplication.Status == ApplicationStatus.Beklemede)
                 {
-                    return ServiceResult<Guid>.Failure($"Aktif stajınız {lastApplication.EndDate:yyyy-MM-dd} tarihine kadar devam ediyor.");
+                    return ServiceResult<Guid>.Failure("Beklemede olan bir başvurunuz zaten var. Lütfen sonuçlanmasını bekleyin.");
+                }
+
+                if (lastApplication.Status == ApplicationStatus.Onaylandı)
+                {
+                    if (DateTime.UtcNow <= lastApplication.EndDate)
+                    {
+                        return ServiceResult<Guid>.Failure($"Aktif stajınız {lastApplication.EndDate:yyyy-MM-dd} tarihine kadar devam ediyor.");
+                    }
                 }
             }
-        }
 
-        var user = await _context.Users
-            .Include(u => u.UserRoles)
-            .FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users
+                .Include(u => u.UserRoles)
+                .FirstOrDefaultAsync(u => u.Id == userId);
 
-        if (user == null) return ServiceResult<Guid>.Failure("Kullanıcı bulunamadı.");
+            if (user == null) return ServiceResult<Guid>.Failure("Kullanıcı bulunamadı.");
 
-        if (user.UserRoles == null || !user.UserRoles.Any())
-        {
-            var internRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Intern");
-            if (internRole != null)
+            if (user.UserRoles == null || !user.UserRoles.Any())
             {
-                _context.UserRoleMappings.Add(new UserRoleMapping
+                var internRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Intern");
+                if (internRole != null)
                 {
-                    UserId = userId,
-                    RoleId = internRole.Id
-                });
+                    _context.UserRoleMappings.Add(new UserRoleMapping
+                    {
+                        UserId = userId,
+                        RoleId = internRole.Id
+                    });
+                }
             }
-        }
 
-        var application = new InternPortal.Domain.Entities.Application
-        {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-
-            EducationLevel = dto.EducationLevel,
-            SchoolName = dto.SchoolName,
-            DepartmentOfStudy = dto.DepartmentOfStudy,
-
-            Grade = dto.Grade,
-            Department = dto.Department,
-            InternshipType = dto.InternshipType,
-            PhoneNumber = dto.PhoneNumber,
-            StartDate = dto.StartDate,
-            EndDate = dto.EndDate,
-            Description = dto.Description,
-            CvUrl = dto.CvPath ?? string.Empty,
-
-            TranscriptFile = dto.TranscriptPath,
-
-            AppliedDate = DateTime.UtcNow,
-            Status = ApplicationStatus.Beklemede,
-            Reference = dto.Reference,
-            ReferenceGsm = dto.ReferenceGsm,
-            ReferenceClosenessStatus = dto.ReferenceClosenessStatus
-        };
-
-        _context.Applications.Add(application);
-        await _context.SaveChangesAsync();
-        return ServiceResult<Guid>.Success(application.Id);
-    }
-
-    public async Task<ServiceResult<bool>> UpdateStatusAsync(Guid applicationId, ApplicationStatus newStatus)
-    {
-        var application = await _context.Applications
-            .Include(a => a.User)
-                .ThenInclude(u => u.UserRoles)
-            .FirstOrDefaultAsync(a => a.Id == applicationId);
-
-        if (application == null) return ServiceResult<bool>.Failure("Başvuru bulunamadı.");
-
-        if (newStatus == ApplicationStatus.Onaylandı && application.User != null && !application.User.UserRoles.Any())
-        {
-            var internRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Intern");
-            if (internRole != null)
+            var application = new InternPortal.Domain.Entities.Application
             {
-                _context.UserRoleMappings.Add(new UserRoleMapping
-                {
-                    UserId = application.UserId,
-                    RoleId = internRole.Id
-                });
-            }
+                Id = Guid.NewGuid(),
+                UserId = userId,
+
+                EducationLevel = dto.EducationLevel,
+                SchoolName = dto.SchoolName,
+                DepartmentOfStudy = dto.DepartmentOfStudy,
+
+                Grade = dto.Grade,
+                Department = dto.Department,
+                InternshipType = dto.InternshipType,
+                PhoneNumber = dto.PhoneNumber,
+                StartDate = dto.StartDate,
+                EndDate = dto.EndDate,
+                Description = dto.Description,
+                CvUrl = dto.CvPath ?? string.Empty,
+
+                TranscriptFile = dto.TranscriptPath,
+
+                AppliedDate = DateTime.UtcNow,
+                Status = ApplicationStatus.Beklemede,
+                Reference = dto.Reference,
+                ReferenceGsm = dto.ReferenceGsm,
+                ReferenceClosenessStatus = dto.ReferenceClosenessStatus
+            };
+
+            _context.Applications.Add(application);
+            await _context.SaveChangesAsync();
+            return ServiceResult<Guid>.Success(application.Id);
         }
 
-        application.Status = newStatus;
-        var saved = await _context.SaveChangesAsync() > 0;
-        return ServiceResult<bool>.Success(saved);
-    }
 
-    public async Task<List<ApplicationDto>> GetByUserIdAsync(Guid userId)
-    {
-        var applications = await _context.Applications
-            .Include(x => x.User)
-            .Where(x => x.UserId == userId)
-            .OrderByDescending(x => x.AppliedDate)
-            .ToListAsync();
+        public async Task<ServiceResult<bool>> UpdateAsync(Guid id, ApplicationUpdateDto dto)
+        {
+            var application = await _context.Applications.FindAsync(id);
 
-        return applications.Select(MapToDto).ToList();
-    }
+            if (application == null)
+            {
+                return ServiceResult<bool>.Failure("Güncellenmek istenen başvuru bulunamadı.");
+            }
+         
+            if (!string.IsNullOrEmpty(dto.PhoneNumber)) application.PhoneNumber = dto.PhoneNumber;
+            if (!string.IsNullOrEmpty(dto.EducationLevel)) application.EducationLevel = dto.EducationLevel;
+            if (!string.IsNullOrEmpty(dto.SchoolName)) application.SchoolName = dto.SchoolName;
+            if (!string.IsNullOrEmpty(dto.DepartmentOfStudy)) application.DepartmentOfStudy = dto.DepartmentOfStudy;
+            if (!string.IsNullOrEmpty(dto.Grade)) application.Grade = dto.Grade;
 
-    public async Task<List<ApplicationDto>> GetAllAsync()
-    {
-        var applications = await _context.Applications
-            .Include(x => x.User)
-            .OrderByDescending(x => x.AppliedDate)
-            .ToListAsync();
+            
+            if (dto.Department.HasValue)
+                application.Department = dto.Department.Value;
 
-        return applications.Select(MapToDto).ToList();
-    }
+            if (dto.InternshipType.HasValue)
+                application.InternshipType = dto.InternshipType.Value;
 
-    public async Task<ApplicationDto?> GetByIdAsync(Guid id)
-    {
-        var application = await _context.Applications
-            .Include(x => x.User)
-            .FirstOrDefaultAsync(x => x.Id == id);
+            if (dto.StartDate.HasValue)
+                application.StartDate = dto.StartDate.Value;
 
-        return application == null ? null : MapToDto(application);
-    }
+            if (dto.EndDate.HasValue)
+                application.EndDate = dto.EndDate.Value;
 
-    private static ApplicationDto MapToDto(InternPortal.Domain.Entities.Application x)
-    {
-        return new ApplicationDto
-        {   
-            Id = x.Id,
+         
+            if (dto.Description != null) application.Description = dto.Description;
+            if (dto.Reference != null) application.Reference = dto.Reference;
+            if (dto.ReferenceGsm != null) application.ReferenceGsm = dto.ReferenceGsm;
 
-            Name = x.User?.Name ?? "İsimsiz",
-            Surname = x.User?.Surname ?? "Aday",
+            _context.Applications.Update(application);
+            await _context.SaveChangesAsync();
 
-            EducationLevel = x.EducationLevel,
-            SchoolName = x.SchoolName,
-            DepartmentOfStudy = x.DepartmentOfStudy,
-            Grade = x.Grade,
-            Department = x.Department,
-            InternshipType = x.InternshipType,
-            PhoneNumber = x.PhoneNumber,
-            StartDate = x.StartDate,
-            EndDate = x.EndDate,
-            Description = x.Description,
-            CvPath = x.CvUrl,
-            TranscriptPath = x.TranscriptFile,
-            Reference = x.Reference,
-            ReferenceGsm = x.ReferenceGsm,
-            ReferenceClosenessStatus = x.ReferenceClosenessStatus,
-            Status = x.Status,
-            CvFile = null!,
-            TranscriptFile = null
-        };
+            return ServiceResult<bool>.Success(true);
+        }
+
+
+        public async Task<ServiceResult<bool>> UpdateStatusAsync(Guid applicationId, ApplicationStatus newStatus)
+        {
+            var application = await _context.Applications
+                .Include(a => a.User)
+                    .ThenInclude(u => u.UserRoles)
+                .FirstOrDefaultAsync(a => a.Id == applicationId);
+
+            if (application == null) return ServiceResult<bool>.Failure("Başvuru bulunamadı.");
+
+            if (newStatus == ApplicationStatus.Onaylandı && application.User != null && !application.User.UserRoles.Any())
+            {
+                var internRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Intern");
+                if (internRole != null)
+                {
+                    _context.UserRoleMappings.Add(new UserRoleMapping
+                    {
+                        UserId = application.UserId,
+                        RoleId = internRole.Id
+                    });
+                }
+            }
+
+            application.Status = newStatus;
+            var saved = await _context.SaveChangesAsync() > 0;
+            return ServiceResult<bool>.Success(saved);
+        }
+
+        public async Task<List<ApplicationDto>> GetByUserIdAsync(Guid userId)
+        {
+            var applications = await _context.Applications
+                .Include(x => x.User)
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.AppliedDate)
+                .ToListAsync();
+
+            return applications.Select(MapToDto).ToList();
+        }
+
+        public async Task<List<ApplicationDto>> GetAllAsync()
+        {
+            var applications = await _context.Applications
+                .Include(x => x.User)
+                .OrderByDescending(x => x.AppliedDate)
+                .ToListAsync();
+
+            return applications.Select(MapToDto).ToList();
+        }
+
+        public async Task<ApplicationDto?> GetByIdAsync(Guid id)
+        {
+            var application = await _context.Applications
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return application == null ? null : MapToDto(application);
+        }
+
+        private static ApplicationDto MapToDto(InternPortal.Domain.Entities.Application x)
+        {
+            return new ApplicationDto
+            {
+                Id = x.Id,
+
+                Name = x.User?.Name ?? "İsimsiz",
+                Surname = x.User?.Surname ?? "Aday",
+
+                EducationLevel = x.EducationLevel,
+                SchoolName = x.SchoolName,
+                DepartmentOfStudy = x.DepartmentOfStudy,
+                Grade = x.Grade,
+                Department = x.Department,
+                InternshipType = x.InternshipType,
+                PhoneNumber = x.PhoneNumber,
+                StartDate = x.StartDate,
+                EndDate = x.EndDate,
+                Description = x.Description,
+                CvPath = x.CvUrl,
+                TranscriptPath = x.TranscriptFile,
+                Reference = x.Reference,
+                ReferenceGsm = x.ReferenceGsm,
+                ReferenceClosenessStatus = x.ReferenceClosenessStatus,
+                Status = x.Status,
+                CvFile = null!,
+                TranscriptFile = null
+            };
+        }
     }
 }

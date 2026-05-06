@@ -1,0 +1,19 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/InternPortal/bin/Debug/net10.0/InternPortal.WebUI.dll
+/InternPortal/bin/Debug/net10.0/InternPortal.WebUI.exe
+/InternPortal/bin/Debug/net10.0/InternPortal.WebUI.pdb
+/InternPortal/obj/Debug/net10.0/ref/InternPortal.WebUI.dll
+/InternPortal/obj/Debug/net10.0/refint/InternPortal.WebUI.dll
+/InternPortal/obj/Debug/net10.0/apphost.exe
+/InternPortal/obj/Debug/net10.0/InternPortal.WebUI.AssemblyInfo.cs
+/InternPortal/obj/Debug/net10.0/InternPortal.WebUI.AssemblyInfoInputs.cache
+/InternPortal/obj/Debug/net10.0/InternPortal.WebUI.dll
+/InternPortal/obj/Debug/net10.0/InternPortal.WebUI.pdb
+/InternPortal/obj/Debug/net10.0/InternPortal.WebUI.sourcelink.json
+/InternPortal/obj/Debug/net10.0/rjsmcshtml.dswa.cache.json
+/InternPortal/obj/Debug/net10.0/rjsmrazor.dswa.cache.json
+/InternPortal/obj/Debug/net10.0/rpswa.dswa.cache.json

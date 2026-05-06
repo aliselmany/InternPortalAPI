@@ -69,40 +69,23 @@
         .form-view-control { 
             background: var(--input-bg); border: 2px solid var(--input-border); 
             border-radius: 12px; padding: 12px 15px; color: var(--text-main); 
-            min-height: 50px; display: flex; align-items: center; 
+            min-height: 50px; display: flex; align-items: center; width: 100%;
         }
         select.form-view-control { cursor: pointer; appearance: auto; }
-        input.form-view-control::placeholder { color: var(--text-muted); opacity: 0.7; }
+        input.form-view-control::placeholder, textarea.form-view-control::placeholder { color: var(--text-muted); opacity: 0.7; }
         .dropdown-menu { border-radius: 12px !important; margin-top: 15px !important; }
         .dropdown-item { font-weight: 500; transition: 0.2s; }
         .dropdown-item:hover, .dropdown-item:focus { background-color: var(--input-bg) !important; color: var(--primary-portal) !important; }
+
+        .pagination .page-link { background-color: var(--input-bg); border-color: var(--input-border); color: var(--text-main); font-weight: 600; }
+        .pagination .page-item.active .page-link { background-color: var(--text-muted); border-color: var(--text-muted); color: var(--card-bg); }
+        .pagination .page-item.disabled .page-link { background-color: var(--card-bg); color: var(--text-muted); border-color: var(--input-border); opacity: 0.5; }
     </style>
 </head>
+
 <body>
 
-    <nav class="admin-nav">
-        <img id="authLogo" src="" alt="Logo" style="height: 45px;" />
-        <div class="d-flex align-items-center gap-4">
-            <span id="totalBadge" class="badge rounded-pill px-4 py-2 fs-6 border" style="background: var(--btn-bg); color: var(--btn-text);">Yükleniyor...</span>
-            
-            <div class="theme-toggle-btn" onclick="toggleTheme()" style="cursor:pointer; font-size: 1.5rem;">
-                <i class="bi bi-sun-fill" id="themeIcon"></i>
-            </div>
-     
-            <div class="dropdown">
-                <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-                    <i class="bi bi-person-circle fs-3 text-secondary" id="profileIcon"></i>
-                </div>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="background-color: var(--card-bg); border-color: var(--input-border);">
-         
-                    <li><a class="dropdown-item d-flex align-items-center gap-3 py-2 text-light" href="#" onclick="showProfile()"><i class="bi bi-person fs-5"></i> Profil</a></li>
-                    <li><a class="dropdown-item d-flex align-items-center gap-3 py-2 text-light" href="#" onclick="showEditProfile()"><i class="bi bi-pencil-square fs-5"></i> Düzenle</a></li>
-                    <li><hr class="dropdown-divider" style="border-color: var(--input-border);"></li>
-                    <li><a class="dropdown-item d-flex align-items-center gap-3 py-2 text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-right fs-5"></i> Çıkış Yap</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <partial name="_AdminNavbarPartial" />
 
     <div class="content-spread" id="mainWrapper">
   
@@ -136,43 +119,80 @@
         <table class="table-custom">
             <thead>
                 <tr>
+                    <th style="width: 15%" class="text-start">İşlemler</th>
                     <th style="width: 25%" class="text-start">Stajyer</th>
-                    <th style="width: 25%" class="text-start">Üniversite</th>
+                    <th style="width: 20%" class="text-start">Üniversite</th>
                     <th style="width: 15%" class="text-start">Bölüm</th>
-                    <th style="width: 10%" class="text-center">Staj Türü</th>
-                    <th style="width: 10%" class="text-center">Durum</th>             
-                    <th style="width: 15%" class="text-end">İşlemler</th>
+                    <th style="width: 15%" class="text-center">Staj Türü</th>
+                    <th style="width: 10%" class="text-center">Durum</th>              
                 </tr>
             </thead>
             <tbody id="appBody"></tbody>
         </table>
+
+       
+        <div class="d-flex justify-content-between align-items-center mt-3 px-2">
+            <span id="totalBadge" class="text-muted fw-light" style="font-size: 0.95rem; letter-spacing: 0.5px;">Toplam 0 Başvuru</span>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm mb-0 shadow-sm" id="paginationWrapper">
+               
+                </ul>
+            </nav>
+        </div>
     </div>
 
     <div class="modal fade" id="inspectModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content shadow-lg text-start">
                 <div class="modal-header border-0 px-4 pt-4">
-                    <h4 class="fw-bold mb-0">Başvuru Formu İncelemesi</h4>
+                    <h4 class="fw-bold mb-0">Başvuru Formu İncelemesi / Düzenleme</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6"><div class="form-view-group"><label class="form-view-label">Ad Soyad</label><div class="form-view-control" id="fDetFullName">-</div></div></div>
-                        <div class="col-md-6"><div class="form-view-group"><label class="form-view-label">Telefon</label><div class="form-view-control" id="fDetPhone">-</div></div></div>
-                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Eğitim</label><div class="form-view-control" id="fDetEduLevel">-</div></div></div>
-                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Üniversite</label><div class="form-view-control" id="fDetSchool">-</div></div></div>
-                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Bölüm/Sınıf</label><div class="form-view-control" id="fDetDeptGrade">-</div></div></div>
+                        <div class="col-md-3"><div class="form-view-group"><label class="form-view-label">Ad</label><input type="text" class="form-control form-view-control" id="fDetName" readonly></div></div>
+                        <div class="col-md-3"><div class="form-view-group"><label class="form-view-label">Soyad</label><input type="text" class="form-control form-view-control" id="fDetSurname" readonly></div></div>
+                        <div class="col-md-6"><div class="form-view-group"><label class="form-view-label">Telefon</label><input type="text" class="form-control form-view-control" id="fDetPhone"></div></div>
+                        
+                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Eğitim Seviyesi</label><input type="text" class="form-control form-view-control" id="fDetEduLevel"></div></div>
+                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Üniversite</label><input type="text" class="form-control form-view-control" id="fDetSchool"></div></div>
+                        <div class="col-md-2"><div class="form-view-group"><label class="form-view-label">Bölüm</label><input type="text" class="form-control form-view-control" id="fDetDept"></div></div>
+                        <div class="col-md-2"><div class="form-view-group"><label class="form-view-label">Sınıf</label><input type="text" class="form-control form-view-control" id="fDetGrade"></div></div>
                     </div>
+                    
                     <div class="row border-top pt-4 mt-2">
-                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Departman</label><div class="form-view-control" id="fDetTargetDept">-</div></div></div>
-                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Staj Türü</label><div class="form-view-control" id="fDetInternType">-</div></div></div>
-                        <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Tarihler</label><div class="form-view-control" id="fDetDates">-</div></div></div>
-                        <div class="col-12"><div class="form-view-group"><label class="form-view-label">Açıklama</label><div class="form-view-control" id="fDetDesc" style="min-height: 100px; align-items: flex-start;">-</div></div></div>
+                        <div class="col-md-4">
+                            <div class="form-view-group">
+                                <label class="form-view-label">Hedef Departman</label>
+                                <select id="fDetTargetDept" class="form-select form-view-control">
+                                    <option value="0">Yazılım</option>
+                                    <option value="1">Proje</option>
+                                    <option value="2">Elektronik</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-view-group">
+                                <label class="form-view-label">Staj Türü</label>
+                                <select id="fDetInternType" class="form-select form-view-control">
+                                    <option value="0">Zorunlu</option>
+                                    <option value="1">Gönüllü</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2"><div class="form-view-group"><label class="form-view-label">Başlangıç Tarihi</label><input type="date" class="form-control form-view-control" id="fDetStartDate"></div></div>
+                        <div class="col-md-2"><div class="form-view-group"><label class="form-view-label">Bitiş Tarihi</label><input type="date" class="form-control form-view-control" id="fDetEndDate"></div></div>
+                        
+                        <div class="col-12"><div class="form-view-group"><label class="form-view-label">Açıklama</label><textarea id="fDetDesc" class="form-control form-view-control" style="min-height: 100px;"></textarea></div></div>
                     </div>
+
                     <div class="row border-top pt-4 mt-2">
                         <div class="col-md-6">
                             <label class="form-view-label">Referans</label>
-                            <div class="p-3 rounded-4 border"><div id="fDetRefInfo" class="fw-bold">-</div><div id="fDetRefGsm" class="small text-muted">-</div></div>
+                            <div class="d-flex flex-column gap-2 p-3 rounded-4 border">
+                                <input type="text" id="fDetRefName" class="form-control form-view-control" placeholder="Referans Adı">
+                                <input type="text" id="fDetRefGsm" class="form-control form-view-control" placeholder="Referans Telefon">
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-view-label">Dosyalar</label>
@@ -183,19 +203,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0 p-4 gap-3">
-                    <button class="btn btn-outline-danger rounded-pill px-5 fw-bold" onclick="updateStatus(2)">REDDET</button>
-                    <button class="btn btn-success rounded-pill px-5 fw-bold" onclick="updateStatus(1)">ONAYLA</button>
+                <div class="modal-footer border-0 p-4 gap-3 d-flex" id="modalFooter">
                 </div>
             </div>
         </div>
     </div>
 
- 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-<script>
+    <script>
         const token = localStorage.getItem('token');
         
         if (!token) {
@@ -204,8 +221,12 @@
 
         let currentAppId = null;
         let myModal = null;
-        
         let allApplications = [];
+        
+     
+        let filteredApplications = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
 
         let currentUser = {
             name: "Admin",
@@ -214,8 +235,8 @@
             phone: "0555 555 55 55"
         };
 
+
         document.addEventListener('DOMContentLoaded', () => {
-       
             if (!localStorage.getItem('token')) {
                 window.location.href = '/';
                 return;
@@ -338,7 +359,7 @@
                 
                 allApplications = await response.json();
                 applyFilters(); 
-            } catch (err) { console.error("Veri çekme hatası:", err); }
+            } catch (err) { console.error(err); }
         }
 
         function applyFilters() {
@@ -348,7 +369,7 @@
             const fType = document.getElementById('filterType').value;
             const fStatus = document.getElementById('filterStatus').value.toLowerCase();
 
-            const filteredData = allApplications.filter(app => {
+            filteredApplications = allApplications.filter(app => {
                 const fullName = `${app.name} ${app.surname}`.toLowerCase();
                 const school = (app.schoolName || '').toLowerCase();
                 const dept = (app.departmentOfStudy || '').toLowerCase();
@@ -365,15 +386,26 @@
                 return matchName && matchSchool && matchDept && matchType && matchStatus;
             });
 
-            renderTable(filteredData);
+     
+            currentPage = 1;
+            renderTable();
         }
 
-        function renderTable(data) {
+        function renderTable() {
             const tbody = document.getElementById('appBody');
-            document.getElementById('totalBadge').textContent = `Toplam ${data.length} Başvuru`;
+            document.getElementById('totalBadge').textContent = `Toplam ${filteredApplications.length} Başvuru`;
             tbody.innerHTML = '';
             
-            data.forEach(app => {
+      
+            const totalPages = Math.ceil(filteredApplications.length / itemsPerPage);
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+
+          
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = filteredApplications.slice(startIndex, endIndex);
+
+            pageData.forEach(app => {
                 const appId = app.id || app.Id; 
                 const typeText = app.internshipType === 0 ? 'Zorunlu' : 'Gönüllü';
                 const statusText = app.status || 'Beklemede';
@@ -384,17 +416,51 @@
                 
                 tbody.insertAdjacentHTML('beforeend', `
                     <tr>
+                        <td class="text-start">
+                            <button class="btn btn-theme-white shadow-sm w-100" onclick="viewDetails('${appId}')">İncele</button>
+                        </td>
                         <td class="fw-bold text-start">${app.name} ${app.surname}</td>
                         <td class="text-start">${app.schoolName || '-'}</td>
                         <td class="text-start">${app.departmentOfStudy || '-'}</td>
                         <td class="text-center">${typeText}</td>
                         <td class="text-center"><span class="badge rounded-pill ${badgeClass} px-3 py-2">${statusText}</span></td>
-                        <td class="text-end">
-                            <button class="btn btn-theme-white shadow-sm" onclick="viewDetails('${appId}')">İncele</button>
-                        </td>
                     </tr>
                 `);
             });
+
+            renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+            const wrapper = document.getElementById('paginationWrapper');
+            wrapper.innerHTML = '';
+
+            if (totalPages <= 1) return; 
+
+            let prevDisabled = currentPage === 1 ? 'disabled' : '';
+            wrapper.insertAdjacentHTML('beforeend', `<li class="page-item ${prevDisabled}"><a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">&laquo;</a></li>`);
+
+           
+            for (let i = 1; i <= totalPages; i++) {
+                let activeClass = currentPage === i ? 'active' : '';
+                wrapper.insertAdjacentHTML('beforeend', `<li class="page-item ${activeClass}"><a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a></li>`);
+            }
+
+         
+            let nextDisabled = currentPage === totalPages ? 'disabled' : '';
+            wrapper.insertAdjacentHTML('beforeend', `<li class="page-item ${nextDisabled}"><a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">&raquo;</a></li>`);
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderTable();
+        }
+        
+        function formatForInput(dateStr) {
+            if (!dateStr) return '';
+            try {
+                return new Date(dateStr).toISOString().split('T')[0];
+            } catch(e) { return ''; }
         }
 
         async function viewDetails(id) {
@@ -414,19 +480,34 @@
                 if (!res.ok) return;
                 const app = await res.json();
                 
-                document.getElementById('fDetFullName').textContent = `${app.name} ${app.surname}`;
-                document.getElementById('fDetPhone').textContent = app.phoneNumber || '-';
-                document.getElementById('fDetEduLevel').textContent = app.educationLevel || '-';
-                document.getElementById('fDetSchool').textContent = app.schoolName || '-';
-                document.getElementById('fDetDeptGrade').textContent = `${app.departmentOfStudy || '-'} / ${app.grade || '-'}`;
-                document.getElementById('fDetTargetDept').textContent = app.department || '-';
-                document.getElementById('fDetInternType').textContent = app.internshipType === 0 ? 'Zorunlu' : 'Gönüllü';
-                document.getElementById('fDetDates').textContent = `${new Date(app.startDate).toLocaleDateString()} - ${new Date(app.endDate).toLocaleDateString()}`;
-                document.getElementById('fDetDesc').textContent = app.description || 'Not yok.';
-                document.getElementById('fDetRefInfo').textContent = `${app.reference || '-'} (${app.referenceClosenessStatus || '-'})`;
-                document.getElementById('fDetRefGsm').textContent = app.referenceGsm || '-';
-                document.getElementById('fDetCv').href = app.cvPath || '#';
+                document.getElementById('fDetName').value = app.name || '';
+                document.getElementById('fDetSurname').value = app.surname || '';
+                document.getElementById('fDetPhone').value = app.phoneNumber || '';
+                document.getElementById('fDetEduLevel').value = app.educationLevel || '';
+                document.getElementById('fDetSchool').value = app.schoolName || '';
+                document.getElementById('fDetDept').value = app.departmentOfStudy || '';
+                document.getElementById('fDetGrade').value = app.grade || '';
                 
+                document.getElementById('fDetTargetDept').value = app.department || '0';
+                document.getElementById('fDetInternType').value = app.internshipType === 0 ? "0" : "1";
+                document.getElementById('fDetStartDate').value = formatForInput(app.startDate);
+                document.getElementById('fDetEndDate').value = formatForInput(app.endDate);
+                document.getElementById('fDetDesc').value = app.description || '';
+                
+                document.getElementById('fDetRefName').value = app.reference || '';
+                document.getElementById('fDetRefGsm').value = app.referenceGsm || '';
+                
+                const cvBtn = document.getElementById('fDetCv');
+                if(app.cvPath) {
+                    cvBtn.href = app.cvPath;
+                    cvBtn.style.pointerEvents = 'auto';
+                    cvBtn.classList.remove('disabled');
+                } else {
+                    cvBtn.href = '#';
+                    cvBtn.style.pointerEvents = 'none';
+                    cvBtn.classList.add('disabled');
+                }
+
                 const tBtn = document.getElementById('fDetTranscript');
                 if(app.transcriptPath) { 
                     tBtn.href = app.transcriptPath; 
@@ -434,8 +515,107 @@
                 } else { 
                     tBtn.style.display = 'none'; 
                 }
+
+                const footer = document.getElementById('modalFooter');
+                const currentStatus = (app.status || '').toLowerCase();
+                const saveBtnHtml = `<button class="btn btn-primary rounded-pill px-4 fw-bold me-auto" onclick="saveApplicationUpdates()">KAYDET</button>`;
+
+                if (currentStatus === 'onaylandı') {
+                    footer.innerHTML = saveBtnHtml + `
+                        <button class="btn btn-outline-danger rounded-pill px-5 fw-bold" onclick="updateStatus(2)">REDDET</button>
+                        <button class="btn btn-warning rounded-pill px-5 fw-bold text-dark" onclick="updateStatus(0)">BEKLEMEYE AL</button>
+                    `;
+                } else if (currentStatus === 'reddedildi') {
+                    footer.innerHTML = saveBtnHtml + `
+                        <button class="btn btn-warning rounded-pill px-5 fw-bold text-dark" onclick="updateStatus(0)">BEKLEMEYE AL</button>
+                        <button class="btn btn-success rounded-pill px-5 fw-bold" onclick="updateStatus(1)">ONAYLA</button>
+                    `;
+                } else {
+                    footer.innerHTML = saveBtnHtml + `
+                        <button class="btn btn-outline-danger rounded-pill px-5 fw-bold" onclick="updateStatus(2)">REDDET</button>
+                        <button class="btn btn-success rounded-pill px-5 fw-bold" onclick="updateStatus(1)">ONAYLA</button>
+                    `;
+                }
+
                 if(myModal) myModal.show();
-            } catch (err) { console.error("Detay hatası:", err); }
+            } catch (err) { console.error(err); }
+        }
+
+        async function saveApplicationUpdates() {
+            if (!currentAppId) return;
+
+            let sDate = document.getElementById('fDetStartDate').value;
+            let eDate = document.getElementById('fDetEndDate').value;
+
+            const updateData = {
+                name: document.getElementById('fDetName').value || null,
+                surname: document.getElementById('fDetSurname').value || null,
+                phoneNumber: document.getElementById('fDetPhone').value || null,
+                educationLevel: document.getElementById('fDetEduLevel').value || null,
+                schoolName: document.getElementById('fDetSchool').value || null,
+                departmentOfStudy: document.getElementById('fDetDept').value || null,
+                grade: document.getElementById('fDetGrade').value || null,
+                department: document.getElementById('fDetTargetDept').value !== "" ? parseInt(document.getElementById('fDetTargetDept').value) : null,
+                internshipType: document.getElementById('fDetInternType').value !== "" ? parseInt(document.getElementById('fDetInternType').value) : null,
+                startDate: sDate ? sDate : null,
+                endDate: eDate ? eDate : null,
+                description: document.getElementById('fDetDesc').value || null,
+                reference: document.getElementById('fDetRefName').value || null,
+                referenceGsm: document.getElementById('fDetRefGsm').value || null
+            };
+
+            try {
+                const res = await fetch(`https://localhost:7166/Applications/update/api/${currentAppId}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (res.ok) {
+                    Swal.fire({
+                        title: 'Başarılı!',
+                        text: 'Başvuru bilgileri başarıyla güncellendi.',
+                        icon: 'success',
+                        background: 'var(--card-bg)',
+                        color: 'var(--text-main)'
+                    });
+                    
+                    if (myModal) myModal.hide();
+                    fetchApplications(); 
+                } else {
+                    let errorMsg = "Güncelleme başarısız oldu.";
+                    try {
+                        const errorData = await res.json();
+                        if (errorData.errors) {
+                            errorMsg = Object.values(errorData.errors).flat().join('<br>');
+                        } else {
+                            errorMsg = errorData.message || errorMsg;
+                        }
+                    } catch(parseErr) {
+                        errorMsg = "API tarafında bir sorun oluştu (Girdiğiniz formatları kontrol edin).";
+                    }
+
+                    Swal.fire({ 
+                        icon: 'warning', 
+                        title: 'İşlem Reddedildi', 
+                        html: errorMsg, 
+                        background: 'var(--card-bg)', 
+                        color: 'var(--text-main)' 
+                    });
+                }
+            } catch (e) {
+                console.error("Fetch Hatası:", e);
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Bağlantı Hatası', 
+                    text: 'Sunucuyla iletişim kurulamadı. API çalışmıyor veya port uyuşmazlığı var.', 
+                    background: 'var(--card-bg)', 
+                    color: 'var(--text-main)' 
+                });
+            }
         }
         
         async function updateStatus(statusCode) {
@@ -455,7 +635,11 @@
             } else if (statusCode === 2) {
                 enumStringValue = "Reddedildi";
                 confirmMessage = "Bu başvuruyu REDDETMEK istediğinize emin misiniz?";
-                successColor = "#dc3545";
+                successColor = "#dc3545"; 
+            } else if (statusCode === 0) {
+                enumStringValue = "Beklemede";
+                confirmMessage = "Bu başvuruyu BEKLEMEYE ALMAK istediğinize emin misiniz?";
+                successColor = "#ffc107"; 
             } else {
                 return; 
             }
@@ -480,7 +664,6 @@
                                 'Authorization': `Bearer ${token}`,
                                 'Content-Type': 'application/json' 
                             },
-                     
                             body: JSON.stringify(enumStringValue) 
                         });
 
@@ -502,14 +685,11 @@
                             Swal.fire({ icon: 'error', title: 'Hata', text: errorData.message || 'Güncelleme başarısız oldu.', background: 'var(--card-bg)', color: 'var(--text-main)' });
                         }
                     } catch (err) {
-                        console.error("Status update error:", err);
                         Swal.fire({ icon: 'error', title: 'Bağlantı Hatası', text: 'Sunucuya ulaşılamıyor.', background: 'var(--card-bg)', color: 'var(--text-main)' });
                     }
                 }
             });
         }
     </script>
-
-
 </body>
 </html>

@@ -15,4 +15,5 @@ public interface IApplicationService
     Task<ApplicationDto?> GetByIdAsync(Guid id);
     
     Task<ServiceResult<bool>> UpdateStatusAsync(Guid applicationId, ApplicationStatus newStatus);
+    Task<ServiceResult<bool>> UpdateAsync(Guid id, ApplicationUpdateDto dto);
 }

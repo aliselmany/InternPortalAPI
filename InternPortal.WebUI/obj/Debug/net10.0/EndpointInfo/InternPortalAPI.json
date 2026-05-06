@@ -222,6 +222,48 @@
         }
       }
     },
+    "/Applications/update/api/{id}": {
+      "put": {
+        "tags": [
+          "Applications"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.ApplicationUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.ApplicationUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.ApplicationUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/Applications/api/{id}/status": {
       "put": {
         "tags": [
@@ -702,6 +744,70 @@
   },
   "components": {
     "schemas": {
+      "InternPortal.Application.Dtos.ApplicationUpdateDto": {
+        "type": "object",
+        "properties": {
+          "educationLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "surname": {
+            "type": "string",
+            "nullable": true
+          },
+          "schoolName": {
+            "type": "string",
+            "nullable": true
+          },
+          "departmentOfStudy": {
+            "type": "string",
+            "nullable": true
+          },
+          "grade": {
+            "type": "string",
+            "nullable": true
+          },
+          "department": {
+            "$ref": "#/components/schemas/InternPortal.Domain.Enums.Department"
+          },
+          "internshipType": {
+            "$ref": "#/components/schemas/InternPortal.Domain.Enums.InternshipType"
+          },
+          "phoneNumber": {
+            "pattern": "^5\\d{9}$",
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceGsm": {
+            "pattern": "^5\\d{9}$",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "InternPortal.Application.Dtos.AssignMentorRequest": {
         "type": "object",
         "properties": {

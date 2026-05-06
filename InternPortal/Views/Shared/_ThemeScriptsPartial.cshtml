@@ -1,0 +1,33 @@
+﻿<script>
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        const authLogo = document.getElementById('authLogo');
+        const themeIcon = document.getElementById('themeIcon');
+        const version = new Date().getTime();
+        
+        if (theme === 'dark') {
+            if (themeIcon) themeIcon.className = 'bi bi-moon-fill';
+            if (authLogo) authLogo.src = `/assets/trex-logo-light.png?v=${version}`;
+        } else {
+            if (themeIcon) themeIcon.className = 'bi bi-sun-fill';
+            if (authLogo) authLogo.src = `/assets/trex-logo-dark.png?v=${version}`;
+        }
+    }
+
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('portal-theme', newTheme);
+        applyTheme(newTheme);
+    }
+
+    function logout() {
+        localStorage.removeItem('token');
+        window.location.replace('/');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('portal-theme') || 'dark';
+        applyTheme(savedTheme);
+    });
+</script>

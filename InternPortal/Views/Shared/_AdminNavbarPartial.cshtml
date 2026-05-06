@@ -1,0 +1,23 @@
+﻿<nav class="admin-nav d-flex w-100 justify-content-between align-items-center px-4 py-3" style="background: var(--card-bg); border-bottom: 1px solid var(--input-border);">
+    <img id="authLogo" src="/assets/trex-logo-light.png" alt="Logo" style="height: 45px;" />
+    
+    <div class="d-flex align-items-center gap-4">
+            
+        <div class="theme-toggle-btn" onclick="toggleTheme()" style="cursor:pointer; font-size: 1.5rem;">
+            <i class="bi bi-sun-fill" id="themeIcon"></i>
+        </div>
+     
+        <div class="dropdown">
+            <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                <i class="bi bi-person-circle fs-3 text-secondary" id="profileIcon"></i>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="background-color: var(--card-bg); border-color: var(--input-border);">
+         
+                <li><a class="dropdown-item d-flex align-items-center gap-3 py-2 text-light" href="#" onclick="showProfile()"><i class="bi bi-person fs-5"></i> Profil</a></li>
+                <li><a class="dropdown-item d-flex align-items-center gap-3 py-2 text-light" href="#" onclick="showEditProfile()"><i class="bi bi-pencil-square fs-5"></i> Düzenle</a></li>
+                <li><hr class="dropdown-divider" style="border-color: var(--input-border);"></li>
+                <li><a class="dropdown-item d-flex align-items-center gap-3 py-2 text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-right fs-5"></i> Çıkış Yap</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -91,10 +91,10 @@
             
         if (theme === 'dark') {
         document.documentElement.setAttribute('data-bs-theme', 'dark');
-        if(themeIcon) themeIcon.className = 'bi bi-moon-fill';
+        if (themeIcon) themeIcon.className = 'bi bi-moon-fill';
         } else {
         document.documentElement.setAttribute('data-bs-theme', 'light');
-        if(themeIcon) themeIcon.className = 'bi bi-sun-fill';
+        if (themeIcon) themeIcon.className = 'bi bi-sun-fill';
         }
         }
 
@@ -133,7 +133,15 @@
         }
 
         const app = applications[0];
+        const appStatus = (app.status || '').toLowerCase();
 
+       
+        if (appStatus === 'approved' || appStatus === 'onaylandı') {
+        window.location.replace('/Applications/InternDashboard');
+        return;
+        }
+
+        
         document.getElementById('schoolName').textContent = app.schoolName || '-';
         document.getElementById('department').textContent = app.department || '-';
         document.getElementById('grade').textContent = app.grade || '-';
@@ -154,11 +162,7 @@
         }
 
         const badge = document.getElementById('statusBadge');
-        if (app.status === 'Approved' || app.status === 'Onaylandı') {
-        badge.className = 'badge rounded-pill bg-success text-white px-4 py-2 fs-6';
-        badge.innerHTML = '<i class="bi bi-check-circle me-2"></i>Onaylandı';
-        }
-        else if (app.status === 'Rejected' || app.status === 'Reddedildi') {
+        if (appStatus === 'rejected' || appStatus === 'reddedildi') {
         badge.className = 'badge rounded-pill bg-danger text-white px-4 py-2 fs-6';
         badge.innerHTML = '<i class="bi bi-x-circle me-2"></i>Reddedildi';
         }

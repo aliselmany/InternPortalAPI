@@ -15,5 +15,11 @@ namespace InternPortal.WebUI.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public IActionResult InternDashboard()
+        {
+            return View();
+        }
     }
 }

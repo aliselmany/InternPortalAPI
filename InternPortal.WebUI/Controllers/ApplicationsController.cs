@@ -46,14 +46,14 @@ namespace InternPortal.WebUI.Controllers
             var userId = Guid.Parse(userIdClaim.Value);
 
             try
-            {   
+            {
                 if (dto.CvFile != null) dto.CvPath = await SaveFileAsync(dto.CvFile, "cvs");
                 if (dto.TranscriptFile != null) dto.TranscriptPath = await SaveFileAsync(dto.TranscriptFile, "transcripts");
 
                 var result = await _applicationService.SubmitAsync(userId, dto);
                 if (!result.IsSuccess) return BadRequest(new { message = result.Message });
 
-   
+
                 return Ok(new { message = "Başvuru başarıyla kaydedildi.", id = result.Data });
             }
             catch (Exception ex)
@@ -61,7 +61,7 @@ namespace InternPortal.WebUI.Controllers
                 return StatusCode(500, new { message = "Sunucu tarafında bir hata oluştu", error = ex.Message });
             }
         }
-        
+
         [HttpGet("Applications/api/my-applications")]
         public async Task<IActionResult> GetMyApplications()
         {
@@ -80,7 +80,7 @@ namespace InternPortal.WebUI.Controllers
             var result = await _applicationService.GetAllAsync();
             return Ok(result);
         }
-                
+
         [HttpGet("Applications/api/{id}")]
         public async Task<IActionResult> GetApplicationById(Guid id)
         {
@@ -88,6 +88,32 @@ namespace InternPortal.WebUI.Controllers
             if (result == null) return NotFound(new { message = "Başvuru bulunamadı." });
             return Ok(result);
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("Applications/update/api/{id}")]
+        public async Task<IActionResult> UpdateApplication(Guid id, [FromBody] ApplicationUpdateDto updateData)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                
+                var result = await _applicationService.UpdateAsync(id, updateData);
+
+                if (result.IsSuccess)
+                    return Ok(new { message = "Başvuru bilgileri başarıyla güncellendi." });
+
+                return BadRequest(new { message = result.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Güncelleme sırasında bir hata oluştu.", error = ex.Message });
+            }
+        }
+  
 
         [Authorize(Roles = "Admin")]
         [HttpPut("Applications/api/{id}/status")]

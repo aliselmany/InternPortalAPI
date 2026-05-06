@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Personel Paneli";
+    ViewData["HideNavbar"] = true;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth-portal.css" asp-append-version="true" />
+}
+
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Tema Değiştir">
+    <i class="bi bi-sun-fill" id="themeIcon"></i>
+</button>
+
+<div class="auth-wrapper" style="overflow-y: auto; padding: 2rem 0; flex-direction: column; justify-content: flex-start; align-items: center;">
+    
+
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+        window.location.replace('/Account/Login');
+        } else {
+
+        try {
+
+        const payload = JSON.parse(atob(token.split('.')[1]));
+    
+        const userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role || payload.Role;
+                
+  
+        if (userRole !== 'Staff' && userRole !== 'Admin') {
+        Swal.fire({
+        icon: 'error',
+        title: 'Yetkisiz Erişim',
+        text: 'Bu sayfayı görüntüleme yetkiniz bulunmamaktadır.',
+        background: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? '#2b3035' : '#fff',
+        color: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? '#fff' : '#000',
+        confirmButtonText: 'Geri Dön',
+        allowOutsideClick: false
+        }).then(() => {
+        window.location.replace('/Account/Login'); 
+        });
+        }
+        } catch (e) {
+        console.error("Token çözümlenemedi", e);
+        localStorage.removeItem('token');
+        window.location.replace('/Account/Login');
+        }
+        }
+
+        function applyTheme(theme) {
+        const themeBtn = document.getElementById('themeBtn');
+        if (!themeBtn) return;
+        const themeIcon = document.getElementById('themeIcon');
+            
+        if (theme === 'dark') {
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        if (themeIcon) themeIcon.className = 'bi bi-moon-fill';
+        } else {
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+        if (themeIcon) themeIcon.className = 'bi bi-sun-fill';
+        }
+        }
+
+        function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+        localStorage.setItem('portal-theme', newTheme);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('portal-theme') || 'light';
+        applyTheme(savedTheme);
+        });
+    </script>
+}

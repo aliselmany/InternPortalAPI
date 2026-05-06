@@ -114,10 +114,10 @@
 
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-            
+                
         const btn = document.getElementById('btnSubmit');
         const errorDiv = document.getElementById('errorMessage');
-        
+            
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
 
@@ -142,19 +142,23 @@
 
         localStorage.setItem('token', result.token);
                     
-        let redirectTarget = '/Applications/Submit';
-                    
+  
+        let redirectTarget = '/Applications/MyApplication';
+                                
         try {
         const payload = JSON.parse(atob(result.token.split('.')[1]));
-        const userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role;
-                        
+        const userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role || payload.Role;
+                                    
+        
         if (userRole === 'Admin') {
         redirectTarget = '/Admin/Dashboard';
+        } else if (userRole === 'Staff') {
+        redirectTarget = '/Staff/StaffDashboard';
         }
         } catch (decodeError) {
         console.error("Token decode error:", decodeError);
         }
-     
+                 
         showThemedAlert(
         'Başarılı!',
         'Giriş başarılı, yönlendiriliyorsunuz...',
@@ -169,7 +173,7 @@
         'error'
         );
         }
-        
+            
         } catch (error) {
         showThemedAlert('Bağlantı Hatası!', 'Sunucuya bağlanılamadı.', 'error');
         } finally {
@@ -181,8 +185,8 @@
     </script>
 
     <script>
-           document.addEventListener('DOMContentLoaded', function() {
-           localStorage.removeItem('token');
+        document.addEventListener('DOMContentLoaded', function() {
+        localStorage.removeItem('token');
         });
     </script>
 }
