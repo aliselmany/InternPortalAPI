@@ -17,7 +17,6 @@ public class RoleDropdownFilter : IOperationFilter
 
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-     
         var roleParam = operation.Parameters?.FirstOrDefault(p =>
             p.Name.Contains("role", StringComparison.OrdinalIgnoreCase));
 
@@ -25,13 +24,11 @@ public class RoleDropdownFilter : IOperationFilter
         {
             UpdateSchemaWithRoles(roleParam.Schema);
         }
-
        
         if (operation.RequestBody?.Content.ContainsKey("application/json") == true)
         {
             var schema = operation.RequestBody.Content["application/json"].Schema;
 
-          
             var roleProp = schema.Properties?.FirstOrDefault(p =>
                 p.Key.Contains("role", StringComparison.OrdinalIgnoreCase)).Value;
 
@@ -50,7 +47,6 @@ public class RoleDropdownFilter : IOperationFilter
 
             try
             {
-   
                 var roles = dbContext.Roles.Select(r => r.Name).ToList();
 
                 if (roles.Any())

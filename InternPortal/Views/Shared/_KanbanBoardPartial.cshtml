@@ -1,0 +1,168 @@
+﻿<style>
+   
+    .kanban-canvas {
+        flex-grow: 1;
+        display: flex;
+        align-items: flex-start;
+        padding: 1.5rem 3.5rem;
+        gap: 1.5rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .kanban-col {
+        min-width: 320px;
+        max-width: 320px;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        max-height: 100%;
+        border-width: 1px;
+        border-style: solid;
+    }
+
+    .kanban-col-header {
+        padding: 1rem;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .kanban-cards {
+        padding: 0 0.5rem 0.5rem 0.5rem;
+        flex-grow: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .kanban-card {
+        padding: 1rem;
+        border-radius: 8px;
+        cursor: grab;
+        transition: border-color 0.2s;
+        position: relative;
+        border-width: 1px;
+        border-style: solid;
+    }
+
+        .kanban-card:active {
+            cursor: grabbing;
+        }
+
+    .delete-task-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        opacity: 0;
+        transition: all 0.2s;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .kanban-card:hover .delete-task-btn {
+        opacity: 1;
+    }
+
+    .delete-task-btn:hover {
+        color: #ff4444 !important;
+        transform: scale(1.1);
+    }
+
+    .add-card-btn {
+        margin: 0.5rem;
+        padding: 0.75rem;
+        background: transparent;
+        border: none;
+        text-align: left;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+    }
+
+   
+    [data-bs-theme="dark"] .kanban-col {
+        background: #2b3035;
+        border-color: rgba(255,255,255,0.1);
+    }
+
+    [data-bs-theme="dark"] .kanban-col-header {
+        color: #f8f9fa;
+    }
+
+    [data-bs-theme="dark"] .kanban-card {
+        background: #1e2124;
+        border-color: rgba(255,255,255,0.1);
+        color: #f8f9fa;
+    }
+
+        [data-bs-theme="dark"] .kanban-card:hover {
+            border-color: rgba(255,255,255,0.5);
+        }
+
+    [data-bs-theme="dark"] .delete-task-btn, [data-bs-theme="dark"] .add-card-btn {
+        color: #adb5bd;
+    }
+
+        [data-bs-theme="dark"] .add-card-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+
+    [data-bs-theme="light"] .kanban-col {
+        background: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+    [data-bs-theme="light"] .kanban-col-header {
+        color: #212529;
+    }
+
+    [data-bs-theme="light"] .kanban-card {
+        background: #ffffff;
+        border-color: #dee2e6;
+        color: #212529;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    [data-bs-theme="light"] .kanban-card:hover {
+          border-color: #adb5bd;
+    }
+
+    [data-bs-theme="light"] .delete-task-btn, [data-bs-theme="light"] .add-card-btn {
+        color: #6c757d;
+    }
+
+    [data-bs-theme="light"] .add-card-btn:hover {
+       background: #dee2e6;
+       color: #212529;
+    }
+</style>
+
+<div class="kanban-canvas" id="kanbanBoard">
+    <div class="kanban-col">
+        <div class="kanban-col-header"><span>Yapılacaklar</span><i class="bi bi-three-dots"></i></div>
+        <div class="kanban-cards" id="ToDo" data-status="ToDo"></div>   
+        <button class="add-card-btn d-none" onclick="addNewTask('ToDo')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+    </div>
+
+    <div class="kanban-col">
+        <div class="kanban-col-header"><span>Yapılıyor</span><i class="bi bi-three-dots"></i></div>
+        <div class="kanban-cards" id="InProgress" data-status="InProgress"></div>
+        <button class="add-card-btn d-none" onclick="addNewTask('InProgress')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+    </div>
+
+    <div class="kanban-col">
+        <div class="kanban-col-header"><span>İnceleniyor</span><i class="bi bi-three-dots"></i></div>
+        <div class="kanban-cards" id="InReview" data-status="InReview"></div>
+        <button class="add-card-btn d-none" onclick="addNewTask('InReview')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+    </div>
+
+    <div class="kanban-col">
+        <div class="kanban-col-header"><span>Tamamlandı</span><i class="bi bi-three-dots"></i></div>
+        <div class="kanban-cards" id="Done" data-status="Done"></div>
+        <button class="add-card-btn d-none" onclick="addNewTask('Done')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+    </div>
+</div>

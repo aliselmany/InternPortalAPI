@@ -8,7 +8,7 @@ namespace InternPortal.Domain.Entities
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
-        public string EducationLevel { get; set; } = string.Empty;
+        public EducationLevel EducationLevel { get; set; } = EducationLevel.Lise;
 
         [Required]
         public string SchoolName { get; set; } = string.Empty;
@@ -31,7 +31,7 @@ namespace InternPortal.Domain.Entities
         [Required]
         public string CvUrl { get; set; } = string.Empty;
 
-        
+
         public string? TranscriptFile { get; set; }
 
         public string? Description { get; set; }
@@ -52,5 +52,7 @@ namespace InternPortal.Domain.Entities
         public string? Reference { get; set; }
         public string? ReferenceGsm { get; set; }
         public string? ReferenceClosenessStatus { get; set; }
+
+        public bool IsDeleted { get; set; } = false;
     }
 }

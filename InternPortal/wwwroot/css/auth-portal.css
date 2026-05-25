@@ -1,5 +1,4 @@
-﻿
-html {
+﻿html {
     zoom: 0.75;
     -moz-transform: scale(0.75);
     -moz-transform-origin: top center;
@@ -38,7 +37,7 @@ body {
     padding: 0 !important;
     overflow: hidden;
     background: var(--bg-gradient) !important;
-    transition: background 0.3s ease; 
+    transition: background 0.3s ease;
 }
 
 .auth-wrapper {
@@ -128,7 +127,6 @@ body {
     font-weight: 700;
 }
 
-
 .theme-toggle {
     position: fixed;
     top: 30px;
@@ -155,3 +153,61 @@ body {
     .theme-toggle i {
         font-size: 1.6rem;
     }
+
+
+.admin-nav {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important; 
+    height: 85px; 
+    padding: 0 3rem !important; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-bg) !important;
+    border-bottom: 1px solid var(--input-border) !important;
+    z-index: 1050;
+    box-sizing: border-box;
+}
+
+
+.intern-dashboard-wrapper {
+    width: 100vw !important;
+    height: 100vh !important;
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    padding-top: 85px; 
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+.admin-nav-custom {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 133.33vw !important;
+    height: 85px !important;
+    padding: 0 4rem !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-bg) !important;
+    border-bottom: 1px solid var(--input-border) !important;
+    z-index: 1050;
+    box-sizing: border-box;
+}
+
+.intern-dashboard-wrapper {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 133.33vw !important; 
+    height: 133.33vh !important; 
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    padding-top: 85px;
+    box-sizing: border-box;
+    background: var(--bg-gradient) !important;
+}

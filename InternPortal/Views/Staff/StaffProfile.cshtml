@@ -1,0 +1,273 @@
+﻿@{
+    ViewData["Title"] = "Profil Yönetimi";
+    ViewData["HideNavbar"] = true;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/staff-portal.css" asp-append-version="true" />
+    <style>
+        .workspace-editor {
+            width: 133.33vw !important;
+            min-height: calc(133.33vh - 85px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 0;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .editor-form-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+        }
+
+        .field-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .editor-label {
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted) !important;
+            opacity: 0.8;
+        }
+
+        .editor-field {
+            background-color: var(--input-bg) !important;
+            border: 2px solid var(--input-border) !important;
+            color: var(--text-main) !important;
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+            .editor-field:focus {
+                outline: none;
+                border-color: var(--text-main) !important;
+                box-shadow: 0 0 0 5px var(--shadow);
+            }
+
+        .editor-textarea {
+            min-height: 320px;
+            resize: none;
+            line-height: 1.7;
+        }
+
+        .social-field-group {
+            display: flex;
+            align-items: center;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 12px;
+        }
+
+        .social-icon {
+            padding: 0 1.2rem;
+            font-size: 1.4rem;
+            color: var(--text-main);
+            border-right: 2px solid var(--input-border);
+            opacity: 0.7;
+        }
+
+        .social-field-group input {
+            border: none !important;
+            background: transparent !important;
+            flex-grow: 1;
+            padding: 1rem 1.2rem;
+            color: var(--text-main) !important;
+        }
+
+        .editor-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 2.5rem;
+            padding-top: 2.5rem;
+            margin-top: 1rem;
+            border-top: 2px solid var(--input-border);
+        }
+
+        .btn-save-pro {
+            background: var(--btn-bg) !important;
+            color: var(--btn-text) !important;
+            border: none;
+            padding: 1.1rem 4.5rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 15px 30px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+            .btn-save-pro:hover {
+                transform: translateY(-3px);
+                filter: brightness(1.1);
+            }
+
+        .btn-cancel-link {
+            color: var(--text-main);
+            text-decoration: none;
+            opacity: 0.5;
+            font-weight: 700;
+        }
+
+            .btn-cancel-link:hover {
+                opacity: 1;
+            }
+    </style>
+}
+
+<partial name="_StaffNavbarPartial" />
+
+<div class="workspace-editor">
+    <div class="form-container">
+        <form id="profileForm">
+            <div class="editor-form-grid">
+                <div style="grid-column: span 9;">
+                    <div class="field-stack">
+                        <label class="editor-label">Uzmanlık Alanlarınız</label>
+                        <input type="text" class="editor-field" id="expertise">
+                    </div>
+                </div>
+                <div style="grid-column: span 3;">
+                    <div class="field-stack">
+                        <label class="editor-label">Max Kontenjan</label>
+                        <input type="number" class="editor-field" id="maxInternCount">
+                    </div>
+                </div>
+                <div style="grid-column: span 12;">
+                    <div class="field-stack">
+                        <label class="editor-label">Hakkımda</label>
+                        <textarea class="editor-field editor-textarea" id="biography"></textarea>
+                    </div>
+                </div>
+                <div style="grid-column: span 6;">
+                    <div class="field-stack">
+                        <label class="editor-label">LinkedIn Adresi</label>
+                        <div class="social-field-group">
+                            <div class="social-icon"><i class="bi bi-linkedin"></i></div>
+                            <input type="url" id="linkedinUrl">
+                        </div>
+                    </div>
+                </div>
+                <div style="grid-column: span 6;">
+                    <div class="field-stack">
+                        <label class="editor-label">GitHub Adresi</label>
+                        <div class="social-field-group">
+                            <div class="social-icon"><i class="bi bi-github"></i></div>
+                            <input type="url" id="githubUrl">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="editor-actions">
+                <a href="/Staff/StaffDashboardIndex" class="btn-cancel-link">İPTAL ET</a>
+                <button type="submit" class="btn-save-pro" id="btnSubmit">PROFİLİ GÜNCELLE</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ThemeScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const API_URL = "https://localhost:7166";
+        const token = localStorage.getItem('token');
+
+        if (!token) window.location.replace('/Account/Login');
+
+        // GİRİŞ YAPAN PERSONELİN GERÇEK ID'SİNİ BULAN FONKSİYON
+        function getUserIdFromToken(jwt) {
+        try {
+        const payload = JSON.parse(atob(jwt.split('.')[1]));
+        return payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+        } catch (e) {
+        return null;
+        }
+        }
+
+        // Sahte ID yerine gerçek ID'yi atadık
+        const currentStaffId = getUserIdFromToken(token);
+
+        document.addEventListener('DOMContentLoaded', loadProfileData);
+
+        async function loadProfileData() {
+        if (!currentStaffId) return;
+
+        try {
+        const response = await fetch(`${API_URL}/api/Users/get-by-id/${currentStaffId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+        const data = await response.json();
+
+        // Gelen verileri kutulara basıyoruz
+        document.getElementById('expertise').value = data.expertise || data.Expertise || '';
+        document.getElementById('biography').value = data.biography || data.Biography || '';
+        document.getElementById('maxInternCount').value = data.maxInternCount ?? data.MaxInternCount ?? 0;
+
+        const accounts = data.socialAccounts || data.SocialAccounts;
+        if (accounts && Array.isArray(accounts)) {
+        const li = accounts.find(s => (s.platformName || s.PlatformName) === 'LinkedIn');
+        const gh = accounts.find(s => (s.platformName || s.PlatformName) === 'GitHub');
+
+        if (li) document.getElementById('linkedinUrl').value = li.profileUrl || li.ProfileUrl || '';
+        if (gh) document.getElementById('githubUrl').value = gh.profileUrl || gh.ProfileUrl || '';
+        }
+        }
+        } catch (error) { console.error("Yükleme hatası:", error); }
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmit');
+        btn.disabled = true;
+        btn.textContent = 'GÜNCELLENİYOR...';
+
+        const updateData = {
+        expertise: document.getElementById('expertise').value,
+        biography: document.getElementById('biography').value,
+        maxInternCount: parseInt(document.getElementById('maxInternCount').value) || 0,
+        socialAccounts: []
+        };
+
+        const li = document.getElementById('linkedinUrl').value;
+        const gh = document.getElementById('githubUrl').value;
+        if(li) updateData.socialAccounts.push({ platformName: "LinkedIn", profileUrl: li });
+        if(gh) updateData.socialAccounts.push({ platformName: "GitHub", profileUrl: gh });
+
+        try {
+        const response = await fetch(`${API_URL}/api/Users/update-mentor-profile`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(updateData)
+        });
+
+        if (response.ok) {
+        Swal.fire({ icon: 'success', title: 'BAŞARILI', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+        }
+        } catch (error) { console.error("Hata:", error); }
+        finally {
+        btn.disabled = false;
+        btn.textContent = 'PROFİLİ GÜNCELLE';
+        }
+        });
+    </script>
+}

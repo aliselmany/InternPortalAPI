@@ -18,12 +18,47 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
 
+  
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetMyProfile()
+    {
+        var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (currentUserIdClaim == null) return Unauthorized(new { message = "Yetkisiz erişim." });
+
+        var userId = Guid.Parse(currentUserIdClaim.Value);
+        var user = await _userService.UserByIdAsync(userId);
+
+        if (user == null) return NotFound(new { message = "Kullanıcı bulunamadı." });
+
+        return Ok(new
+        {
+            name = user.Name,
+            surname = user.Surname,
+            email = user.Email,
+            phoneNumber = user.PhoneNumber
+        });
+    }
+   
+
+    [HttpPost("select-mentor")]
+    [Authorize(Roles = "Intern")]
+    public async Task<IActionResult> SelectMentor([FromBody] Guid mentorId)
+    {
+        var internIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (internIdClaim == null) return Unauthorized();
+
+        var result = await _userService.SelectMentorAsync(Guid.Parse(internIdClaim.Value), mentorId);
+        if (!result) return BadRequest(new { message = "Mentör seçimi başarısız oldu." });
+
+        return Ok(new { message = "Mentör başarıyla atandı." });
+    }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] CreateUserDto createUserDto)
     {
         var result = await _userService.RegisterAsync(createUserDto);
         if (!result.IsSuccess) return BadRequest(new { message = result.Message });
-
         return Ok(new { message = "Registration successful" });
     }
 
@@ -32,21 +67,25 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
         var result = await _userService.LoginAsync(loginRequest);
-
-        if (!result.IsSuccess)
-            return Unauthorized(new { message = result.Message });
-
+        if (!result.IsSuccess) return Unauthorized(new { message = result.Message });
         return Ok(new { token = result.Data.Token, message = "Giriş başarılı" });
     }
 
-    [Authorize(Roles = "Admin,User,Intern")]
+    [Authorize(Roles = "Admin")]
     [HttpPost("assign-mentor")]
     public async Task<IActionResult> AssignMentor([FromBody] AssignMentorRequest request)
     {
         var result = await _userService.AssignMentorAsync(request.InternId, request.MentorId);
         if (!result.IsSuccess) return BadRequest(new { message = result.Message });
-
         return Ok(new { message = "Mentor assigned successfully." });
+    }
+
+    [HttpGet("my-interns/{staffId}")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<IActionResult> GetMyInterns(Guid staffId)
+    {
+        var interns = await _userService.GetMyInternsAsync(staffId);
+        return Ok(interns);
     }
 
     [Authorize(Roles = "Admin")]
@@ -85,7 +124,7 @@ public class UsersController : ControllerBase
         var usersByName = await _userService.GetUsersByRoleNameAsync(roleIdentifier);
         return Ok(usersByName);
     }
-        
+
     [Authorize(Roles = "Admin,Staff")]
     [HttpPut("update-mentor-profile")]
     public async Task<IActionResult> MentorStaffProfile([FromBody] MentorProfileUpdateDto dto, [FromQuery] Guid? targetUserId = null)

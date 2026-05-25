@@ -1,0 +1,223 @@
+﻿@{
+    ViewData["Title"] = "Çalışma Alanı";
+    ViewData["HideNavbar"] = true;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/staff-portal.css" asp-append-version="true" />
+    <style>
+
+        body, html {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .workspace-section {
+            padding: 3rem 5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-bottom: 5rem;
+        }
+
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 2rem;
+        }
+
+        .intern-board-card {
+            border-radius: 12px;
+            height: 140px;
+            padding: 20px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+            .intern-board-card i {
+                align-self: flex-end;
+                font-size: 1.8rem;
+                opacity: 0.3;
+                transition: opacity 0.3s;
+            }
+
+            .intern-board-card:hover {
+                transform: translateY(-8px);
+                border-color: var(--text-main) !important;
+            }
+
+                .intern-board-card:hover i {
+                    opacity: 1;
+                    color: var(--text-main) !important;
+                }
+
+        .section-title {
+            letter-spacing: 1px;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .placeholder-card {
+            border-radius: 12px;
+            height: 140px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: default;
+            border-style: dashed;
+            border-width: 2px;
+        }
+
+        [data-bs-theme="dark"] body,
+        [data-bs-theme="dark"] html {
+            background-color: #1a1d20;
+            color: #f8f9fa;
+        }
+
+        [data-bs-theme="dark"] .intern-board-card {
+            background: linear-gradient(135deg, #2b3035 0%, #1a1d20 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+            [data-bs-theme="dark"] .intern-board-card:hover {
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            }
+
+            [data-bs-theme="dark"] .intern-board-card i {
+                color: #ffffff;
+            }
+
+        [data-bs-theme="dark"] .section-title {
+            color: #f8f9fa;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        [data-bs-theme="dark"] .placeholder-card {
+            background: transparent;
+            border-color: rgba(255,255,255,0.2);
+        }
+
+            [data-bs-theme="dark"] .placeholder-card span {
+                color: #adb5bd !important;
+            }
+
+
+        [data-bs-theme="light"] body,
+        [data-bs-theme="light"] html {
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        [data-bs-theme="light"] .intern-board-card {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            color: #212529;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+            [data-bs-theme="light"] .intern-board-card:hover {
+                box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            }
+
+            [data-bs-theme="light"] .intern-board-card i {
+                color: #212529;
+            }
+
+        [data-bs-theme="light"] .section-title {
+            color: #212529;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        [data-bs-theme="light"] .placeholder-card {
+            background: transparent;
+            border-color: #ced4da;
+        }
+
+            [data-bs-theme="light"] .placeholder-card span {
+                color: #6c757d !important;
+            }
+    </style>
+}
+
+<partial name="_StaffNavbarPartial" />
+
+<div class="workspace-section">
+    <h3 class="section-title">
+        <i class="bi bi-collection-play me-2"></i> Çalışma Alanlarınız
+    </h3>
+
+    <div class="board-grid" id="internBoardsContainer">
+        <div class="placeholder-card" id="placeholderCard">
+            <span class="text-secondary small fw-bold">Yeni stajyer eklendiğinde<br>burada görünecektir</span>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ThemeScriptsPartial" />
+    <script>
+        const API_URL = "https://localhost:7166";
+        const token = localStorage.getItem('token');
+
+        if (!token) window.location.replace('/Account/Login');
+
+        function getUserIdFromToken(jwt) {
+            try {
+                const payload = JSON.parse(atob(jwt.split('.')[1]));
+                return payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+            } catch (e) {
+                return null;
+            }
+        }
+
+
+        const currentStaffId = getUserIdFromToken(token);
+
+        document.addEventListener('DOMContentLoaded', loadInternBoards);
+
+        async function loadInternBoards() {
+            if (!currentStaffId) return; 
+
+            try {
+                const response = await fetch(`${API_URL}/api/Users/my-interns/${currentStaffId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const interns = await response.json();
+                    const placeholder = document.getElementById('placeholderCard');
+
+                    interns.forEach(intern => {
+                        const displayName = intern.fullName || (intern.name + " " + intern.surname);
+                        const cardHtml = `
+                            <div class="intern-board-card" onclick="goToBoard('${intern.id}')">
+                                <span>${displayName}</span>
+                                <i class="bi bi-kanban"></i>
+                            </div>`;
+
+                        placeholder.insertAdjacentHTML('beforebegin', cardHtml);
+                    });
+                }
+            } catch (error) {
+                console.error("Boardlar yüklenemedi:", error);
+            }
+        }
+
+        function goToBoard(internId) {
+            window.location.href = `/Staff/StaffDashboard?internId=${internId}`;
+        }
+    </script>
+}

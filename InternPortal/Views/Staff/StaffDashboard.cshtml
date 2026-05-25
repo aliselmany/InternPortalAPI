@@ -1,82 +1,453 @@
 ﻿@{
-    ViewData["Title"] = "Personel Paneli";
+    ViewData["Title"] = "Personel Paneli - Kanban";
     ViewData["HideNavbar"] = true;
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/auth-portal.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/staff-portal.css" asp-append-version="true" />
+    <style>
+    
+        body, html {
+            height: 100vh !important;
+            overflow: hidden !important;
+            margin: 0;
+            padding: 0;
+        }
+
+        .board-wrapper {
+    
+            height: calc(100vh - 85px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            width: 133.33vw; 
+        }
+
+        .board-header {
+            padding: 1rem 4rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            overflow-x: auto;
+            flex-shrink: 0; 
+            border-bottom: 1px solid var(--input-border);
+        }
+
+        .back-btn {
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-width: 1px;
+            border-style: solid;
+            border-color: var(--input-border);
+            color: var(--text-main);
+        }
+
+            .back-btn:hover {
+                background: var(--input-bg);
+            }
+
+        .intern-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: var(--input-border);
+            color: var(--text-main);
+            background: transparent;
+        }
+
+            .intern-btn:hover {
+                background: var(--input-bg);
+            }
+
+            .intern-btn.active {
+                background: var(--text-main);
+                color: var(--card-bg);
+                border-color: var(--text-main);
+            }
+
+        .kanban-canvas {
+            flex-grow: 1; 
+            display: flex;
+            align-items: flex-start; 
+            padding: 2rem 4rem;
+            gap: 2rem; 
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .kanban-col {
+            min-width: 320px;
+            max-width: 320px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+         
+            max-height: calc(100vh - 180px);
+            border-width: 1px;
+            border-style: solid;
+            background: var(--card-bg);
+            border-color: var(--input-border);
+            box-shadow: 0 4px 6px var(--shadow);
+            height: auto; 
+        }
+
+        .kanban-col-header {
+            padding: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--input-border);
+        }
+
+        .kanban-cards {
+            padding: 0.8rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            min-height: 40px; 
+        }
+
+           
+            .kanban-cards::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .kanban-cards::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .kanban-cards::-webkit-scrollbar-thumb {
+                background-color: var(--input-border);
+                border-radius: 10px;
+            }
+
+        .kanban-card {
+            padding: 1.2rem;
+            border-radius: 8px;
+            cursor: grab;
+            position: relative;
+            flex-shrink: 0;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            box-shadow: 0 1px 3px var(--shadow);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+            .kanban-card:active {
+                cursor: grabbing;
+            }
+
+            .kanban-card:hover {
+                transform: translateY(-2px);
+                border-color: var(--text-muted);
+            }
+
+        .delete-task-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            opacity: 0;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .kanban-card:hover .delete-task-btn {
+            opacity: 1;
+        }
+
+        .delete-task-btn:hover {
+            color: #ff4444 !important;
+            transform: scale(1.1);
+        }
+
+        .add-card-btn {
+            margin: 0.8rem;
+            padding: 0.8rem;
+            background: transparent;
+            border: 1px dashed var(--input-border);
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            flex-shrink: 0;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+            .add-card-btn:hover {
+                background: var(--input-bg);
+                color: var(--text-main);
+                border-color: var(--text-muted);
+            }
+
+  
+        [data-bs-theme="dark"] .kanban-col {
+            background: #212529;
+        }
+
+        [data-bs-theme="dark"] .kanban-card {
+            background: #2b3035;
+        }
+    </style>
 }
 
-<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Tema Değiştir">
-    <i class="bi bi-sun-fill" id="themeIcon"></i>
-</button>
+<partial name="_StaffNavbarPartial" />
 
-<div class="auth-wrapper" style="overflow-y: auto; padding: 2rem 0; flex-direction: column; justify-content: flex-start; align-items: center;">
-    
+<div class="board-wrapper">
+    <div class="board-header" id="internSelector">
+        <button class="back-btn" onclick="window.location.href='/Staff/StaffDashboardIndex'">
+            <i class="bi bi-arrow-left"></i> Panolara Dön
+        </button>
+        <span class="text-secondary fw-bold ms-3 me-2"><i class="bi bi-grid-3x3-gap-fill me-1"></i> Stajyer:</span>
+    </div>
 
+    <div class="kanban-canvas" id="kanbanBoard">
+        <div class="kanban-col">
+            <div class="kanban-col-header"><span>Yapılacaklar</span><i class="bi bi-three-dots"></i></div>
+            <div class="kanban-cards" id="ToDo" data-status="ToDo"></div>
+            <button class="add-card-btn" onclick="addNewTask('ToDo')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+        </div>
+
+        <div class="kanban-col">
+            <div class="kanban-col-header"><span>Yapılıyor</span><i class="bi bi-three-dots"></i></div>
+            <div class="kanban-cards" id="InProgress" data-status="InProgress"></div>
+            <button class="add-card-btn" onclick="addNewTask('InProgress')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+        </div>
+
+        <div class="kanban-col">
+            <div class="kanban-col-header"><span>İnceleniyor</span><i class="bi bi-three-dots"></i></div>
+            <div class="kanban-cards" id="InReview" data-status="InReview"></div>
+            <button class="add-card-btn" onclick="addNewTask('InReview')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+        </div>
+
+        <div class="kanban-col">
+            <div class="kanban-col-header"><span>Tamamlandı</span><i class="bi bi-three-dots"></i></div>
+            <div class="kanban-cards" id="Done" data-status="Done"></div>
+            <button class="add-card-btn" onclick="addNewTask('Done')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
+    <partial name="_ThemeScriptsPartial" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <script>
-
         const token = localStorage.getItem('token');
-        if (!token) {
-        window.location.replace('/Account/Login');
-        } else {
+        if (!token) window.location.replace('/Account/Login');
 
+        const API_URL = "https://localhost:7166";
+
+        function getUserIdFromToken(jwt) {
         try {
-
-        const payload = JSON.parse(atob(token.split('.')[1]));
-    
-        const userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role || payload.Role;
-                
-  
-        if (userRole !== 'Staff' && userRole !== 'Admin') {
-        Swal.fire({
-        icon: 'error',
-        title: 'Yetkisiz Erişim',
-        text: 'Bu sayfayı görüntüleme yetkiniz bulunmamaktadır.',
-        background: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? '#2b3035' : '#fff',
-        color: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? '#fff' : '#000',
-        confirmButtonText: 'Geri Dön',
-        allowOutsideClick: false
-        }).then(() => {
-        window.location.replace('/Account/Login'); 
-        });
-        }
+        const payload = JSON.parse(atob(jwt.split('.')[1]));
+        return payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
         } catch (e) {
-        console.error("Token çözümlenemedi", e);
-        localStorage.removeItem('token');
-        window.location.replace('/Account/Login');
+        return null;
         }
         }
 
-        function applyTheme(theme) {
-        const themeBtn = document.getElementById('themeBtn');
-        if (!themeBtn) return;
-        const themeIcon = document.getElementById('themeIcon');
-            
-        if (theme === 'dark') {
-        document.documentElement.setAttribute('data-bs-theme', 'dark');
-        if (themeIcon) themeIcon.className = 'bi bi-moon-fill';
-        } else {
-        document.documentElement.setAttribute('data-bs-theme', 'light');
-        if (themeIcon) themeIcon.className = 'bi bi-sun-fill';
-        }
-        }
+        const currentStaffId = getUserIdFromToken(token);
 
-        function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        applyTheme(newTheme);
-        localStorage.setItem('portal-theme', newTheme);
-        }
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentInternId = urlParams.get('internId');
 
         document.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('portal-theme') || 'light';
-        applyTheme(savedTheme);
+        initSortable();
+        loadInternBoards();
         });
+
+        async function loadInternBoards() {
+        if (!currentStaffId) return;
+
+        try {
+        const response = await fetch(`${API_URL}/api/Users/my-interns/${currentStaffId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+        const interns = await response.json();
+        const container = document.getElementById('internSelector');
+
+        const headerHTML = container.innerHTML;
+        container.innerHTML = headerHTML;
+
+        interns.forEach((intern, index) => {
+        if (index === 0 && !currentInternId) currentInternId = intern.id;
+
+        const btn = document.createElement('button');
+        btn.className = `intern-btn ${intern.id === currentInternId ? 'active' : ''}`;
+
+        const displayName = intern.fullName || (intern.name + " " + intern.surname);
+        btn.innerHTML = `<i class="bi bi-layout-sidebar-inset me-1"></i> ${displayName}`;
+
+        btn.onclick = () => switchBoard(intern.id, btn);
+        container.appendChild(btn);
+        });
+
+        if (currentInternId) loadTasks();
+        }
+        } catch (error) { console.error("Pano yükleme hatası:", error); }
+        }
+
+        function switchBoard(internId, btnElement) {
+        document.querySelectorAll('.intern-btn').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+        currentInternId = internId;
+
+        window.history.replaceState(null, null, `?internId=${internId}`);
+
+        loadTasks();
+        }
+
+        async function loadTasks() {
+        if (!currentInternId) return;
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/intern/${currentInternId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+        const tasks = await response.json();
+        ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(id => document.getElementById(id).innerHTML = '');
+
+        tasks.forEach(task => {
+        const cardHtml = `
+        <div class="kanban-card shadow-sm" data-task-id="${task.id}">
+        ${task.title}
+        <i class="bi bi-trash3 delete-task-btn" onclick="deleteTask(${task.id})"></i>
+        </div>`;
+        document.getElementById(task.status).insertAdjacentHTML('beforeend', cardHtml);
+        });
+        }
+        } catch (error) { console.error("Görev yükleme hatası:", error); }
+        }
+
+        async function addNewTask(status) {
+        if (!currentInternId || !currentStaffId) return;
+
+        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+        const { value: taskTitle } = await Swal.fire({
+        title: 'Yeni Görev',
+        input: 'text',
+        inputPlaceholder: 'Ne yapılacak?',
+        showCancelButton: true,
+        confirmButtonText: 'Ekle',
+        cancelButtonText: 'İptal',
+        background: isDark ? '#1e1e1e' : '#fff',
+        color: isDark ? '#fff' : '#000',
+        customClass: {
+        confirmButton: 'btn btn-primary px-4 me-2',
+        cancelButton: 'btn btn-outline-secondary px-4'
+        },
+        buttonsStyling: false
+        });
+
+        if (taskTitle) {
+        const newTask = { title: taskTitle, internId: currentInternId, staffId: currentStaffId, status: status };
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(newTask)
+        });
+        if (response.ok) {
+        Swal.fire({ icon: 'success', title: 'Eklendi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+        loadTasks();
+        } else {
+        const err = await response.json();
+        Swal.fire('Hata', err.message || 'Görev eklenirken bir sorun oluştu.', 'error');
+        }
+        } catch (error) { console.error("Ekleme hatası:", error); }
+        }
+        }
+
+        async function deleteTask(taskId) {
+        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+        const result = await Swal.fire({
+        title: 'Silinsin mi?',
+        text: "Bu görev kalıcı olarak silinecek!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sil',
+        cancelButtonText: 'Vazgeç',
+        background: isDark ? '#1e1e1e' : '#fff',
+        color: isDark ? '#fff' : '#000',
+        customClass: {
+        confirmButton: 'btn btn-danger px-4 me-2',
+        cancelButton: 'btn btn-secondary px-4'
+        },
+        buttonsStyling: false
+        });
+
+        if (result.isConfirmed) {
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+        loadTasks();
+        Swal.fire({ icon: 'success', title: 'Silindi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+        }
+        } catch (error) { console.error("Silme hatası:", error); }
+        }
+        }
+
+        function initSortable() {
+        ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(colId => {
+        const el = document.getElementById(colId);
+        if (el) {
+        new Sortable(el, {
+        group: 'kanban',
+        animation: 150,
+        ghostClass: 'bg-secondary',
+        onEnd: function (evt) {
+        const taskId = evt.item.getAttribute('data-task-id');
+        const newStatus = evt.to.getAttribute('data-status');
+        const newOrderIndex = evt.newIndex;
+        updateTaskPosition(taskId, newStatus, newOrderIndex);
+        }
+        });
+        }
+        });
+        }
+
+        async function updateTaskPosition(taskId, newStatus, newOrderIndex) {
+        try {
+        await fetch(`${API_URL}/api/KanbanTasks/move`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ taskId: parseInt(taskId), newStatus, newOrderIndex })
+        });
+        } catch (error) { loadTasks(); }
+        }
     </script>
 }

@@ -101,17 +101,14 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-
 app.UseCors("AllowWebUI");
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllers(); 
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
-
-app.Run();
+app.Run();  

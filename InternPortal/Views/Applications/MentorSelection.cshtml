@@ -1,0 +1,307 @@
+﻿@{
+    ViewData["Title"] = "Mentörünü Seç";
+    ViewData["HideNavbar"] = true;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth-portal.css" asp-append-version="true" />
+    <style>
+        body, html {
+            height: 100%;
+            background-color: var(--bg-main) !important;
+            color: var(--text-main);
+        }
+
+        .selection-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .mentor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .mentor-card {
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+            .mentor-card:hover {
+                border-color: var(--text-main);
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            }
+
+        .mentor-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mentor-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--input-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            border: 1px solid var(--input-border);
+        }
+
+        .mentor-info h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .mentor-info span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mentor-about {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+            background: var(--input-bg);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--input-border);
+            flex-grow: 1;
+        }
+
+        .capacity-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-wrap {
+            height: 8px;
+            background: var(--input-border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--text-main);
+            transition: 0.5s;
+        }
+
+        .btn-select {
+            background: transparent;
+            color: var(--text-main);
+            border: 2px solid var(--input-border);
+            padding: 0.8rem;
+            border-radius: 12px;
+            font-weight: bold;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+            .btn-select:hover:not(:disabled) {
+                background: var(--text-main);
+                color: var(--bg-main);
+                border-color: var(--text-main);
+            }
+
+            .btn-select:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                border-color: var(--input-border);
+            }
+    </style>
+}
+<div class="selection-container">
+    <div class="text-center">
+        <h1 class="page-title">Mentörünü Seç</h1>
+        <p class="text-muted fs-5">Staj sürecinde sana rehberlik edecek uzmanı seç ve görevlerine hemen başla.</p>
+    </div>
+
+    <div class="mentor-grid" id="mentorGrid">
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ThemeScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const API_URL = "https://localhost:7166";
+        const token = localStorage.getItem('token');
+
+        function getUserIdFromToken(jwt) {
+        try {
+        const payload = JSON.parse(atob(jwt.split('.')[1]));
+        return payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload.nameid || payload.sub;
+        } catch (e) { return null; }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+        if (!token) {
+        window.location.replace('/Account/Login');
+        return;
+        }
+
+        const userId = getUserIdFromToken(token);
+        if (userId) {
+        try {
+        const res = await fetch(`${API_URL}/api/Users/get-by-id/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+        const user = await res.json();
+
+        // GELEN VERİYİ KONSOLA YAZDIRALIM (F12 İLE BAKABİLİRSİN)
+        console.log("API'den Gelen Kullanıcı Verisi:", user);
+
+        let mId = user.mentorId || user.MentorId || (user.data && (user.data.mentorId || user.data.MentorId));
+
+        console.log("Tespit Edilen Mentor ID:", mId);
+
+        if (mId && mId !== "00000000-0000-0000-0000-000000000000") {
+        console.log("Mentör bulundu, yönlendiriliyor...");
+        window.location.replace('/Applications/InternDashboard');
+        return;
+        } else {
+        console.log("Mentör ID bulunamadı, seçim sayfasında kalınıyor.");
+        }
+        }
+        } catch(e) { console.error("Kontrol hatası:", e); }
+        }
+
+        loadMentors();
+        });
+
+        async function loadMentors() {
+        try {
+        const res = await fetch(`${API_URL}/api/Users/available-mentors`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+        const mentors = await res.json();
+        const grid = document.getElementById('mentorGrid');
+
+        if(mentors.length === 0) {
+        grid.innerHTML = '<div class="col-12 text-center text-muted">Şu an uygun mentör bulunmuyor.</div>';
+        return;
+        }
+
+        grid.innerHTML = mentors.map(m => {
+        const percent = m.maxCapacity > 0 ? (m.currentCount / m.maxCapacity) * 100 : 100;
+        const isFull = m.currentCount >= m.maxCapacity;
+        const initial = m.fullName ? m.fullName.charAt(0).toUpperCase() : 'M';
+
+        return `
+        <div class="mentor-card">
+        <div class="mentor-header">
+        <div class="mentor-avatar">${initial}</div>
+        <div class="mentor-info">
+        <h3>${m.fullName}</h3>
+        <span>${m.expertise || 'Yazılım Uzmanı'}</span>
+        </div>
+        </div>
+        <div class="mentor-about">
+        <strong>Hakkında:</strong><br/>
+        ${m.biography || 'Bu mentör profili için hakkında bilgisi girilmemiştir.'}
+        </div>
+        <div class="mt-auto">
+        <div class="capacity-info">
+        <span>Kontenjan</span>
+        <span>${m.currentCount} / ${m.maxCapacity}</span>
+        </div>
+        <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width: ${percent}%"></div>
+        </div>
+        </div>
+        <button class="btn-select" ${isFull ? 'disabled' : ''} onclick="bindMentorToIntern('${m.id}', '${m.fullName}')">
+        ${isFull ? 'KONTENJAN DOLU' : 'BU MENTÖRÜ SEÇ'}
+        </button>
+        </div>
+        `;
+        }).join('');
+        }
+        } catch (error) {
+        console.error("Mentör yükleme hatası:", error);
+        }
+        }
+
+        async function bindMentorToIntern(mentorId, mentorName) {
+        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+        const { isConfirmed } = await Swal.fire({
+        title: 'Onaylıyor musun?',
+        text: `${mentorName} adlı mentör ile staja başlayacaksın. Bu işlem değiştirilemez.`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Evet, Seç',
+        cancelButtonText: 'Vazgeç',
+        background: isDark ? '#1a1d20' : '#fff',
+        color: isDark ? '#fff' : '#000',
+        customClass: {
+        confirmButton: 'btn btn-primary px-4 me-2',
+        cancelButton: 'btn btn-outline-secondary px-4'
+        },
+        buttonsStyling: false
+        });
+
+        if (isConfirmed) {
+        try {
+        const res = await fetch(`${API_URL}/api/Users/select-mentor`, {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(mentorId)
+        });
+
+        if (res.ok) {
+        Swal.fire({
+        icon: 'success',
+        title: 'Başarılı!',
+        text: 'Mentör eşleşmesi sağlandı. Görev panosuna yönlendiriliyorsun...',
+        background: isDark ? '#1a1d20' : '#fff',
+        color: isDark ? '#fff' : '#000',
+        showConfirmButton: false,
+        timer: 1500
+        }).then(() => {
+        window.location.replace('/Applications/InternDashboard');
+        });
+        } else {
+        const err = await res.json();
+        Swal.fire('Hata', err.message || 'Seçim başarısız.', 'error');
+        }
+        } catch (error) {
+        console.error("Bağlama hatası:", error);
+        }
+        }
+        }
+    </script>
+}

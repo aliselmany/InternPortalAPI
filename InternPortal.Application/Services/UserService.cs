@@ -32,7 +32,6 @@ public class UserService : IUserService
         string hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
         var user = new User { Name = dto.Name, Surname = dto.Surname, Email = dto.Email, Password = hashedPassword };
 
-        // FIX: Assigning "Intern" immediately upon registration instead of "User"
         var internRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Intern");
         if (internRole != null)
             user.UserRoles.Add(new UserRoleMapping { RoleId = internRole.Id });
@@ -54,6 +53,55 @@ public class UserService : IUserService
         return ServiceResult<LoginResponseDto>.Success(new LoginResponseDto { Token = GenerateJwtToken(user), Email = user.Email });
     }
 
+    public async Task<UserResponseDto?> UserByIdAsync(Guid userId)
+    {
+        var user = await _context.Users
+            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .Include(u => u.SocialAccounts)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null) return null;
+
+        return new UserResponseDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Surname = user.Surname,
+            Email = user.Email,
+            Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList(),
+            Department = user.Department,
+            Expertise = user.Expertise,
+            Biography = user.Biography,
+            MaxInternCount = user.MaxInternCount,
+            MentorId = user.MentorId, // EKSİK OLAN SATIR EKLENDİ!
+            SocialAccounts = user.SocialAccounts.Select(s => new SocialAccountDto
+            {
+                PlatformName = s.PlatformName,
+                ProfileUrl = s.ProfileUrl
+            }).ToList()
+        };
+    }
+
+    public async Task<IEnumerable<UserResponseDto>> GetMyInternsAsync(Guid staffId)
+    {
+        return await _context.Users
+            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .Where(u => u.MentorId == staffId)
+            .Select(u => new UserResponseDto
+            {
+                Id = u.Id,
+                Name = u.Name,
+                Surname = u.Surname,
+                Email = u.Email,
+                Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList(),
+                Department = u.Department,
+                Expertise = u.Expertise,
+                Biography = u.Biography,
+                MaxInternCount = u.MaxInternCount,
+                MentorId = u.MentorId // GARANTİ OLMASI İÇİN BURAYA DA EKLENDİ
+            }).ToListAsync();
+    }
+
     public async Task<List<UserResponseDto>> GetAllUsersAsync(GetUserFilterDto filter)
     {
         var query = _context.Users
@@ -73,62 +121,11 @@ public class UserService : IUserService
             Email = u.Email,
             Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList(),
             Department = u.Department,
-            Expertise = u.Expertise
+            Expertise = u.Expertise,
+            Biography = u.Biography,
+            MaxInternCount = u.MaxInternCount,
+            MentorId = u.MentorId // GARANTİ OLMASI İÇİN BURAYA DA EKLENDİ
         }).ToListAsync();
-    }
-
-    public async Task<UserResponseDto?> UserByIdAsync(Guid userId)
-    {
-        var user = await _context.Users
-            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-            .FirstOrDefaultAsync(u => u.Id == userId);
-
-        if (user == null) return null;
-
-        return new UserResponseDto
-        {
-            Id = user.Id,
-            Name = user.Name,
-            Surname = user.Surname,
-            Email = user.Email,
-            Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList(),
-            Department = user.Department,
-            Expertise = user.Expertise
-        };
-    }
-
-    public async Task<List<UserResponseDto>> UsersByRoleIdAsync(Guid roleId)
-    {
-        return await _context.Users
-            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-            .Where(u => u.UserRoles.Any(ur => ur.RoleId == roleId))
-            .Select(u => new UserResponseDto
-            {
-                Id = u.Id,
-                Name = u.Name,
-                Surname = u.Surname,
-                Email = u.Email,
-                Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList(),
-                Department = u.Department,
-                Expertise = u.Expertise
-            }).ToListAsync();
-    }
-
-    public async Task<List<UserResponseDto>> GetUsersByRoleNameAsync(string roleName)
-    {
-        return await _context.Users
-            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-            .Where(u => u.UserRoles.Any(ur => ur.Role.Name.ToLower() == roleName.ToLower()))
-            .Select(u => new UserResponseDto
-            {
-                Id = u.Id,
-                Name = u.Name,
-                Surname = u.Surname,
-                Email = u.Email,
-                Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList(),
-                Department = u.Department,
-                Expertise = u.Expertise
-            }).ToListAsync();
     }
 
     public async Task<List<AvailableMentorDto>> GetAvailableMentorsAsync(GetAvailableMentorsDto filter)
@@ -168,35 +165,6 @@ public class UserService : IUserService
         }).ToListAsync();
     }
 
-    public async Task<ServiceResult> UpdateUserByIdAsync(Guid userId, UpdateUserDto dto)
-    {
-        var user = await _context.Users.FindAsync(userId);
-        if (user == null) return ServiceResult.Failure("User not found.");
-
-        if (!string.IsNullOrWhiteSpace(dto.Name)) user.Name = dto.Name;
-        if (!string.IsNullOrWhiteSpace(dto.Surname)) user.Surname = dto.Surname;
-        if (!string.IsNullOrWhiteSpace(dto.Email)) user.Email = dto.Email;
-        if (!string.IsNullOrWhiteSpace(dto.Password)) user.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-
-        await _context.SaveChangesAsync();
-        return ServiceResult.Success();
-    }
-
-    public async Task<ServiceResult<bool>> UpdateUserRoleAsync(Guid userId, string roleName)
-    {
-        var user = await _context.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == userId);
-        if (user == null) return ServiceResult<bool>.Failure("User not found.");
-
-        var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
-        if (role == null) return ServiceResult<bool>.Failure("Role not found.");
-
-        user.UserRoles.Clear();
-        user.UserRoles.Add(new UserRoleMapping { UserId = userId, RoleId = role.Id });
-
-        await _context.SaveChangesAsync();
-        return ServiceResult<bool>.Success(true);
-    }
-
     public async Task<bool> UpdateMentorProfileAsync(Guid staffId, MentorProfileUpdateDto dto)
     {
         var staff = await _context.Users
@@ -206,15 +174,15 @@ public class UserService : IUserService
 
         if (staff == null || staff.UserRoles.Any(ur => ur.Role.Name == "Intern")) return false;
 
-        if (!string.IsNullOrWhiteSpace(dto.Expertise)) staff.Expertise = dto.Expertise;
-        if (!string.IsNullOrWhiteSpace(dto.Biography)) staff.Biography = dto.Biography;
+        staff.Expertise = dto.Expertise ?? staff.Expertise;
+        staff.Biography = dto.Biography ?? staff.Biography;
         if (dto.MaxInternCount.HasValue) staff.MaxInternCount = dto.MaxInternCount.Value;
+
+        var existingAccounts = _context.UserSocialAccounts.Where(x => x.UserId == staffId);
+        _context.UserSocialAccounts.RemoveRange(existingAccounts);
 
         if (dto.SocialAccounts != null)
         {
-            var existingAccounts = _context.UserSocialAccounts.Where(x => x.UserId == staffId);
-            _context.UserSocialAccounts.RemoveRange(existingAccounts);
-
             foreach (var account in dto.SocialAccounts)
             {
                 _context.UserSocialAccounts.Add(new UserSocialAccount
@@ -226,7 +194,14 @@ public class UserService : IUserService
                 });
             }
         }
+        return await _context.SaveChangesAsync() > 0;
+    }
 
+    public async Task<bool> SelectMentorAsync(Guid internId, Guid mentorId)
+    {
+        var intern = await _context.Users.FindAsync(internId);
+        if (intern == null) return false;
+        intern.MentorId = mentorId;
         return await _context.SaveChangesAsync() > 0;
     }
 
@@ -273,5 +248,72 @@ public class UserService : IUserService
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public async Task<List<UserResponseDto>> UsersByRoleIdAsync(Guid roleId)
+    {
+        return await _context.Users
+            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .Where(u => u.UserRoles.Any(ur => ur.RoleId == roleId))
+            .Select(u => new UserResponseDto
+            {
+                Id = u.Id,
+                Name = u.Name,
+                Surname = u.Surname,
+                Email = u.Email,
+                Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList(),
+                Expertise = u.Expertise,
+                Biography = u.Biography,
+                MaxInternCount = u.MaxInternCount,
+                MentorId = u.MentorId // GARANTİ OLMASI İÇİN BURAYA DA EKLENDİ
+            }).ToListAsync();
+    }
+
+    public async Task<List<UserResponseDto>> GetUsersByRoleNameAsync(string roleName)
+    {
+        return await _context.Users
+            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .Where(u => u.UserRoles.Any(ur => ur.Role.Name.ToLower() == roleName.ToLower()))
+            .Select(u => new UserResponseDto
+            {
+                Id = u.Id,
+                Name = u.Name,
+                Surname = u.Surname,
+                Email = u.Email,
+                Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList(),
+                Expertise = u.Expertise,
+                Biography = u.Biography,
+                MaxInternCount = u.MaxInternCount,
+                MentorId = u.MentorId // GARANTİ OLMASI İÇİN BURAYA DA EKLENDİ
+            }).ToListAsync();
+    }
+
+    public async Task<ServiceResult> UpdateUserByIdAsync(Guid userId, UpdateUserDto dto)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null) return ServiceResult.Failure("Kullanıcı bulunamadı.");
+
+        if (!string.IsNullOrWhiteSpace(dto.Name)) user.Name = dto.Name;
+        if (!string.IsNullOrWhiteSpace(dto.Surname)) user.Surname = dto.Surname;
+        if (!string.IsNullOrWhiteSpace(dto.Email)) user.Email = dto.Email;
+        if (!string.IsNullOrWhiteSpace(dto.Password)) user.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+        await _context.SaveChangesAsync();
+        return ServiceResult.Success();
+    }
+
+    public async Task<ServiceResult<bool>> UpdateUserRoleAsync(Guid userId, string roleName)
+    {
+        var user = await _context.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) return ServiceResult<bool>.Failure("Kullanıcı bulunamadı.");
+
+        var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+        if (role == null) return ServiceResult<bool>.Failure("Rol bulunamadı.");
+
+        user.UserRoles.Clear();
+        user.UserRoles.Add(new UserRoleMapping { UserId = userId, RoleId = role.Id });
+
+        await _context.SaveChangesAsync();
+        return ServiceResult<bool>.Success(true);
     }
 }

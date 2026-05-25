@@ -57,6 +57,7 @@ C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\wwwroot\lib\bo
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
+C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\wwwroot\css\staff-portal.css
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
@@ -68,6 +69,7 @@ wwwroot\css\account-login.css
 wwwroot\css\account-register.css
 wwwroot\css\application-submit.css
 wwwroot\css\auth-portal.css
+wwwroot\css\staff-portal.css
 wwwroot\favicon.ico
 wwwroot\lib\bootstrap\LICENSE
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css

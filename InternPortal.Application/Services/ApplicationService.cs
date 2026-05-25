@@ -64,7 +64,11 @@ namespace InternPortal.Application.Services
                 Id = Guid.NewGuid(),
                 UserId = userId,
 
-                EducationLevel = dto.EducationLevel,
+
+                EducationLevel = Enum.TryParse<EducationLevel>(dto.EducationLevel, true, out var parsedEdu)
+                                ? parsedEdu
+                                : EducationLevel.Lise,
+
                 SchoolName = dto.SchoolName,
                 DepartmentOfStudy = dto.DepartmentOfStudy,
 
@@ -91,7 +95,6 @@ namespace InternPortal.Application.Services
             return ServiceResult<Guid>.Success(application.Id);
         }
 
-
         public async Task<ServiceResult<bool>> UpdateAsync(Guid id, ApplicationUpdateDto dto)
         {
             var application = await _context.Applications.FindAsync(id);
@@ -100,14 +103,22 @@ namespace InternPortal.Application.Services
             {
                 return ServiceResult<bool>.Failure("Güncellenmek istenen başvuru bulunamadı.");
             }
-         
+
             if (!string.IsNullOrEmpty(dto.PhoneNumber)) application.PhoneNumber = dto.PhoneNumber;
-            if (!string.IsNullOrEmpty(dto.EducationLevel)) application.EducationLevel = dto.EducationLevel;
+
+
+            if (!string.IsNullOrEmpty(dto.EducationLevel))
+            {
+                if (Enum.TryParse<EducationLevel>(dto.EducationLevel, true, out var updateEdu))
+                {
+                    application.EducationLevel = updateEdu;
+                }
+            }
+
             if (!string.IsNullOrEmpty(dto.SchoolName)) application.SchoolName = dto.SchoolName;
             if (!string.IsNullOrEmpty(dto.DepartmentOfStudy)) application.DepartmentOfStudy = dto.DepartmentOfStudy;
             if (!string.IsNullOrEmpty(dto.Grade)) application.Grade = dto.Grade;
 
-            
             if (dto.Department.HasValue)
                 application.Department = dto.Department.Value;
 
@@ -120,7 +131,6 @@ namespace InternPortal.Application.Services
             if (dto.EndDate.HasValue)
                 application.EndDate = dto.EndDate.Value;
 
-         
             if (dto.Description != null) application.Description = dto.Description;
             if (dto.Reference != null) application.Reference = dto.Reference;
             if (dto.ReferenceGsm != null) application.ReferenceGsm = dto.ReferenceGsm;
@@ -130,7 +140,6 @@ namespace InternPortal.Application.Services
 
             return ServiceResult<bool>.Success(true);
         }
-
 
         public async Task<ServiceResult<bool>> UpdateStatusAsync(Guid applicationId, ApplicationStatus newStatus)
         {
@@ -170,15 +179,58 @@ namespace InternPortal.Application.Services
             return applications.Select(MapToDto).ToList();
         }
 
-        public async Task<List<ApplicationDto>> GetAllAsync()
+        // --- BACKEND FİLTRELEME MANTIGI BURAYA EKLENDİ ---
+        public async Task<List<ApplicationDto>> GetAllAsync(ApplicationFilterQuery filter)
         {
-            var applications = await _context.Applications
+            var query = _context.Applications
                 .Include(x => x.User)
+                .AsQueryable();
+
+            // Eğer filter nesnesi boş gelmezse şartları eklemeye başla
+            if (filter != null)
+            {
+                if (!string.IsNullOrWhiteSpace(filter.Name))
+                {
+                    var searchName = filter.Name.Trim().ToLower();
+                    query = query.Where(a => (a.User.Name + " " + a.User.Surname).ToLower().Contains(searchName));
+                }
+
+                if (!string.IsNullOrWhiteSpace(filter.SchoolName))
+                {
+                    var searchSchool = filter.SchoolName.Trim().ToLower();
+                    query = query.Where(a => a.SchoolName.ToLower().Contains(searchSchool));
+                }
+
+                if (!string.IsNullOrWhiteSpace(filter.DepartmentOfStudy))
+                {
+                    var searchDept = filter.DepartmentOfStudy.Trim().ToLower();
+                    query = query.Where(a => a.DepartmentOfStudy.ToLower().Contains(searchDept));
+                }
+
+                if (filter.InternshipType.HasValue)
+                {
+                    query = query.Where(a => (int)a.InternshipType == filter.InternshipType.Value);
+                }
+
+                if (!string.IsNullOrWhiteSpace(filter.Status))
+                {
+                    // Metni Enum'a çeviriyoruz ki SQL Server Enum karşılığı (int) üzerinden hızlıca filtrelesin
+                    if (Enum.TryParse<ApplicationStatus>(filter.Status, true, out var parsedStatus))
+                    {
+                        query = query.Where(a => a.Status == parsedStatus);
+                    }
+                }
+            }
+
+            // Süzülmüş veriyi tarihe göre sıralayıp RAM'e alıyoruz
+            var applications = await query
                 .OrderByDescending(x => x.AppliedDate)
                 .ToListAsync();
 
+            // Senin kendi yazdığın MapToDto metoduna yönlendirerek listeyi dönüyoruz
             return applications.Select(MapToDto).ToList();
         }
+        // ---------------------------------------------------
 
         public async Task<ApplicationDto?> GetByIdAsync(Guid id)
         {
@@ -198,7 +250,9 @@ namespace InternPortal.Application.Services
                 Name = x.User?.Name ?? "İsimsiz",
                 Surname = x.User?.Surname ?? "Aday",
 
-                EducationLevel = x.EducationLevel,
+
+                EducationLevel = x.EducationLevel.ToString(),
+
                 SchoolName = x.SchoolName,
                 DepartmentOfStudy = x.DepartmentOfStudy,
                 Grade = x.Grade,

@@ -17,4 +17,7 @@ public interface IUserService
     Task<ServiceResult> AssignMentorAsync(Guid internId, Guid mentorId); 
     Task<bool> DeleteUserAsync(Guid userId);
     Task<List<UserResponseDto>> GetUsersByRoleNameAsync(string roleName);
-}
+    Task<IEnumerable<UserResponseDto>> GetMyInternsAsync(Guid staffId);
+    Task<bool> SelectMentorAsync(Guid internId, Guid mentorId);
+ 
+ }

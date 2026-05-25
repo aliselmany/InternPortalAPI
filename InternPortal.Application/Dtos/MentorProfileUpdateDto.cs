@@ -11,7 +11,6 @@ public class MentorProfileUpdateDto
 
     public string? Biography { get; set; }
 
-    //[DefaultValue("")]
     public int? MaxInternCount { get; set; }
 
     public List<SocialAccountDto> SocialAccounts { get; set; } = new();

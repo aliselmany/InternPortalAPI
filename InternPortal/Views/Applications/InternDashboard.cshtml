@@ -4,22 +4,309 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/auth-portal.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/staff-portal.css" asp-append-version="true" />
+    <style>
+        /* GLOBAL RESET: %75 ZOOM VE DIŞ SCROLL ENGELLEME */
+        body, html {
+            width: 133.33vw !important;
+            height: 133.33vh !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: var(--bg-main) !important;
+            max-width: none !important;
+            max-height: none !important;
+        }
+
+        .navbar, nav {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        /* ANA PANO SARMALAYICI */
+        .board-wrapper {
+            width: 100% !important;
+            height: calc(133.33vh - 85px) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
+        }
+
+        /* BAŞLIK ALANI */
+        .board-header {
+            padding: 2rem 4rem 1rem 4rem !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 15px !important;
+            flex-shrink: 0 !important;
+            border-bottom: 1px solid var(--input-border) !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        [data-bs-theme="dark"] .board-header {
+            color: var(--text-main) !important;
+        }
+
+        /* FOTOĞRAFTAKİ DOĞAL GENİŞLİKTEKİ KANVAS YAPISI */
+        .kanban-canvas {
+            flex-grow: 1 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: flex-start !important;
+            padding: 2rem 4rem !important;
+            gap: 2rem !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* FOTOĞRAFTAKİ KISA BOYLU VE SABİT GENİŞLİKTEKİ KOLONLAR */
+        .kanban-col {
+            min-width: 320px !important;
+            max-width: 320px !important;
+            border-radius: 12px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            max-height: calc(133.33vh - 280px) !important; /* Altta tam fotoğraftaki gibi boşluk bırakır */
+            border-width: 1px !important;
+            border-style: solid !important;
+            background: var(--card-bg) !important;
+            border-color: var(--input-border) !important;
+            box-shadow: 0 4px 6px var(--shadow) !important;
+            height: auto !important;
+            box-sizing: border-box !important;
+        }
+
+        .kanban-col-header {
+            padding: 1.2rem !important;
+            font-weight: bold !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            flex-shrink: 0 !important;
+            color: var(--text-main) !important;
+            border-bottom: 1px solid var(--input-border) !important;
+        }
+
+        .kanban-cards {
+            padding: 0.8rem !important;
+            overflow-y: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0.8rem !important;
+            min-height: 40px !important;
+        }
+
+            /* İnce modern scrollbar stili */
+            .kanban-cards::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .kanban-cards::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .kanban-cards::-webkit-scrollbar-thumb {
+                background-color: var(--input-border);
+                border-radius: 10px;
+            }
+
+        /* KART TASARIMLARI */
+        .kanban-card {
+            padding: 1.2rem !important;
+            border-radius: 8px !important;
+            cursor: grab !important;
+            position: relative !important;
+            flex-shrink: 0 !important;
+            background: var(--input-bg) !important;
+            border: 1px solid var(--input-border) !important;
+            color: var(--text-main) !important;
+            box-shadow: 0 1px 3px var(--shadow) !important;
+            transition: transform 0.2s, border-color 0.2s !important;
+        }
+
+            .kanban-card:active {
+                cursor: grabbing !important;
+            }
+
+            .kanban-card:hover {
+                transform: translateY(-2px) !important;
+                border-color: var(--text-muted) !important;
+            }
+
+        /* Koyu Tema Ayarları */
+        [data-bs-theme="dark"] .kanban-col {
+            background: #212529 !important;
+        }
+
+        [data-bs-theme="dark"] .kanban-card {
+            background: #2b3035 !important;
+        }
+    </style>
 }
 
-<partial name="_AdminNavbarPartial" />
+<partial name="_InternNavbarPartial" />
 
-<div class="auth-wrapper" style="overflow-y: auto; padding: 2rem 0; flex-direction: column; justify-content: flex-start; align-items: center;">
+<div class="board-wrapper">
+    <div class="board-header">
+        <h4 class="m-0 fw-bold"><i class="bi bi-kanban me-2"></i> Çalışma Alanım</h4>
+    </div>
+
+    <div class="kanban-canvas" id="kanbanBoard">
+        <div class="kanban-col">
+            <div class="kanban-col-header"><span>Yapılacaklar</span><i class="bi bi-three-dots"></i></div>
+            <div class="kanban-cards" id="ToDo" data-status="ToDo"></div>
+        </div>
+
+        <div class="kanban-col">
+            <div class="kanban-col-header"><span>Yapılıyor</span><i class="bi bi-three-dots"></i></div>
+            <div class="kanban-cards" id="InProgress" data-status="InProgress"></div>
+        </div>
+
+        <div class="kanban-col">
+            <div class="kanban-col-header"><span>İnceleniyor</span><i class="bi bi-three-dots"></i></div>
+            <div class="kanban-cards" id="InReview" data-status="InReview"></div>
+        </div>
+
+        <div class="kanban-col">
+            <div class="kanban-col-header"><span>Tamamlandı</span><i class="bi bi-three-dots"></i></div>
+            <div class="kanban-cards" id="Done" data-status="Done"></div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <partial name="_ThemeScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <script>
-
+        const API_URL = "https://localhost:7166";
         const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.replace('/Account/Login');
+
+        if (!token) window.location.replace('/Account/Login');
+
+        function getUserIdFromToken(jwt) {
+        try {
+        const payload = JSON.parse(atob(jwt.split('.')[1]));
+        return payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+        } catch (e) {
+        return null;
+        }
+        }
+
+        const currentInternId = getUserIdFromToken(token);
+        const isUserStaff = false;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+        await checkMentorStatus();
+        initSortable();
+        loadTasks();
+        });
+
+        async function checkMentorStatus() {
+        if (!currentInternId) return;
+
+        try {
+        const response = await fetch(`${API_URL}/api/Users/get-by-id/${currentInternId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+        const user = await response.json();
+
+        if (!user.mentorId || user.mentorId === "00000000-0000-0000-0000-000000000000") {
+        window.location.replace('/Applications/MentorSelection');
+        }
+        }
+        } catch (error) {
+        console.error("Erişim kontrolü başarısız:", error);
+        }
+        }
+
+        async function loadTasks() {
+        if (!currentInternId) return;
+
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/intern/${currentInternId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+        const tasks = await response.json();
+
+        ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.innerHTML = '';
+        });
+
+        tasks.forEach(task => {
+        const deleteBtnHtml = isUserStaff ? `<i class="bi bi-trash3 delete-task-btn" onclick="deleteTask(${task.id})"></i>` : '';
+
+        const cardHtml = `
+        <div class="kanban-card shadow-sm" data-task-id="${task.id}">
+        ${task.title}
+        ${deleteBtnHtml}
+        </div>`;
+
+        const targetCol = document.getElementById(task.status);
+        if (targetCol) targetCol.insertAdjacentHTML('beforeend', cardHtml);
+        });
+        }
+        } catch (error) {
+        console.error("Görev yükleme hatası:", error);
+        }
+        }
+
+        function initSortable() {
+        ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(colId => {
+        const el = document.getElementById(colId);
+        if (el) {
+        new Sortable(el, {
+        group: 'kanban',
+        animation: 150,
+        ghostClass: 'bg-secondary',
+        onEnd: function (evt) {
+        const taskId = evt.item.getAttribute('data-task-id');
+        const newStatus = evt.to.getAttribute('data-status');
+        const newOrderIndex = evt.newIndex;
+
+        if (evt.from !== evt.to) {
+        updateTaskPosition(taskId, newStatus, newOrderIndex);
+        }
+        }
+        });
+        }
+        });
+        }
+
+        async function updateTaskPosition(taskId, newStatus, newOrderIndex) {
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/move`, {
+        method: 'PUT',
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+        taskId: parseInt(taskId, 10),
+        newStatus: newStatus,
+        newOrderIndex: newOrderIndex
+        })
+        });
+
+        if (!response.ok) {
+        throw new Error("Sunucu güncellemeyi reddetti.");
+        }
+
+        } catch (error) {
+        console.error("Taşıma hatası:", error);
+        loadTasks();
+        }
         }
     </script>
 }

@@ -10,10 +10,10 @@ public interface IApplicationService
  
     Task<List<ApplicationDto>> GetByUserIdAsync(Guid userId);
 
-    Task<List<ApplicationDto>> GetAllAsync();
-
     Task<ApplicationDto?> GetByIdAsync(Guid id);
     
     Task<ServiceResult<bool>> UpdateStatusAsync(Guid applicationId, ApplicationStatus newStatus);
+
     Task<ServiceResult<bool>> UpdateAsync(Guid id, ApplicationUpdateDto dto);
+    Task<List<ApplicationDto>> GetAllAsync(ApplicationFilterQuery filter);
 }

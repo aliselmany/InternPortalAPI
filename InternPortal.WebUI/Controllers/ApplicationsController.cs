@@ -75,9 +75,10 @@ namespace InternPortal.WebUI.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet("Applications/api/all")]
-        public async Task<IActionResult> GetAllApplications()
+        public async Task<IActionResult> GetAllApplications([FromQuery] ApplicationFilterQuery filter)
         {
-            var result = await _applicationService.GetAllAsync();
+         
+            var result = await _applicationService.GetAllAsync(filter);
             return Ok(result);
         }
 
@@ -113,8 +114,7 @@ namespace InternPortal.WebUI.Controllers
                 return StatusCode(500, new { message = "Güncelleme sırasında bir hata oluştu.", error = ex.Message });
             }
         }
-  
-
+            
         [Authorize(Roles = "Admin")]
         [HttpPut("Applications/api/{id}/status")]
         public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] ApplicationStatus status)
@@ -138,5 +138,7 @@ namespace InternPortal.WebUI.Controllers
             }
             return $"/uploads/{subFolder}/{fileName}";
         }
+
+
     }
 }

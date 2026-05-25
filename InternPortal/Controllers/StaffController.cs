@@ -9,5 +9,19 @@ namespace InternPortal.WebUI.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public IActionResult StaffDashboardIndex()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult StaffProfile()
+        {
+            return View();
+        }
+
+
     }
 }
