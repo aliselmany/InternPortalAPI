@@ -21,7 +21,7 @@ public class AppDbContext : DbContext
             if (entry.CurrentValues.Properties.Any(p => p.Name == "IsDeleted"))
             {
                 entry.State = EntityState.Modified;
-                entry.CurrentValues["IsDeleted"] = true; 
+                entry.CurrentValues["IsDeleted"] = true;
             }
         }
 
@@ -31,9 +31,11 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-  
+   
         modelBuilder.Entity<InternPortal.Domain.Entities.Application>().HasQueryFilter(a => !a.IsDeleted);
+        modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
+        modelBuilder.Entity<KanbanTask>().HasQueryFilter(k => !k.IsDeleted);
+        modelBuilder.Entity<UserSocialAccount>().HasQueryFilter(s => !s.IsDeleted);
 
         modelBuilder.Entity<UserRoleMapping>().ToTable("UserRoleMappings");
         modelBuilder.Entity<UserRoleMapping>()
