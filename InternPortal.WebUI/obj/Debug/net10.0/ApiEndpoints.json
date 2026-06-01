@@ -259,6 +259,22 @@
   },
   {
     "ContainingType": "InternPortal.WebUI.Controllers.UsersController",
+    "Method": "ForgotPassword",
+    "RelativePath": "api/Users/forgot-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "InternPortal.WebUI.Controllers.ForgotPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.UsersController",
     "Method": "GetUserById",
     "RelativePath": "api/Users/get-by-id/{id}",
     "HttpMethod": "GET",
@@ -349,6 +365,22 @@
   },
   {
     "ContainingType": "InternPortal.WebUI.Controllers.UsersController",
+    "Method": "ResetPassword",
+    "RelativePath": "api/Users/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "InternPortal.WebUI.Controllers.ResetPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.UsersController",
     "Method": "SelectMentor",
     "RelativePath": "api/Users/select-mentor",
     "HttpMethod": "POST",
@@ -380,6 +412,22 @@
         "Name": "targetUserId",
         "Type": "System.Nullable\u00601[[System.Guid, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.UsersController",
+    "Method": "VerifyResetCode",
+    "RelativePath": "api/Users/verify-reset-code",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "InternPortal.WebUI.Controllers.VerifyResetCodeDto",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

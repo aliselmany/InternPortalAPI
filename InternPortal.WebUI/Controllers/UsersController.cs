@@ -12,13 +12,14 @@ namespace InternPortal.WebUI.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IMailService _mailService; 
 
-    public UsersController(IUserService userService)
+    public UsersController(IUserService userService, IMailService mailService)
     {
         _userService = userService;
+        _mailService = mailService;
     }
 
-  
     [HttpGet("me")]
     [Authorize]
     public async Task<IActionResult> GetMyProfile()
@@ -39,7 +40,6 @@ public class UsersController : ControllerBase
             phoneNumber = user.PhoneNumber
         });
     }
-   
 
     [HttpPost("select-mentor")]
     [Authorize(Roles = "Intern")]
@@ -153,4 +153,97 @@ public class UsersController : ControllerBase
 
         return Ok(new { message = "User deleted successfully." });
     }
+
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto model)
+    {
+        var userResult = await _userService.GetUserByEmailAsync(model.Email);
+        if (!userResult.IsSuccess || userResult.Data == null)
+        {
+            return BadRequest(new { message = "Bu e-posta adresi sistemde kayıtlı değil." });
+        }
+
+        Random random = new Random();
+        string resetCode = random.Next(100000, 999999).ToString();
+
+        var saveResult = await _userService.SavePasswordResetCodeAsync(userResult.Data.Id, resetCode, DateTime.Now.AddMinutes(3));
+        if (!saveResult.IsSuccess)
+        {
+            return BadRequest(new { message = "Onay kodu oluşturulurken bir teknik hata oluştu." });
+        }
+
+        _mailService.SendPasswordResetCode(model.Email, resetCode);
+
+        return Ok(new { message = "6 haneli onay kodu e-posta adresinize gönderildi." });
+    }
+
+    [HttpPost("verify-reset-code")]
+    [AllowAnonymous]
+    public async Task<IActionResult> VerifyResetCode([FromBody] VerifyResetCodeDto model)
+    {
+        var verifyResult = await _userService.VerifyResetCodeAsync(model.Email, model.Code);
+        if (!verifyResult.IsSuccess)
+        {
+            return BadRequest(new { message = verifyResult.Message });
+        }
+
+        return Ok(new { message = "Onay kodu başarıyla doğrulandı." });
+    }
+
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
+    {
+        if (model.NewPassword != model.ConfirmPassword)
+        {
+            return BadRequest(new { message = "Girdiğiniz şifreler birbiriyle uyuşmuyor." });
+        }
+
+        var verifyResult = await _userService.VerifyResetCodeAsync(model.Email, model.Code);
+        if (!verifyResult.IsSuccess)
+        {
+            return BadRequest(new { message = "Doğrulama süresi dolmuş veya geçersiz işlem. Lütfen baştan başlayın." });
+        }
+
+        var userResult = await _userService.GetUserByEmailAsync(model.Email);
+        if (!userResult.IsSuccess || userResult.Data == null)
+        {
+            return BadRequest(new { message = "Kullanıcı bulunamadı." });
+        }
+
+        var oldPasswordCheck = await _userService.CheckOldPasswordAsync(userResult.Data.Id, model.NewPassword);
+        if (!oldPasswordCheck.IsSuccess)
+        {
+            return BadRequest(new { message = oldPasswordCheck.Message });
+        }
+
+        var updateResult = await _userService.UpdatePasswordAsync(userResult.Data.Id, model.NewPassword);
+        if (!updateResult.IsSuccess)
+        {
+            return BadRequest(new { message = "Şifre güncellenirken bir hata oluştu." });
+        }
+
+        return Ok(new { message = "Şifreniz başarıyla güncellendi. Yeni şifrenizle giriş yapabilirsiniz." });
+    }
+}
+
+
+public class ForgotPasswordDto
+{
+    public string Email { get; set; } = string.Empty;
+}
+
+public class VerifyResetCodeDto
+{
+    public string Email { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
+}
+
+public class ResetPasswordDto
+{
+    public string Email { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
+    public string ConfirmPassword { get; set; } = string.Empty;
 }

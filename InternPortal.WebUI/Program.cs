@@ -24,10 +24,14 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
-builder.Services.AddHttpClient(); 
+
+builder.Services.AddHttpClient();
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
+
+builder.Services.AddScoped<IMailService, MailService>();
 
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -53,6 +57,7 @@ builder.Services.AddControllersWithViews()
    });
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "InternPortal API", Version = "v1" });
@@ -100,15 +105,15 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseCors("AllowWebUI");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers(); 
+app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
-app.Run();  
+
+app.Run();

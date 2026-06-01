@@ -192,7 +192,7 @@
 
         if (!token) window.location.replace('/Account/Login');
 
-        // GİRİŞ YAPAN PERSONELİN GERÇEK ID'SİNİ BULAN FONKSİYON
+      
         function getUserIdFromToken(jwt) {
         try {
         const payload = JSON.parse(atob(jwt.split('.')[1]));
@@ -202,7 +202,6 @@
         }
         }
 
-        // Sahte ID yerine gerçek ID'yi atadık
         const currentStaffId = getUserIdFromToken(token);
 
         document.addEventListener('DOMContentLoaded', loadProfileData);
@@ -218,7 +217,6 @@
         if (response.ok) {
         const data = await response.json();
 
-        // Gelen verileri kutulara basıyoruz
         document.getElementById('expertise').value = data.expertise || data.Expertise || '';
         document.getElementById('biography').value = data.biography || data.Biography || '';
         document.getElementById('maxInternCount').value = data.maxInternCount ?? data.MaxInternCount ?? 0;

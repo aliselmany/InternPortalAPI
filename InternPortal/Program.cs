@@ -9,7 +9,6 @@ using InternPortal.Infrastructure.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -17,9 +16,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
-builder.Services.AddHttpClient(); 
 
-builder.Services.AddAuthentication(options => { 
+builder.Services.AddScoped<IMailService, MailService>();
+
+builder.Services.AddHttpClient();
+
+
+builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
@@ -35,7 +38,7 @@ builder.Services.AddAuthentication(options => {
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "zırt"))
     };
 });
-        
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -53,7 +56,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.MapControllerRoute(
       name: "default",
       pattern: "{controller=Account}/{action=Login}/{id?}");

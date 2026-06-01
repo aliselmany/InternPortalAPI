@@ -22,28 +22,27 @@ public class User
     [Required]
     public string Password { get; set; } = string.Empty;
 
-    public string? Expertise { get; set; }      
-    public string? Biography { get; set; }      
-    public int MaxInternCount { get; set; } = 0; 
+    public string? Expertise { get; set; }
+    public string? Biography { get; set; }
+    public int MaxInternCount { get; set; } = 0;
 
     public string? University { get; set; }
     public string? Department { get; set; }
-    public string? PhoneNumber { get; set; }     
+    public string? PhoneNumber { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
-    
-   
+
     public Guid? MentorId { get; set; }
 
     [ForeignKey("MentorId")]
     public virtual User? Mentor { get; set; }
 
+    [MaxLength(6)]
+    public string? PasswordResetCode { get; set; }
+    public DateTime? PasswordResetCodeExpiration { get; set; }
+
     public virtual ICollection<User> Interns { get; set; } = new List<User>();
-
-   
     public virtual ICollection<UserSocialAccount> SocialAccounts { get; set; } = new List<UserSocialAccount>();
-
- 
     public virtual ICollection<UserRoleMapping> UserRoles { get; set; } = new List<UserRoleMapping>();
     public virtual Application? Application { get; set; }
 }

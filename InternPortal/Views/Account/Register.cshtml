@@ -18,7 +18,7 @@
             <div class="mb-4">
                 <img id="authLogo" src="~/assets/trex-logo-dark.png" alt="Logo" style="max-width: 160px; height: auto;">
             </div>
-            
+
             <h2 class="fw-bold" style="letter-spacing: -2px; font-size: 3rem;">Aramıza Katılın</h2>
             <p class="text-muted" style="font-size: 1.15rem;">Staj başvurunuzu başlatmak için kurumsal hesabınızı oluşturun.</p>
         </div>
@@ -44,10 +44,13 @@
 
             <div class="mt-4">
                 <label asp-for="Password" class="form-label">Şifre</label>
-                <input asp-for="Password" name="Password" type="password" class="form-control form-control-lg" placeholder="••••••••" required>
+                <div class="position-relative mt-2">
+                    <input asp-for="Password" id="registerPassword" name="Password" type="password" class="form-control form-control-lg pe-5" placeholder="••••••••" required>
+                    <i class="bi bi-eye-slash fs-5 text-muted position-absolute" id="toggleRegisterPasswordIcon" style="top: 50%; right: 15px; transform: translateY(-50%); cursor: pointer; z-index: 10;"></i>
+                </div>
             </div>
 
-            <button type="submit" id="btnSubmit" class="btn-auth">Hesap Oluştur</button>
+            <button type="submit" id="btnSubmit" class="btn-auth mt-4">Hesap Oluştur</button>
 
             <div class="text-center mt-4">
                 <span class="text-muted">Zaten hesabınız var mı?</span>
@@ -90,6 +93,18 @@
         applyTheme(savedTheme);
         });
 
+      
+        document.getElementById('toggleRegisterPasswordIcon').addEventListener('click', function () {
+        const passwordInput = document.getElementById('registerPassword');
+        if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        this.classList.replace('bi-eye-slash', 'bi-eye');
+        } else {
+        passwordInput.type = 'password';
+        this.classList.replace('bi-eye', 'bi-eye-slash');
+        }
+        });
+
         function showThemedAlert(title, text, icon, timer = null, redirectUrl = null) {
         const currentTheme = document.documentElement.getAttribute('data-bs-theme');
         const isDark = currentTheme === 'dark';
@@ -130,7 +145,7 @@
 
         if (response.ok) {
         this.reset();
-                
+
         showThemedAlert(
         'Başarıyla Kayıt Oldunuz!',
         'Hesabınız aktif edildi. Şimdi giriş yapabilirsiniz.',

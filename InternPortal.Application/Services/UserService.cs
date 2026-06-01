@@ -73,7 +73,7 @@ public class UserService : IUserService
             Expertise = user.Expertise,
             Biography = user.Biography,
             MaxInternCount = user.MaxInternCount,
-            MentorId = user.MentorId, // EKSİK OLAN SATIR EKLENDİ!
+            MentorId = user.MentorId, 
             SocialAccounts = user.SocialAccounts.Select(s => new SocialAccountDto
             {
                 PlatformName = s.PlatformName,
@@ -98,7 +98,7 @@ public class UserService : IUserService
                 Expertise = u.Expertise,
                 Biography = u.Biography,
                 MaxInternCount = u.MaxInternCount,
-                MentorId = u.MentorId // GARANTİ OLMASI İÇİN BURAYA DA EKLENDİ
+                MentorId = u.MentorId 
             }).ToListAsync();
     }
 
@@ -124,7 +124,7 @@ public class UserService : IUserService
             Expertise = u.Expertise,
             Biography = u.Biography,
             MaxInternCount = u.MaxInternCount,
-            MentorId = u.MentorId // GARANTİ OLMASI İÇİN BURAYA DA EKLENDİ
+            MentorId = u.MentorId 
         }).ToListAsync();
     }
 
@@ -265,7 +265,7 @@ public class UserService : IUserService
                 Expertise = u.Expertise,
                 Biography = u.Biography,
                 MaxInternCount = u.MaxInternCount,
-                MentorId = u.MentorId // GARANTİ OLMASI İÇİN BURAYA DA EKLENDİ
+                MentorId = u.MentorId 
             }).ToListAsync();
     }
 
@@ -284,7 +284,7 @@ public class UserService : IUserService
                 Expertise = u.Expertise,
                 Biography = u.Biography,
                 MaxInternCount = u.MaxInternCount,
-                MentorId = u.MentorId // GARANTİ OLMASI İÇİN BURAYA DA EKLENDİ
+                MentorId = u.MentorId
             }).ToListAsync();
     }
 
@@ -315,5 +315,81 @@ public class UserService : IUserService
 
         await _context.SaveChangesAsync();
         return ServiceResult<bool>.Success(true);
+    }
+
+    public async Task<ServiceResult<UserResponseDto?>> GetUserByEmailAsync(string email)
+    {
+        var user = await _context.Users
+            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+
+        if (user == null)
+            return ServiceResult<UserResponseDto?>.Failure("Bu e-posta adresine ait bir kullanıcı bulunamadı.");
+
+        var dto = new UserResponseDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Surname = user.Surname,
+            Email = user.Email,
+            Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList()
+        };
+
+        return ServiceResult<UserResponseDto?>.Success(dto);
+    }
+
+    public async Task<ServiceResult> SavePasswordResetCodeAsync(Guid userId, string code, DateTime expiration)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+            return ServiceResult.Failure("Kullanıcı bulunamadı.");
+
+        user.PasswordResetCode = code;
+        user.PasswordResetCodeExpiration = expiration;
+
+        await _context.SaveChangesAsync();
+        return ServiceResult.Success();
+    }
+
+    public async Task<ServiceResult> VerifyResetCodeAsync(string email, string code)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+        if (user == null)
+            return ServiceResult.Failure("Kullanıcı bulunamadı.");
+
+        if (string.IsNullOrEmpty(user.PasswordResetCode) || user.PasswordResetCode != code)
+            return ServiceResult.Failure("Girdiğiniz onay kodu hatalı.");
+
+        if (user.PasswordResetCodeExpiration < DateTime.Now)
+            return ServiceResult.Failure("Onay kodunun geçerlilik süresi dolmuş.");
+
+        return ServiceResult.Success();
+    }
+
+    public async Task<ServiceResult> CheckOldPasswordAsync(Guid userId, string newPassword)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+            return ServiceResult.Failure("Kullanıcı bulunamadı.");
+
+        if (BCrypt.Net.BCrypt.Verify(newPassword, user.Password))
+            return ServiceResult.Failure("Yeni şifreniz eski şifrenizle aynı olamaz.");
+
+        return ServiceResult.Success();
+    }
+
+    public async Task<ServiceResult> UpdatePasswordAsync(Guid userId, string newPassword)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+            return ServiceResult.Failure("Kullanıcı bulunamadı.");
+
+        user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
+        user.PasswordResetCode = null;
+        user.PasswordResetCodeExpiration = null;
+
+        await _context.SaveChangesAsync();
+        return ServiceResult.Success();
     }
 }

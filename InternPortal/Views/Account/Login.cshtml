@@ -8,9 +8,11 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/auth-portal.css" asp-append-version="true" />
 }
+
 <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Tema Değiştir">
     <i class="bi bi-sun-fill"></i>
 </button>
+
 <div class="auth-wrapper">
     <div class="auth-card">
         <div class="text-center mb-5">
@@ -32,9 +34,12 @@
             <div class="mb-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <label asp-for="Password" class="form-label mb-0">Şifre</label>
-                    <a href="#" class="small text-decoration-none text-muted fw-bold">Şifremi Unuttum?</a>
+                    <a asp-action="ForgotPassword" asp-controller="Account" class="small text-decoration-none text-muted fw-bold">Şifremi Unuttum?</a>
                 </div>
-                <input asp-for="Password" name="Password" type="password" class="form-control form-control-lg mt-2" placeholder="••••••••" required>
+                <div class="position-relative mt-2">
+                    <input asp-for="Password" id="loginPassword" name="Password" type="password" class="form-control form-control-lg pe-5" placeholder="••••••••" required>
+                    <i class="bi bi-eye-slash fs-5 text-muted position-absolute" id="togglePasswordIcon" style="top: 50%; right: 15px; transform: translateY(-50%); cursor: pointer; z-index: 10;"></i>
+                </div>
             </div>
 
             <div class="mb-4 form-check">
@@ -46,7 +51,7 @@
 
             <div class="text-center mt-5">
                 <span class="text-muted">Hesabınız yok mu?</span>
-                <a asp-action="Register" class="text-primary-portal text-decoration-none ms-1">Şimdi Kayıt Ol</a>
+                <a asp-action="Register" asp-controller="Account" class="text-primary-portal text-decoration-none ms-1">Şimdi Kayıt Ol</a>
             </div>
         </form>
     </div>
@@ -87,6 +92,18 @@
         const savedTheme = localStorage.getItem('portal-theme') || 'light';
         applyTheme(savedTheme);
         localStorage.removeItem('token');
+        });
+
+        
+        document.getElementById('togglePasswordIcon').addEventListener('click', function () {
+        const passwordInput = document.getElementById('loginPassword');
+        if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        this.classList.replace('bi-eye-slash', 'bi-eye');
+        } else {
+        passwordInput.type = 'password';
+        this.classList.replace('bi-eye', 'bi-eye-slash');
+        }
         });
 
         function showThemedAlert(title, text, icon, timer = null, redirectUrl = null) {
@@ -164,13 +181,12 @@
         if (userData.mentorId && userData.mentorId !== "00000000-0000-0000-0000-000000000000") {
         redirectTarget = '/Applications/InternDashboard';
         } else {
-        if (appList.length === 0) {
+        if (appList.length === 0) { 
         redirectTarget = '/Applications/Submit';
         } else {
         const latestApp = appList[0];
         const st = latestApp.status;
 
-      
         if (st === 0 || st === "Pending" || st === "Beklemede") {
         redirectTarget = '/Applications/MyApplication';
         } else if (st === 1 || st === 2 || st === "Approved" || st === "Onaylandı") {
@@ -182,7 +198,6 @@
         }
         } catch (stajyerErr) {
         console.error("Stajyer akış hatası:", stajyerErr);
-     
         redirectTarget = '/Applications/InternDashboard';
         }
         }

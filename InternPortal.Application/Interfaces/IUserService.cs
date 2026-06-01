@@ -14,10 +14,19 @@ public interface IUserService
     Task<ServiceResult> UpdateUserByIdAsync(Guid userId, UpdateUserDto dto);
     Task<ServiceResult<bool>> UpdateUserRoleAsync(Guid userId, string roleName);
     Task<bool> UpdateMentorProfileAsync(Guid staffId, MentorProfileUpdateDto dto);
-    Task<ServiceResult> AssignMentorAsync(Guid internId, Guid mentorId); 
+    Task<ServiceResult> AssignMentorAsync(Guid internId, Guid mentorId);
     Task<bool> DeleteUserAsync(Guid userId);
     Task<List<UserResponseDto>> GetUsersByRoleNameAsync(string roleName);
     Task<IEnumerable<UserResponseDto>> GetMyInternsAsync(Guid staffId);
     Task<bool> SelectMentorAsync(Guid internId, Guid mentorId);
- 
- }
+
+    Task<ServiceResult<UserResponseDto?>> GetUserByEmailAsync(string email);
+
+    Task<ServiceResult> SavePasswordResetCodeAsync(Guid userId, string code, DateTime expiration);
+
+    Task<ServiceResult> VerifyResetCodeAsync(string email, string code);
+
+    Task<ServiceResult> CheckOldPasswordAsync(Guid userId, string newPassword);
+
+    Task<ServiceResult> UpdatePasswordAsync(Guid userId, string newPassword);
+}
