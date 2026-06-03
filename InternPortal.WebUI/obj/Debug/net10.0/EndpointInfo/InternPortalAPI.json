@@ -492,6 +492,48 @@
         }
       }
     },
+    "/api/KanbanTasks/{id}/description": {
+      "put": {
+        "tags": [
+          "KanbanTasks"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortalAPI.Controllers.TaskDescriptionUpdateModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortalAPI.Controllers.TaskDescriptionUpdateModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortalAPI.Controllers.TaskDescriptionUpdateModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Roles/all": {
       "get": {
         "tags": [
@@ -622,6 +664,91 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/TaskComments/task/{taskId}": {
+      "get": {
+        "tags": [
+          "TaskComments"
+        ],
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/TaskComments/add": {
+      "post": {
+        "tags": [
+          "TaskComments"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.DTOs.CreateCommentDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.DTOs.CreateCommentDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.DTOs.CreateCommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/TaskComments/delete/{id}": {
+      "delete": {
+        "tags": [
+          "TaskComments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -1092,6 +1219,29 @@
   },
   "components": {
     "schemas": {
+      "InternPortal.Application.DTOs.CreateCommentDto": {
+        "required": [
+          "content",
+          "taskId",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "content": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
       "InternPortal.Application.Dtos.ApplicationUpdateDto": {
         "type": "object",
         "properties": {
@@ -1395,6 +1545,16 @@
             "nullable": true
           },
           "code": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InternPortalAPI.Controllers.TaskDescriptionUpdateModel": {
+        "type": "object",
+        "properties": {
+          "description": {
             "type": "string",
             "nullable": true
           }

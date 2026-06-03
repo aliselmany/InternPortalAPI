@@ -41,6 +41,8 @@ public class User
     public string? PasswordResetCode { get; set; }
     public DateTime? PasswordResetCodeExpiration { get; set; }
 
+    public bool IsDeleted { get; set; } = false;
+
     public virtual ICollection<User> Interns { get; set; } = new List<User>();
     public virtual ICollection<UserSocialAccount> SocialAccounts { get; set; } = new List<UserSocialAccount>();
     public virtual ICollection<UserRoleMapping> UserRoles { get; set; } = new List<UserRoleMapping>();

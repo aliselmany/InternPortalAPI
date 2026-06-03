@@ -6,7 +6,7 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/staff-portal.css" asp-append-version="true" />
     <style>
-    
+
         body, html {
             height: 100vh !important;
             overflow: hidden !important;
@@ -15,12 +15,11 @@
         }
 
         .board-wrapper {
-    
             height: calc(100vh - 85px);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            width: 133.33vw; 
+            width: 133.33vw;
         }
 
         .board-header {
@@ -29,7 +28,7 @@
             align-items: center;
             gap: 15px;
             overflow-x: auto;
-            flex-shrink: 0; 
+            flex-shrink: 0;
             border-bottom: 1px solid var(--input-border);
         }
 
@@ -83,11 +82,11 @@
             }
 
         .kanban-canvas {
-            flex-grow: 1; 
+            flex-grow: 1;
             display: flex;
-            align-items: flex-start; 
+            align-items: flex-start;
             padding: 2rem 4rem;
-            gap: 2rem; 
+            gap: 2rem;
             overflow-x: auto;
             overflow-y: hidden;
         }
@@ -98,14 +97,13 @@
             border-radius: 12px;
             display: flex;
             flex-direction: column;
-         
             max-height: calc(100vh - 180px);
             border-width: 1px;
             border-style: solid;
             background: var(--card-bg);
             border-color: var(--input-border);
             box-shadow: 0 4px 6px var(--shadow);
-            height: auto; 
+            height: auto;
         }
 
         .kanban-col-header {
@@ -125,16 +123,16 @@
             display: flex;
             flex-direction: column;
             gap: 0.8rem;
-            min-height: 40px; 
-        }
-           
-        .kanban-cards::-webkit-scrollbar {
-           width: 6px;
+            min-height: 40px;
         }
 
-        .kanban-cards::-webkit-scrollbar-track {
+            .kanban-cards::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .kanban-cards::-webkit-scrollbar-track {
                 background: transparent;
-        }
+            }
 
             .kanban-cards::-webkit-scrollbar-thumb {
                 background-color: var(--input-border);
@@ -197,11 +195,11 @@
             transition: all 0.2s;
         }
 
-        .add-card-btn:hover {
-            background: var(--input-bg);
-            color: var(--text-main);
-            border-color: var(--text-muted);
-        }
+            .add-card-btn:hover {
+                background: var(--input-bg);
+                color: var(--text-main);
+                border-color: var(--text-muted);
+            }
 
         [data-bs-theme="dark"] .kanban-col {
             background: #212529;
@@ -210,6 +208,69 @@
         [data-bs-theme="dark"] .kanban-card {
             background: #2b3035;
         }
+
+        .custom-task-modal .modal-dialog {
+            max-width: 55% !important;
+            margin-top: 5rem;
+        }
+
+        .custom-task-modal .modal-content {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--input-border) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 15px 35px var(--shadow) !important;
+        }
+
+        .custom-task-modal .modal-header {
+            border-bottom: 1px solid var(--input-border) !important;
+            padding: 1.5rem 2rem !important;
+        }
+
+        .custom-task-modal .modal-body {
+            padding: 2rem !important;
+        }
+
+        .custom-task-modal .form-control {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border: 2px solid var(--input-border) !important;
+            border-radius: 12px !important;
+            font-size: 1.15rem !important;
+            padding: 1.5rem !important;
+            resize: none !important;
+        }
+
+            .custom-task-modal .form-control:focus {
+                border-color: #adb5bd !important;
+                box-shadow: none !important;
+            }
+
+        [data-bs-theme="dark"] .custom-task-modal .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        .modal-backdrop {
+            width: 133.33vw !important;
+            height: 133.33vh !important;
+        }
+
+        .modal {
+            width: 133.33vw !important;
+            height: 133.33vh !important;
+        }
+
+
+        .btn-theme-custom {
+            background-color: var(--btn-bg) !important;
+            color: var(--btn-text) !important;
+            border: 1px solid var(--input-border) !important;
+        }
+
+            .btn-theme-custom:hover {
+                opacity: 0.85;
+            }
+
     </style>
 }
 
@@ -250,6 +311,37 @@
     </div>
 </div>
 
+<div class="modal fade custom-task-modal" id="taskDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h3 class="modal-title fw-bold m-0" id="taskDetailModalLabel">
+                    <i class="bi bi-card-checklist me-2"></i>Görev Adı
+                </h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-uppercase text-muted fw-bold m-0" style="letter-spacing: 1px;"><i class="bi bi-justify-left me-2"></i>Açıklama</h5>
+                    <span id="taskStatusBadge" class="badge bg-warning text-dark px-4 py-2 fs-6" style="border-radius: 8px;">ToDo</span>
+                </div>
+
+                <textarea id="taskDescriptionInput" class="form-control mb-4" rows="8" placeholder="Bu görev için detaylı bir açıklama girin..."></textarea>
+
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-theme-custom px-5 py-3 fw-bold fs-5" onclick="saveTaskDescription()" style="border-radius: 10px;">
+                        <i class="bi bi-save me-2"></i> Kaydet
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<input type="hidden" id="currentOpenTaskId" value="" />
+
 @section Scripts {
     <partial name="_ThemeScriptsPartial" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -260,6 +352,8 @@
         if (!token) window.location.replace('/Account/Login');
 
         const API_URL = "https://localhost:7166";
+
+        let globalTasksData = [];
 
         function getUserIdFromToken(jwt) {
         try {
@@ -332,13 +426,16 @@
 
         if (response.ok) {
         const tasks = await response.json();
+
+        globalTasksData = tasks;
+
         ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(id => document.getElementById(id).innerHTML = '');
 
         tasks.forEach(task => {
         const cardHtml = `
-        <div class="kanban-card shadow-sm" data-task-id="${task.id}">
+        <div class="kanban-card shadow-sm" data-task-id="${task.id}" onclick="openTaskModal(${task.id})">
         ${task.title}
-        <i class="bi bi-trash3 delete-task-btn" onclick="deleteTask(${task.id})"></i>
+        <i class="bi bi-trash3 delete-task-btn" onclick="event.stopPropagation(); deleteTask(${task.id})"></i>
         </div>`;
         document.getElementById(task.status).insertAdjacentHTML('beforeend', cardHtml);
         });
@@ -446,6 +543,47 @@
         body: JSON.stringify({ taskId: parseInt(taskId), newStatus, newOrderIndex })
         });
         } catch (error) { loadTasks(); }
+        }
+
+        function openTaskModal(taskId) {
+        const task = globalTasksData.find(t => t.id === taskId);
+        if (!task) return;
+
+        document.getElementById('currentOpenTaskId').value = taskId;
+        document.getElementById('taskDetailModalLabel').innerHTML = `<i class="bi bi-card-checklist me-2"></i>${task.title}`;
+        document.getElementById('taskDescriptionInput').value = task.description || '';
+
+        const badge = document.getElementById('taskStatusBadge');
+        badge.innerText = task.status;
+        badge.className = `badge text-dark px-3 py-2 bg-${task.status === 'Done' ? 'success' : 'warning'}`;
+
+        const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
+        modal.show();
+        }
+
+        async function saveTaskDescription() {
+        const taskId = document.getElementById('currentOpenTaskId').value;
+        const newDescription = document.getElementById('taskDescriptionInput').value.trim();
+
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/description`, {
+        method: 'PUT',
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ description: newDescription })
+        });
+
+        if (response.ok) {
+        Swal.fire({ icon: 'success', title: 'Açıklama kaydedildi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+        loadTasks();
+        } else {
+        Swal.fire('Hata', 'Açıklama kaydedilemedi.', 'error');
+        }
+        } catch (error) {
+        console.error("Kaydetme hatası:", error);
+        }
         }
     </script>
 }

@@ -31,12 +31,11 @@ namespace InternPortal.Domain.Entities
         [Required]
         public string CvUrl { get; set; } = string.Empty;
 
-
         public string? TranscriptFile { get; set; }
 
         public string? Description { get; set; }
 
-        [Required]
+        [Required]  
         public DateTime StartDate { get; set; }
 
         [Required]

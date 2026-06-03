@@ -66,7 +66,6 @@ namespace InternPortal.WebUI.Controllers
             return RedirectToAction("Login");
         }
 
- 
         [HttpGet]
         public IActionResult ForgotPassword()
         {
@@ -94,7 +93,6 @@ namespace InternPortal.WebUI.Controllers
             ViewBag.Error = errorResult?.Message ?? "İşlem başarısız. Lütfen e-posta adresinizi kontrol edin.";
             return View();
         }
-
 
         [HttpGet]
         public IActionResult VerifyResetCode()

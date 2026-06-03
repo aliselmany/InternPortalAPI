@@ -30,6 +30,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
+builder.Services.AddScoped<ITaskCommentService, TaskCommentService>();
 
 builder.Services.AddScoped<IMailService, MailService>();
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
-namespace InternPortal.Domain.Entities 
+
+namespace InternPortal.Domain.Entities
 {
     public class KanbanTask
     {
@@ -13,5 +14,6 @@ namespace InternPortal.Domain.Entities
         public Guid StaffId { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime? DueDate { get; set; }
+        public bool IsDeleted { get; set; } = false;
     }
 }

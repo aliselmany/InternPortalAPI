@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using InternPortal.Domain.Entities;
-using InternPortal.Application.Dtos; 
+using InternPortal.Application.Dtos;
 using InternPortal.Infrastructure.Persistence;
 using System.Threading.Tasks;
 using System.Linq;
@@ -82,6 +82,19 @@ namespace InternPortalAPI.Controllers
             return Ok();
         }
 
+        [HttpPut("{id}/description")]
+        public async Task<IActionResult> UpdateTaskDescription(int id, [FromBody] TaskDescriptionUpdateModel model)
+        {
+            var task = await _context.KanbanTasks.FindAsync(id);
+            if (task == null)
+                return NotFound(new { message = "Görev bulunamadı!" });
+
+            task.Description = model.Description;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Açıklama başarıyla güncellendi." });
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(int id)
         {
@@ -93,4 +106,6 @@ namespace InternPortalAPI.Controllers
             return Ok();
         }
     }
+
+    public record TaskDescriptionUpdateModel(string Description);
 }

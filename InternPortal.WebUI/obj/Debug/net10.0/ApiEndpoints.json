@@ -54,6 +54,27 @@
   },
   {
     "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
+    "Method": "UpdateTaskDescription",
+    "RelativePath": "api/KanbanTasks/{id}/description",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "InternPortalAPI.Controllers.TaskDescriptionUpdateModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
     "Method": "GetTasksByIntern",
     "RelativePath": "api/KanbanTasks/intern/{internId}",
     "HttpMethod": "GET",
@@ -163,6 +184,59 @@
       {
         "Name": "dto",
         "Type": "InternPortal.Application.Dtos.UpdateNameDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.API.Controllers.TaskCommentsController",
+    "Method": "AddComment",
+    "RelativePath": "api/TaskComments/add",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "commentDto",
+        "Type": "InternPortal.Application.DTOs.CreateCommentDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.API.Controllers.TaskCommentsController",
+    "Method": "DeleteComment",
+    "RelativePath": "api/TaskComments/delete/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.API.Controllers.TaskCommentsController",
+    "Method": "GetCommentsByTaskId",
+    "RelativePath": "api/TaskComments/task/{taskId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "taskId",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],

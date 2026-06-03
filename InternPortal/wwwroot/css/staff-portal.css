@@ -119,10 +119,9 @@ body {
         transform: scale(1.1);
     }
 
-    .theme-toggle i {
-        font-size: 1.6rem;
-    }
-
+ .theme-toggle i {
+     font-size: 1.6rem;
+ }
 
 .admin-nav, .admin-nav-custom {
     position: fixed !important;

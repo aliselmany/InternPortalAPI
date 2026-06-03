@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<InternPortal.Domain.Entities.Application> Applications { get; set; }
     public DbSet<UserSocialAccount> UserSocialAccounts { get; set; }
     public DbSet<KanbanTask> KanbanTasks { get; set; }
+    public DbSet<TaskComment> TaskComments { get; set; }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -24,18 +25,19 @@ public class AppDbContext : DbContext
                 entry.CurrentValues["IsDeleted"] = true;
             }
         }
-
         return await base.SaveChangesAsync(cancellationToken);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-   
+
         modelBuilder.Entity<InternPortal.Domain.Entities.Application>().HasQueryFilter(a => !a.IsDeleted);
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
         modelBuilder.Entity<KanbanTask>().HasQueryFilter(k => !k.IsDeleted);
         modelBuilder.Entity<UserSocialAccount>().HasQueryFilter(s => !s.IsDeleted);
+
+        modelBuilder.Entity<TaskComment>().HasQueryFilter(tc => !tc.IsDeleted);
 
         modelBuilder.Entity<UserRoleMapping>().ToTable("UserRoleMappings");
         modelBuilder.Entity<UserRoleMapping>()
@@ -92,6 +94,18 @@ public class AppDbContext : DbContext
             .HasOne<User>()
             .WithMany()
             .HasForeignKey(k => k.StaffId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TaskComment>()
+            .HasOne(tc => tc.Task)
+            .WithMany()
+            .HasForeignKey(tc => tc.TaskId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TaskComment>()
+            .HasOne(tc => tc.User)
+            .WithMany()
+            .HasForeignKey(tc => tc.UserId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

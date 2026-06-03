@@ -269,4 +269,4 @@ C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net1
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\InternPortal.WebUI.genruntimeconfig.cache
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\ref\InternPortal.WebUI.dll
 C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\l8iv9qdnoe-{0}-jgrh30zrjs-jgrh30zrjs.gz
-C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\wz7ofutg3g-{0}-ikrn12d1ew-ikrn12d1ew.gz
+C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal\obj\Debug\net10.0\compressed\wz7ofutg3g-{0}-356v2gaz5v-356v2gaz5v.gz
