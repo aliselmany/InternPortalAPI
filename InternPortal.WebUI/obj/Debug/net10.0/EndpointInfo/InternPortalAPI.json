@@ -29,7 +29,7 @@
                 "type": "object",
                 "properties": {
                   "EducationLevel": {
-                    "type": "string"
+                    "$ref": "#/components/schemas/InternPortal.Domain.Enums.EducationLevel"
                   },
                   "Id": {
                     "type": "string",
@@ -1484,6 +1484,13 @@
           "Yazılım",
           "Elektronik",
           "Proje"
+        ],
+        "type": "string"
+      },
+      "InternPortal.Domain.Enums.EducationLevel": {
+        "enum": [
+          "Lise",
+          "Üniversite"
         ],
         "type": "string"
       },

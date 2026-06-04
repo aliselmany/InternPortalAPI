@@ -6,7 +6,6 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/staff-portal.css" asp-append-version="true" />
     <style>
-
         body, html {
             height: 100vh !important;
             overflow: hidden !important;
@@ -16,70 +15,12 @@
 
         .board-wrapper {
             height: calc(100vh - 85px);
+            margin-top: 85px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             width: 133.33vw;
         }
-
-        .board-header {
-            padding: 1rem 4rem;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            overflow-x: auto;
-            flex-shrink: 0;
-            border-bottom: 1px solid var(--input-border);
-        }
-
-        .back-btn {
-            background: transparent;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            border-width: 1px;
-            border-style: solid;
-            border-color: var(--input-border);
-            color: var(--text-main);
-        }
-
-            .back-btn:hover {
-                background: var(--input-bg);
-            }
-
-        .intern-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-width: 1px;
-            border-style: solid;
-            border-color: var(--input-border);
-            color: var(--text-main);
-            background: transparent;
-        }
-
-            .intern-btn:hover {
-                background: var(--input-bg);
-            }
-
-            .intern-btn.active {
-                background: var(--text-main);
-                color: var(--card-bg);
-                border-color: var(--text-main);
-            }
 
         .kanban-canvas {
             flex-grow: 1;
@@ -97,7 +38,7 @@
             border-radius: 12px;
             display: flex;
             flex-direction: column;
-            max-height: calc(100vh - 180px);
+            max-height: calc(100vh - 150px);
             border-width: 1px;
             border-style: solid;
             background: var(--card-bg);
@@ -260,7 +201,6 @@
             height: 133.33vh !important;
         }
 
-
         .btn-theme-custom {
             background-color: var(--btn-bg) !important;
             color: var(--btn-text) !important;
@@ -271,42 +211,95 @@
                 opacity: 0.85;
             }
 
+        .inline-add-input {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--input-border) !important;
+            border-radius: 8px !important;
+            resize: none !important;
+            font-size: 0.95rem !important;
+            padding: 0.8rem !important;
+        }
+
+            .inline-add-input:focus {
+                background-color: var(--card-bg) !important;
+                border-color: var(--text-muted) !important;
+                box-shadow: none !important;
+            }
+
+        .close-add-form {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+            .close-add-form:hover {
+                color: var(--text-main) !important;
+            }
+
+        .add-card-form {
+            padding: 0 0.8rem 0.8rem 0.8rem;
+        }
     </style>
 }
 
 <partial name="_StaffNavbarPartial" />
 
 <div class="board-wrapper">
-    <div class="board-header" id="internSelector">
-        <button class="back-btn" onclick="window.location.href='/Staff/StaffDashboardIndex'">
-            <i class="bi bi-arrow-left"></i> Panolara Dön
-        </button>
-        <span class="text-secondary fw-bold ms-3 me-2"><i class="bi bi-grid-3x3-gap-fill me-1"></i> Stajyer:</span>
-    </div>
-
     <div class="kanban-canvas" id="kanbanBoard">
         <div class="kanban-col">
             <div class="kanban-col-header"><span>Yapılacaklar</span><i class="bi bi-three-dots"></i></div>
             <div class="kanban-cards" id="ToDo" data-status="ToDo"></div>
-            <button class="add-card-btn" onclick="addNewTask('ToDo')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+
+            <div class="add-card-form" id="addForm-ToDo" style="display: none;">
+                <textarea class="form-control mb-2 inline-add-input shadow-none" id="input-ToDo" rows="2" placeholder="Bir başlık girin..."></textarea>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-theme-custom btn-sm px-3 fw-bold" onclick="submitNewTask('ToDo')">Kart Ekle</button>
+                    <i class="bi bi-x-lg fs-5 text-muted close-add-form" onclick="hideAddCardForm('ToDo')"></i>
+                </div>
+            </div>
+            <button class="add-card-btn" id="addBtn-ToDo" onclick="showAddCardForm('ToDo')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
         </div>
 
         <div class="kanban-col">
             <div class="kanban-col-header"><span>Yapılıyor</span><i class="bi bi-three-dots"></i></div>
             <div class="kanban-cards" id="InProgress" data-status="InProgress"></div>
-            <button class="add-card-btn" onclick="addNewTask('InProgress')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+
+            <div class="add-card-form" id="addForm-InProgress" style="display: none;">
+                <textarea class="form-control mb-2 inline-add-input shadow-none" id="input-InProgress" rows="2" placeholder="Bir başlık girin..."></textarea>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-theme-custom btn-sm px-3 fw-bold" onclick="submitNewTask('InProgress')">Kart Ekle</button>
+                    <i class="bi bi-x-lg fs-5 text-muted close-add-form" onclick="hideAddCardForm('InProgress')"></i>
+                </div>
+            </div>
+            <button class="add-card-btn" id="addBtn-InProgress" onclick="showAddCardForm('InProgress')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
         </div>
 
         <div class="kanban-col">
             <div class="kanban-col-header"><span>İnceleniyor</span><i class="bi bi-three-dots"></i></div>
             <div class="kanban-cards" id="InReview" data-status="InReview"></div>
-            <button class="add-card-btn" onclick="addNewTask('InReview')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+
+            <div class="add-card-form" id="addForm-InReview" style="display: none;">
+                <textarea class="form-control mb-2 inline-add-input shadow-none" id="input-InReview" rows="2" placeholder="Bir başlık girin..."></textarea>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-theme-custom btn-sm px-3 fw-bold" onclick="submitNewTask('InReview')">Kart Ekle</button>
+                    <i class="bi bi-x-lg fs-5 text-muted close-add-form" onclick="hideAddCardForm('InReview')"></i>
+                </div>
+            </div>
+            <button class="add-card-btn" id="addBtn-InReview" onclick="showAddCardForm('InReview')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
         </div>
 
         <div class="kanban-col">
             <div class="kanban-col-header"><span>Tamamlandı</span><i class="bi bi-three-dots"></i></div>
             <div class="kanban-cards" id="Done" data-status="Done"></div>
-            <button class="add-card-btn" onclick="addNewTask('Done')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
+
+            <div class="add-card-form" id="addForm-Done" style="display: none;">
+                <textarea class="form-control mb-2 inline-add-input shadow-none" id="input-Done" rows="2" placeholder="Bir başlık girin..."></textarea>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-theme-custom btn-sm px-3 fw-bold" onclick="submitNewTask('Done')">Kart Ekle</button>
+                    <i class="bi bi-x-lg fs-5 text-muted close-add-form" onclick="hideAddCardForm('Done')"></i>
+                </div>
+            </div>
+            <button class="add-card-btn" id="addBtn-Done" onclick="showAddCardForm('Done')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
         </div>
     </div>
 </div>
@@ -314,32 +307,53 @@
 <div class="modal fade custom-task-modal" id="taskDetailModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-
             <div class="modal-header">
                 <h3 class="modal-title fw-bold m-0" id="taskDetailModalLabel">
                     <i class="bi bi-card-checklist me-2"></i>Görev Adı
                 </h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
             <div class="modal-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="text-uppercase text-muted fw-bold m-0" style="letter-spacing: 1px;"><i class="bi bi-justify-left me-2"></i>Açıklama</h5>
                     <span id="taskStatusBadge" class="badge bg-warning text-dark px-4 py-2 fs-6" style="border-radius: 8px;">ToDo</span>
                 </div>
-
                 <textarea id="taskDescriptionInput" class="form-control mb-4" rows="8" placeholder="Bu görev için detaylı bir açıklama girin..."></textarea>
-
                 <div class="d-flex justify-content-end">
                     <button class="btn btn-theme-custom px-5 py-3 fw-bold fs-5" onclick="saveTaskDescription()" style="border-radius: 10px;">
                         <i class="bi bi-save me-2"></i> Kaydet
                     </button>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
+
+<div class="modal fade custom-task-modal" id="transferModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 45% !important;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fw-bold m-0" style="color: var(--text-main);">
+                    <i class="bi bi-arrow-left-right me-2"></i>Stajyeri Başka Mentöre Devret
+                </h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="fs-5 text-muted mb-4">Seçili stajyeri kendi sorumluluğunuzdan çıkarıp başka bir personele (mentöre) devretmek için aşağıdan seçim yapın.</p>
+                <label class="form-label text-muted fw-bold text-uppercase" style="letter-spacing: 1px;">Yeni Mentör Seçin:</label>
+                <select id="mentorSelect" class="form-select mb-4 shadow-sm" style="padding: 1rem !important; font-size: 1rem !important; background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 12px;">
+                    <option value="">Yükleniyor...</option>
+                </select>
+                <div class="d-flex justify-content-end mt-2">
+                    <button class="btn btn-theme-custom px-5 py-3 fw-bold fs-5 rounded-3" onclick="executeTransfer()">
+                        Devret
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <input type="hidden" id="currentOpenTaskId" value="" />
 
 @section Scripts {
@@ -354,27 +368,25 @@
         const API_URL = "https://localhost:7166";
 
         let globalTasksData = [];
+        let globalInternsList = [];
 
         function getUserIdFromToken(jwt) {
         try {
         const payload = JSON.parse(atob(jwt.split('.')[1]));
         return payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-        } catch (e) {
-        return null;
-        }
+        } catch (e) { return null; }
         }
 
         const currentStaffId = getUserIdFromToken(token);
-
         const urlParams = new URLSearchParams(window.location.search);
         let currentInternId = urlParams.get('internId');
 
         document.addEventListener('DOMContentLoaded', () => {
         initSortable();
-        loadInternBoards();
+        loadInternData();
         });
 
-        async function loadInternBoards() {
+        async function loadInternData() {
         if (!currentStaffId) return;
 
         try {
@@ -384,37 +396,116 @@
 
         if (response.ok) {
         const interns = await response.json();
-        const container = document.getElementById('internSelector');
+        globalInternsList = interns;
+        const navDisplay = document.getElementById('navbarInternNameDisplay');
 
-        const headerHTML = container.innerHTML;
-        container.innerHTML = headerHTML;
+        if (interns.length === 0) {
+        if(navDisplay) navDisplay.innerHTML = `<i class="bi bi-person-workspace text-secondary me-2"></i> Stajyer Bulunmuyor`;
+        return;
+        }
 
-        interns.forEach((intern, index) => {
-        if (index === 0 && !currentInternId) currentInternId = intern.id;
+        if (!currentInternId && interns.length > 0) {
+        currentInternId = interns[0].id;
+        }
 
-        const btn = document.createElement('button');
-        btn.className = `intern-btn ${intern.id === currentInternId ? 'active' : ''}`;
-
-        const displayName = intern.fullName || (intern.name + " " + intern.surname);
-        btn.innerHTML = `<i class="bi bi-layout-sidebar-inset me-1"></i> ${displayName}`;
-
-        btn.onclick = () => switchBoard(intern.id, btn);
-        container.appendChild(btn);
-        });
+        const activeIntern = interns.find(i => i.id === currentInternId);
+        if (activeIntern && navDisplay) {
+        const displayName = activeIntern.fullName || (activeIntern.name + " " + activeIntern.surname);
+        navDisplay.innerHTML = `<i class="bi bi-person-workspace text-secondary me-2"></i> ${displayName} <span class="text-muted fw-normal ms-1" style="font-size: 0.9rem;">(Çalışma Alanı)</span>`;
+        }
 
         if (currentInternId) loadTasks();
         }
-        } catch (error) { console.error("Pano yükleme hatası:", error); }
+        } catch (error) { console.error("Stajyer bilgileri yüklenemedi:", error); }
         }
 
-        function switchBoard(internId, btnElement) {
-        document.querySelectorAll('.intern-btn').forEach(b => b.classList.remove('active'));
-        btnElement.classList.add('active');
-        currentInternId = internId;
+        window.openTransferModal = async function() {
+        if (!currentInternId) return;
 
-        window.history.replaceState(null, null, `?internId=${internId}`);
+        const modal = new bootstrap.Modal(document.getElementById('transferModal'));
+        modal.show();
 
-        loadTasks();
+        const select = document.getElementById('mentorSelect');
+        select.innerHTML = '<option value="">Mentörler aranıyor...</option>';
+
+        try {
+        const response = await fetch(`${API_URL}/api/Users/available-mentors`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+        const mentors = await response.json();
+        select.innerHTML = '<option value="">Listeden bir mentör seçin...</option>';
+        mentors.forEach(m => {
+        if(m.id !== currentStaffId) {
+        select.innerHTML += `<option value="${m.id}">${m.fullName} (Doluluk: ${m.currentCount}/${m.maxCapacity})</option>`;
+        }
+        });
+        } else {
+        select.innerHTML = '<option value="">Mentör listesi çekilemedi.</option>';
+        }
+        } catch (error) {
+        select.innerHTML = '<option value="">Bir hata oluştu.</option>';
+        }
+        }
+
+        async function executeTransfer() {
+        const mentorId = document.getElementById('mentorSelect').value;
+        if (!mentorId) {
+        Swal.fire('Eksik Seçim', 'Lütfen devredeceğiniz personeli seçin.', 'warning');
+        return;
+        }
+
+        const activeIntern = globalInternsList.find(i => i.id === currentInternId);
+        const internName = activeIntern ? (activeIntern.fullName || activeIntern.name + " " + activeIntern.surname) : "Seçili Stajyer";
+        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+        const result = await Swal.fire({
+        title: 'Emin misiniz?',
+        text: `${internName} isimli stajyeri devretmek üzeresiniz.`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Evet, Devret',
+        cancelButtonText: 'İptal',
+        background: isDark ? '#1e1e1e' : '#fff',
+        color: isDark ? '#fff' : '#000',
+        customClass: {
+        confirmButton: 'btn btn-theme-custom px-4 me-2',
+        cancelButton: 'btn btn-secondary px-4'
+        },
+        buttonsStyling: false
+        });
+
+        if (result.isConfirmed) {
+        try {
+        const response = await fetch(`${API_URL}/api/Users/assign-mentor`, {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ internId: currentInternId, mentorId: mentorId })
+        });
+
+        if (response.ok) {
+        bootstrap.Modal.getInstance(document.getElementById('transferModal')).hide();
+        Swal.fire({ icon: 'success', title: 'Başarıyla Devredildi', showConfirmButton: false, timer: 2000 });
+
+        currentInternId = null;
+        document.getElementById('kanbanBoard').innerHTML = '';
+        const navDisplay = document.getElementById('navbarInternNameDisplay');
+        if(navDisplay) navDisplay.innerHTML = `<i class="bi bi-person-workspace text-secondary me-2"></i> Stajyer Seçilmedi`;
+
+        setTimeout(() => {
+        window.location.href = '/Staff/StaffDashboardIndex';
+        }, 1500);
+
+        } else {
+        const err = await response.json();
+        Swal.fire('Hata', err.message || 'Devir işlemi başarısız oldu.', 'error');
+        }
+        } catch (error) { console.error(error); }
+        }
         }
 
         async function loadTasks() {
@@ -426,7 +517,6 @@
 
         if (response.ok) {
         const tasks = await response.json();
-
         globalTasksData = tasks;
 
         ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(id => document.getElementById(id).innerHTML = '');
@@ -443,28 +533,31 @@
         } catch (error) { console.error("Görev yükleme hatası:", error); }
         }
 
-        async function addNewTask(status) {
+        function showAddCardForm(status) {
+        document.getElementById(`addBtn-${status}`).style.display = 'none';
+        document.getElementById(`addForm-${status}`).style.display = 'block';
+        const inputElement = document.getElementById(`input-${status}`);
+        inputElement.focus();
+        inputElement.onkeydown = function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submitNewTask(status);
+        }
+        };
+        }
+
+        function hideAddCardForm(status) {
+        document.getElementById(`addForm-${status}`).style.display = 'none';
+        document.getElementById(`input-${status}`).value = '';
+        document.getElementById(`addBtn-${status}`).style.display = 'block';
+        }
+
+        async function submitNewTask(status) {
         if (!currentInternId || !currentStaffId) return;
+        const inputElement = document.getElementById(`input-${status}`);
+        const taskTitle = inputElement.value.trim();
+        if (!taskTitle) { inputElement.focus(); return; }
 
-        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-
-        const { value: taskTitle } = await Swal.fire({
-        title: 'Yeni Görev',
-        input: 'text',
-        inputPlaceholder: 'Ne yapılacak?',
-        showCancelButton: true,
-        confirmButtonText: 'Ekle',
-        cancelButtonText: 'İptal',
-        background: isDark ? '#1e1e1e' : '#fff',
-        color: isDark ? '#fff' : '#000',
-        customClass: {
-        confirmButton: 'btn btn-primary px-4 me-2',
-        cancelButton: 'btn btn-outline-secondary px-4'
-        },
-        buttonsStyling: false
-        });
-
-        if (taskTitle) {
         const newTask = { title: taskTitle, internId: currentInternId, staffId: currentStaffId, status: status };
         try {
         const response = await fetch(`${API_URL}/api/KanbanTasks`, {
@@ -472,8 +565,9 @@
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(newTask)
         });
+
         if (response.ok) {
-        Swal.fire({ icon: 'success', title: 'Eklendi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+        hideAddCardForm(status);
         loadTasks();
         } else {
         const err = await response.json();
@@ -481,11 +575,9 @@
         }
         } catch (error) { console.error("Ekleme hatası:", error); }
         }
-        }
 
         async function deleteTask(taskId) {
         const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-
         const result = await Swal.fire({
         title: 'Silinsin mi?',
         text: "Bu görev kalıcı olarak silinecek!",
@@ -495,10 +587,7 @@
         cancelButtonText: 'Vazgeç',
         background: isDark ? '#1e1e1e' : '#fff',
         color: isDark ? '#fff' : '#000',
-        customClass: {
-        confirmButton: 'btn btn-danger px-4 me-2',
-        cancelButton: 'btn btn-secondary px-4'
-        },
+        customClass: { confirmButton: 'btn btn-danger px-4 me-2', cancelButton: 'btn btn-secondary px-4' },
         buttonsStyling: false
         });
 
@@ -581,9 +670,7 @@
         } else {
         Swal.fire('Hata', 'Açıklama kaydedilemedi.', 'error');
         }
-        } catch (error) {
-        console.error("Kaydetme hatası:", error);
-        }
+        } catch (error) { console.error("Kaydetme hatası:", error); }
         }
     </script>
 }

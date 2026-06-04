@@ -1,8 +1,12 @@
 ﻿<nav class="admin-nav d-flex w-100 justify-content-between align-items-center" style="min-height: 85px !important; padding: 0 3.5rem !important; background: var(--card-bg); border-bottom: 1px solid var(--input-border); transition: background-color 0.3s ease, border-color 0.3s ease;">
 
-    <a href="/Staff/StaffDashboardIndex">
-        <img id="authLogo" src="/assets/trex-logo-light.png" alt="Logo" style="height: 50px !important; width: auto !important; object-fit: contain;" />
-    </a>
+    <div class="d-flex align-items-center">
+        <a href="/Staff/StaffDashboardIndex">
+            <img id="authLogo" src="/assets/trex-logo-light.png" alt="Logo" style="height: 50px !important; width: auto !important; object-fit: contain;" />
+        </a>
+
+        <h5 id="navbarInternNameDisplay" class="m-0 ms-4 fw-bold" style="color: var(--text-main);"></h5>
+    </div>
 
     <div class="d-flex align-items-center gap-4">
 
@@ -22,9 +26,10 @@
                         <i class="bi bi-person fs-5"></i> Profil
                     </a>
                 </li>
+
                 <li>
-                    <a class="dropdown-item d-flex align-items-center gap-3 py-2" style="color: var(--text-color);" href="/Staff/StaffProfile">
-                        <i class="bi bi-pencil-square fs-5"></i> Düzenle
+                    <a class="dropdown-item d-flex align-items-center gap-3 py-2" style="color: var(--text-color);" href="javascript:void(0)" onclick="if(window.openTransferModal) { window.openTransferModal(); } else { typeof Swal !== 'undefined' ? Swal.fire('Uyarı', 'Bu işlem sadece Çalışma Alanı panosunda yapılabilir.', 'info') : alert('Bu işlem sadece Çalışma Alanı panosunda yapılabilir.'); }">
+                        <i class="bi bi-arrow-left-right fs-5"></i> Stajyeri Devret
                     </a>
                 </li>
 
@@ -41,7 +46,6 @@
 </nav>
 
 <style>
-    
     .dropdown-item:hover {
         background-color: var(--input-bg);
     }

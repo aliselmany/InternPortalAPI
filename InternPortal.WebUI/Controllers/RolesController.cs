@@ -7,7 +7,7 @@ namespace InternPortal.WebUI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin,Intern")]
 public class RolesController : ControllerBase
 {
     private readonly IRolesService _rolesService;
@@ -38,7 +38,7 @@ public class RolesController : ControllerBase
 
         return Ok(new { message = "Role created successfully." });
     }
-
+    
     [HttpPut("users/{id}/role")]
     public async Task<IActionResult> UpdateUserRole(Guid id, [FromQuery] string roleName)
     {

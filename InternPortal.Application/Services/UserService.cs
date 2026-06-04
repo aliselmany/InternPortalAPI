@@ -3,6 +3,7 @@ using InternPortal.Application.Common;
 using InternPortal.Application.Dtos;
 using InternPortal.Application.Interfaces;
 using InternPortal.Domain.Entities;
+using InternPortal.Domain.Enums;
 using InternPortal.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -73,7 +74,7 @@ public class UserService : IUserService
             Expertise = user.Expertise,
             Biography = user.Biography,
             MaxInternCount = user.MaxInternCount,
-            MentorId = user.MentorId, 
+            MentorId = user.MentorId,
             SocialAccounts = user.SocialAccounts.Select(s => new SocialAccountDto
             {
                 PlatformName = s.PlatformName,
@@ -81,6 +82,7 @@ public class UserService : IUserService
             }).ToList()
         };
     }
+
 
     public async Task<IEnumerable<UserResponseDto>> GetMyInternsAsync(Guid staffId)
     {
@@ -98,7 +100,12 @@ public class UserService : IUserService
                 Expertise = u.Expertise,
                 Biography = u.Biography,
                 MaxInternCount = u.MaxInternCount,
-                MentorId = u.MentorId 
+                MentorId = u.MentorId,
+
+                EndDate = _context.Applications
+                                  .Where(a => a.UserId == u.Id && a.Status == ApplicationStatus.Onaylandı)
+                                  .Select(a => a.EndDate)
+                                  .FirstOrDefault()
             }).ToListAsync();
     }
 
@@ -124,7 +131,7 @@ public class UserService : IUserService
             Expertise = u.Expertise,
             Biography = u.Biography,
             MaxInternCount = u.MaxInternCount,
-            MentorId = u.MentorId 
+            MentorId = u.MentorId
         }).ToListAsync();
     }
 
@@ -214,7 +221,8 @@ public class UserService : IUserService
         if (mentor.Interns.Count >= mentor.MaxInternCount) return ServiceResult.Failure("Capacity full.");
 
         var intern = await _context.Users.FindAsync(internId);
-        if (intern == null || intern.MentorId != null) return ServiceResult.Failure("Invalid intern or already assigned.");
+
+        if (intern == null) return ServiceResult.Failure("Invalid intern.");
 
         intern.MentorId = mentorId;
         await _context.SaveChangesAsync();
@@ -265,7 +273,7 @@ public class UserService : IUserService
                 Expertise = u.Expertise,
                 Biography = u.Biography,
                 MaxInternCount = u.MaxInternCount,
-                MentorId = u.MentorId 
+                MentorId = u.MentorId
             }).ToListAsync();
     }
 

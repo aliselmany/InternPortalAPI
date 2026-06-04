@@ -19,5 +19,6 @@ namespace InternPortal.Application.Dtos
         public int CurrentInternCount { get; set; }
         public Guid? MentorId { get; set; }
         public List<SocialAccountDto> SocialAccounts { get; set; } = new();
+        public DateTime? EndDate{ get; set; }
     }
 }

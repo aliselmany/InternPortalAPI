@@ -7,10 +7,10 @@ namespace InternPortal.Application.Dtos;
 public class ApplicationDto : IValidatableObject
 {
     [Required(ErrorMessage = "Lütfen eğitim seviyenizi seçiniz.")]
-    public string EducationLevel { get; set; } = string.Empty;
+    public EducationLevel EducationLevel { get; set; }
 
     public Guid Id { get; set; }
-        
+
     public string Name { get; set; } = string.Empty;
     public string Surname { get; set; } = string.Empty;
 
@@ -45,7 +45,7 @@ public class ApplicationDto : IValidatableObject
 
     [Required(ErrorMessage = "Lütfen özgeçmiş (CV) dosyanızı yükleyiniz.")]
     public IFormFile CvFile { get; set; } = null!;
-   
+
     public IFormFile? TranscriptFile { get; set; }
 
     public string? CvPath { get; set; }

@@ -71,7 +71,7 @@ public class UsersController : ControllerBase
         return Ok(new { token = result.Data.Token, message = "Giriş başarılı" });
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Staff")]
     [HttpPost("assign-mentor")]
     public async Task<IActionResult> AssignMentor([FromBody] AssignMentorRequest request)
     {

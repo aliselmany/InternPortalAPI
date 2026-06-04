@@ -599,7 +599,7 @@
     "Parameters": [
       {
         "Name": "EducationLevel",
-        "Type": "System.String",
+        "Type": "InternPortal.Domain.Enums.EducationLevel",
         "IsRequired": false
       },
       {

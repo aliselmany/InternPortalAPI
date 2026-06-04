@@ -64,10 +64,7 @@ namespace InternPortal.Application.Services
                 Id = Guid.NewGuid(),
                 UserId = userId,
 
-
-                EducationLevel = Enum.TryParse<EducationLevel>(dto.EducationLevel, true, out var parsedEdu)
-                                ? parsedEdu
-                                : EducationLevel.Lise,
+                EducationLevel = dto.EducationLevel,
 
                 SchoolName = dto.SchoolName,
                 DepartmentOfStudy = dto.DepartmentOfStudy,
@@ -179,14 +176,13 @@ namespace InternPortal.Application.Services
             return applications.Select(MapToDto).ToList();
         }
 
-        // --- BACKEND FİLTRELEME MANTIGI BURAYA EKLENDİ ---
         public async Task<List<ApplicationDto>> GetAllAsync(ApplicationFilterQuery filter)
         {
             var query = _context.Applications
                 .Include(x => x.User)
                 .AsQueryable();
 
-            // Eğer filter nesnesi boş gelmezse şartları eklemeye başla
+  
             if (filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(filter.Name))
@@ -214,7 +210,7 @@ namespace InternPortal.Application.Services
 
                 if (!string.IsNullOrWhiteSpace(filter.Status))
                 {
-                    // Metni Enum'a çeviriyoruz ki SQL Server Enum karşılığı (int) üzerinden hızlıca filtrelesin
+
                     if (Enum.TryParse<ApplicationStatus>(filter.Status, true, out var parsedStatus))
                     {
                         query = query.Where(a => a.Status == parsedStatus);
@@ -222,15 +218,13 @@ namespace InternPortal.Application.Services
                 }
             }
 
-            // Süzülmüş veriyi tarihe göre sıralayıp RAM'e alıyoruz
             var applications = await query
                 .OrderByDescending(x => x.AppliedDate)
                 .ToListAsync();
 
-            // Senin kendi yazdığın MapToDto metoduna yönlendirerek listeyi dönüyoruz
+
             return applications.Select(MapToDto).ToList();
         }
-        // ---------------------------------------------------
 
         public async Task<ApplicationDto?> GetByIdAsync(Guid id)
         {
@@ -250,8 +244,8 @@ namespace InternPortal.Application.Services
                 Name = x.User?.Name ?? "İsimsiz",
                 Surname = x.User?.Surname ?? "Aday",
 
-
-                EducationLevel = x.EducationLevel.ToString(),
+             
+                EducationLevel = x.EducationLevel,
 
                 SchoolName = x.SchoolName,
                 DepartmentOfStudy = x.DepartmentOfStudy,

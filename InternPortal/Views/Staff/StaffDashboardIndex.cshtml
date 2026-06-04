@@ -43,8 +43,8 @@
             justify-content: space-between;
         }
 
-            .intern-board-card i {
-                align-self: flex-end;
+          
+            .intern-board-card .kanban-icon {
                 font-size: 1.8rem;
                 opacity: 0.3;
                 transition: opacity 0.3s;
@@ -55,10 +55,23 @@
                 border-color: var(--text-main) !important;
             }
 
-                .intern-board-card:hover i {
+                .intern-board-card:hover .kanban-icon {
                     opacity: 1;
                     color: var(--text-main) !important;
                 }
+
+      
+        .time-badge {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(108, 117, 125, 0.1);
+            border: 1px solid rgba(108, 117, 125, 0.2);
+            transition: all 0.3s ease;
+        }
 
         .section-title {
             letter-spacing: 1px;
@@ -96,7 +109,7 @@
                 box-shadow: 0 10px 20px rgba(0,0,0,0.4);
             }
 
-            [data-bs-theme="dark"] .intern-board-card i {
+            [data-bs-theme="dark"] .intern-board-card .kanban-icon {
                 color: #ffffff;
             }
 
@@ -113,6 +126,10 @@
             [data-bs-theme="dark"] .placeholder-card span {
                 color: #adb5bd !important;
             }
+
+        [data-bs-theme="dark"] .time-badge {
+            color: #adb5bd;
+        }
 
 
         [data-bs-theme="light"] body,
@@ -132,7 +149,7 @@
                 box-shadow: 0 10px 20px rgba(0,0,0,0.15);
             }
 
-            [data-bs-theme="light"] .intern-board-card i {
+            [data-bs-theme="light"] .intern-board-card .kanban-icon {
                 color: #212529;
             }
 
@@ -149,6 +166,10 @@
             [data-bs-theme="light"] .placeholder-card span {
                 color: #6c757d !important;
             }
+
+        [data-bs-theme="light"] .time-badge {
+            color: #6c757d;
+        }
     </style>
 }
 
@@ -183,13 +204,42 @@
             }
         }
 
-
         const currentStaffId = getUserIdFromToken(token);
 
         document.addEventListener('DOMContentLoaded', loadInternBoards);
 
+       
+        function calculateRemainingTime(endDateString) {
+            if (!endDateString) return "Süre belirsiz";
+
+            const endDate = new Date(endDateString);
+            const today = new Date();
+
+            today.setHours(0, 0, 0, 0);
+            endDate.setHours(0, 0, 0, 0);
+
+            if (endDate < today) return "Staj bitti";
+
+            let months = endDate.getMonth() - today.getMonth() + (12 * (endDate.getFullYear() - today.getFullYear()));
+            let days = endDate.getDate() - today.getDate();
+
+            if (days < 0) {
+                months--;
+                const previousMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate();
+                days += previousMonth;
+            }
+
+            if (months === 0 && days === 0) return "Son gün";
+
+            let result = "";
+            if (months > 0) result += `${months} ay `;
+            if (days > 0) result += `${days} gün `;
+
+            return result.trim() + " kaldı";
+        }
+
         async function loadInternBoards() {
-            if (!currentStaffId) return; 
+            if (!currentStaffId) return;
 
             try {
                 const response = await fetch(`${API_URL}/api/Users/my-interns/${currentStaffId}`, {
@@ -202,17 +252,23 @@
 
                     interns.forEach(intern => {
                         const displayName = intern.fullName || (intern.name + " " + intern.surname);
+
+                        const remainingTime = calculateRemainingTime(intern.endDate || intern.internshipEndDate);
+
                         const cardHtml = `
                             <div class="intern-board-card" onclick="goToBoard('${intern.id}')">
                                 <span>${displayName}</span>
-                                <i class="bi bi-kanban"></i>
+                                <div class="d-flex justify-content-between align-items-end w-100">
+                                    <span class="time-badge shadow-sm"><i class="bi bi-hourglass-split me-1"></i>${remainingTime}</span>
+                                    <i class="bi bi-kanban kanban-icon mb-1"></i>
+                                </div>
                             </div>`;
 
                         placeholder.insertAdjacentHTML('beforebegin', cardHtml);
                     });
                 }
             } catch (error) {
-                console.error("Boardlar yüklenemedi:", error);
+                console.error("Boardlar yüklenemedi:", error);s
             }
         }
 

@@ -177,7 +177,7 @@
         if (res.ok) {
         const user = await res.json();
 
-        // GELEN VERİYİ KONSOLA YAZDIRALIM (F12 İLE BAKABİLİRSİN)
+  
         console.log("API'den Gelen Kullanıcı Verisi:", user);
 
         let mId = user.mentorId || user.MentorId || (user.data && (user.data.mentorId || user.data.MentorId));

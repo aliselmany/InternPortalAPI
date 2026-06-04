@@ -6,7 +6,6 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/staff-portal.css" asp-append-version="true" />
     <style>
-
         body, html {
             width: 133.33vw !important;
             height: 133.33vh !important;
@@ -140,7 +139,6 @@
             background: #2b3035 !important;
         }
 
-        /* 🚀 ZOOM'A ÖZEL GENİŞ MODAL VE BACKDROP CSS'İ */
         .modal-backdrop {
             width: 133.33vw !important;
             height: 133.33vh !important;
@@ -183,16 +181,15 @@
             resize: none !important;
         }
 
-            .custom-task-modal .form-control:focus {
-                border-color: #adb5bd !important;
-                box-shadow: none !important;
-            }
+        .custom-task-modal .form-control:focus {
+            border-color: #adb5bd !important;
+            box-shadow: none !important;
+        }
 
         [data-bs-theme="dark"] .custom-task-modal .btn-close {
             filter: invert(1) grayscale(100%) brightness(200%);
         }
 
-        /* 🚀 MAVİ YERİNE TEMAYA UYGUN KOYU BUTON */
         .btn-theme-custom {
             background-color: var(--btn-bg) !important;
             color: var(--btn-text) !important;
@@ -201,6 +198,17 @@
 
             .btn-theme-custom:hover {
                 opacity: 0.85;
+            }
+
+
+        .mentor-email-link {
+            color: var(--text-main) !important;
+            transition: opacity 0.2s ease;
+        }
+
+            .mentor-email-link:hover {
+                opacity: 0.7;
+                text-decoration: underline !important;
             }
     </style>
 }
@@ -264,6 +272,39 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="mentorInfoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content shadow-lg" style="background-color: var(--card-bg); color: var(--text-main); border: 1px solid var(--input-border); border-radius: 16px;">
+            <div class="modal-header border-0 pb-0 justify-content-end">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1) grayscale(100%) brightness(200%);"></button>
+            </div>
+            <div class="modal-body text-center px-4 pb-5 pt-0">
+
+                <div class="mb-3">
+                    <i class="bi bi-person-bounding-box text-secondary" style="font-size: 5rem;"></i>
+                </div>
+
+                <h4 class="fw-bold mb-1" id="mentorNameDisplay">Yükleniyor...</h4>
+                <p class="text-muted mb-4" id="mentorExpertiseDisplay" style="font-size: 0.95rem;">Lütfen bekleyin</p>
+
+                <div class="d-flex flex-column gap-3 text-start">
+                    <div class="p-3 rounded-3 shadow-sm" style="background-color: var(--input-bg); border: 1px solid var(--input-border);">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                            <i class="bi bi-envelope-fill me-1"></i> E-Posta Adresi
+                        </small>
+                        <div class="fs-6 mt-1 fw-medium" id="mentorEmailDisplay">...</div>
+                    </div>
+                </div>
+
+                <div id="mentorSocialsDisplay" class="d-flex justify-content-center gap-3 mt-4">
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <input type="hidden" id="currentOpenTaskId" value="" />
 
 @section Scripts {
@@ -400,12 +441,10 @@
         }
         }
 
-        // 🚀 SADELEŞTİRİLMİŞ MODAL AÇMA VE KAYDETME İŞLEMLERİ
         function openTaskModal(taskId) {
         const task = globalTasksData.find(t => t.id === taskId);
         if (!task) return;
 
-        // Modalı ilgili görevin verileriyle doldur
         document.getElementById('currentOpenTaskId').value = taskId;
         document.getElementById('taskDetailModalLabel').innerHTML = `<i class="bi bi-card-checklist me-2"></i>${task.title}`;
         document.getElementById('taskDescriptionInput').value = task.description || '';
@@ -442,5 +481,74 @@
         console.error("Kaydetme hatası:", error);
         }
         }
+
+        window.showMentorInfo = async function() {
+        const modalElement = document.getElementById('mentorInfoModal');
+        if (!modalElement) return;
+
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+
+        document.getElementById('mentorNameDisplay').innerText = "Aranıyor...";
+        document.getElementById('mentorExpertiseDisplay').innerText = "...";
+        document.getElementById('mentorEmailDisplay').innerText = "...";
+        document.getElementById('mentorSocialsDisplay').innerHTML = "";
+
+        try {
+        if (!currentInternId) return;
+
+        const meRes = await fetch(`${API_URL}/api/Users/get-by-id/${currentInternId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const meData = await meRes.json();
+
+        if (!meData.mentorId || meData.mentorId === "00000000-0000-0000-0000-000000000000") {
+        document.getElementById('mentorNameDisplay').innerText = "Mentör Atanmamış";
+        document.getElementById('mentorExpertiseDisplay').innerText = "Şu an için bir mentörünüz bulunmuyor.";
+        document.getElementById('mentorEmailDisplay').innerText = "-";
+        return;
+        }
+
+        const mentorRes = await fetch(`${API_URL}/api/Users/get-by-id/${meData.mentorId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const mentorData = await mentorRes.json();
+
+        document.getElementById('mentorNameDisplay').innerText = `${mentorData.name} ${mentorData.surname}`;
+        document.getElementById('mentorExpertiseDisplay').innerText = mentorData.expertise || "Uzmanlık alanı belirtilmemiş";
+        document.getElementById('mentorEmailDisplay').innerHTML = `<a href="mailto:${mentorData.email}" class="text-decoration-none fw-bold mentor-email-link" style="letter-spacing: 0.5px;">${mentorData.email}</a>`;
+
+        let socialsHtml = "";
+        if (mentorData.socialAccounts && mentorData.socialAccounts.length > 0) {
+        mentorData.socialAccounts.forEach(acc => {
+        let platform = acc.platformName.toLowerCase();
+
+        if (platform.includes("github")) {
+        socialsHtml += `
+        <a href="${acc.profileUrl}" target="_blank" class="btn btn-outline-secondary rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+        <i class="bi bi-github fs-5" style="color: var(--text-main);"></i>
+        </a>`;
+        }
+        else if (platform.includes("linkedin")) {
+        socialsHtml += `
+        <a href="${acc.profileUrl}" target="_blank" class="btn btn-outline-secondary rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+        <i class="bi bi-linkedin fs-5" style="color: var(--text-main);"></i>
+        </a>`;
+        }
+        });
+        }
+
+        if (socialsHtml === "") {
+        socialsHtml = `<span class="text-muted" style="font-size: 0.85rem;"><i class="bi bi-info-circle me-1"></i>Ekli sosyal medya hesabı bulunamadı.</span>`;
+        }
+
+        document.getElementById('mentorSocialsDisplay').innerHTML = socialsHtml;
+
+        } catch (error) {
+        console.error("Mentör bilgisi çekilemedi:", error);
+        document.getElementById('mentorNameDisplay').innerText = "Bir Hata Oluştu";
+        document.getElementById('mentorExpertiseDisplay').innerText = "Bağlantı sorunu.";
+        }
+        };
     </script>
 }
