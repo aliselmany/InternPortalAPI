@@ -103,13 +103,10 @@ namespace InternPortal.Application.Services
 
             if (!string.IsNullOrEmpty(dto.PhoneNumber)) application.PhoneNumber = dto.PhoneNumber;
 
-
+            // DÜZELTİLEN KISIM BURASI: TryParse silindi, doğrudan atama yapıldı.
             if (!string.IsNullOrEmpty(dto.EducationLevel))
             {
-                if (Enum.TryParse<EducationLevel>(dto.EducationLevel, true, out var updateEdu))
-                {
-                    application.EducationLevel = updateEdu;
-                }
+                application.EducationLevel = dto.EducationLevel;
             }
 
             if (!string.IsNullOrEmpty(dto.SchoolName)) application.SchoolName = dto.SchoolName;
@@ -182,7 +179,6 @@ namespace InternPortal.Application.Services
                 .Include(x => x.User)
                 .AsQueryable();
 
-  
             if (filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(filter.Name))
@@ -244,7 +240,7 @@ namespace InternPortal.Application.Services
                 Name = x.User?.Name ?? "İsimsiz",
                 Surname = x.User?.Surname ?? "Aday",
 
-             
+
                 EducationLevel = x.EducationLevel,
 
                 SchoolName = x.SchoolName,

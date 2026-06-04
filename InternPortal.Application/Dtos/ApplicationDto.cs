@@ -7,8 +7,7 @@ namespace InternPortal.Application.Dtos;
 public class ApplicationDto : IValidatableObject
 {
     [Required(ErrorMessage = "Lütfen eğitim seviyenizi seçiniz.")]
-    public EducationLevel EducationLevel { get; set; }
-
+    public string EducationLevel { get; set; }
     public Guid Id { get; set; }
 
     public string Name { get; set; } = string.Empty;

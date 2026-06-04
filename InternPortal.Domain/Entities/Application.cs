@@ -8,7 +8,7 @@ namespace InternPortal.Domain.Entities
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
-        public EducationLevel EducationLevel { get; set; } = EducationLevel.Lise;
+        public string EducationLevel { get; set; } 
 
         [Required]
         public string SchoolName { get; set; } = string.Empty;

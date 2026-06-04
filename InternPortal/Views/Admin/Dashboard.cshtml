@@ -319,7 +319,7 @@
                                 </select>
                             </div>
                         </div>
-                            
+
                         <div class="col-md-4"><div class="form-view-group"><label class="form-view-label">Üniversite</label><input type="text" class="form-control modal-form-control" id="fDetSchool" readonly></div></div>
                         <div class="col-md-2"><div class="form-view-group"><label class="form-view-label">Bölüm</label><input type="text" class="form-control modal-form-control" id="fDetDept" readonly></div></div>
                         <div class="col-md-2"><div class="form-view-group"><label class="form-view-label">Sınıf</label><input type="text" class="form-control modal-form-control" id="fDetGrade" readonly></div></div>
@@ -381,7 +381,7 @@
         const token = localStorage.getItem('token');
 
         if (!token) {
-        window.location.href = '/';
+        window.location.href = '/Account/Login';
         }
 
         let currentAppId = null;
@@ -418,7 +418,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
         if (!localStorage.getItem('token')) {
-        window.location.href = '/';
+        window.location.href = '/Account/Login';
         return;
         }
 
@@ -457,7 +457,7 @@
 
         function logout() {
         localStorage.removeItem('token');
-        window.location.href = '/';
+        window.location.href = '/Account/Login';
         }
 
         function showProfile() {
@@ -621,9 +621,14 @@
         document.getElementById('fDetDept').value = app.departmentOfStudy || '';
         document.getElementById('fDetGrade').value = app.grade || '';
 
-        let eduValue = "1";
-        if (app.educationLevel === 0 || app.educationLevel === "Lise") eduValue = "0";
-        else if (app.educationLevel === 1 || app.educationLevel === "Üniversite" || app.educationLevel === "Universite") eduValue = "1";
+       
+        let eduValue = "0";
+        if (app.educationLevel !== null && app.educationLevel !== undefined) {
+        let levelStr = app.educationLevel.toString().toLowerCase();
+        if (levelStr === "1" || levelStr === "üniversite" || levelStr === "universite" || levelStr === "university") {
+        eduValue = "1";
+        }
+        }
         document.getElementById('fDetEduLevel').value = eduValue;
 
         let deptValue = "0";
