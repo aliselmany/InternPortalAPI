@@ -7,7 +7,7 @@ namespace InternPortal.WebUI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin,Intern")]
 public class RolesController : ControllerBase
 {
     private readonly IRolesService _rolesService;
