@@ -14,7 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<UserSocialAccount> UserSocialAccounts { get; set; }
     public DbSet<KanbanTask> KanbanTasks { get; set; }
     public DbSet<TaskComment> TaskComments { get; set; }
-
+    public DbSet<KanbanComment> KanbanComments { get; set; }
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         foreach (var entry in ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted))

@@ -4,7 +4,7 @@ using InternPortal.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-
+using System.Text.RegularExpressions; 
 namespace InternPortal.WebUI.Controllers;
 
 [ApiController]
@@ -12,7 +12,11 @@ namespace InternPortal.WebUI.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
-    private readonly IMailService _mailService; 
+    private readonly IMailService _mailService;
+
+    private static readonly Regex PasswordPolicyRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$");
+
+    private const string PasswordPolicyErrorMessage = "Şifreniz kurallara uymuyor! Güvenliğiniz için şifreniz en az 8 karakter uzunluğunda olmalı; en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir.";
 
     public UsersController(IUserService userService, IMailService mailService)
     {
@@ -57,9 +61,25 @@ public class UsersController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] CreateUserDto createUserDto)
     {
+        if (string.IsNullOrEmpty(createUserDto.Password) || !PasswordPolicyRegex.IsMatch(createUserDto.Password))
+        {
+            return BadRequest(new { message = PasswordPolicyErrorMessage });
+        }
+
         var result = await _userService.RegisterAsync(createUserDto);
         if (!result.IsSuccess) return BadRequest(new { message = result.Message });
         return Ok(new { message = "Registration successful" });
+    }
+
+    [HttpPost("verify-email")]
+    [AllowAnonymous]
+    public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequestDto dto)
+    {
+        var result = await _userService.VerifyEmailAsync(dto.Email, dto.Code);
+        if (!result.IsSuccess)
+            return BadRequest(new { message = result.Message });
+
+        return Ok(new { message = "E-posta adresiniz başarıyla doğrulandı! Şimdi giriş yapabilirsiniz." });
     }
 
     [HttpPost("login")]
@@ -200,6 +220,11 @@ public class UsersController : ControllerBase
             return BadRequest(new { message = "Girdiğiniz şifreler birbiriyle uyuşmuyor." });
         }
 
+        if (string.IsNullOrEmpty(model.NewPassword) || !PasswordPolicyRegex.IsMatch(model.NewPassword))
+        {
+            return BadRequest(new { message = PasswordPolicyErrorMessage });
+        }
+
         var verifyResult = await _userService.VerifyResetCodeAsync(model.Email, model.Code);
         if (!verifyResult.IsSuccess)
         {
@@ -228,7 +253,6 @@ public class UsersController : ControllerBase
     }
 }
 
-
 public class ForgotPasswordDto
 {
     public string Email { get; set; } = string.Empty;
@@ -246,4 +270,10 @@ public class ResetPasswordDto
     public string Code { get; set; } = string.Empty;
     public string NewPassword { get; set; } = string.Empty;
     public string ConfirmPassword { get; set; } = string.Empty;
+}
+
+public class VerifyEmailRequestDto
+{
+    public string Email { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
 }

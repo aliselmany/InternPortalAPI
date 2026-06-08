@@ -147,7 +147,7 @@
                 <div style="grid-column: span 3;">
                     <div class="field-stack">
                         <label class="editor-label">Max Kontenjan</label>
-                        <input type="number" class="editor-field" id="maxInternCount">
+                        <input type="number" class="editor-field" id="maxInternCount" min="0" max="40" oninput="if(this.value > 40) this.value = 40; else if(this.value < 0) this.value = 0;">
                     </div>
                 </div>
                 <div style="grid-column: span 12;">
@@ -192,7 +192,6 @@
 
         if (!token) window.location.replace('/Account/Login');
 
-      
         function getUserIdFromToken(jwt) {
         try {
         const payload = JSON.parse(atob(jwt.split('.')[1]));

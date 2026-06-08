@@ -48,8 +48,9 @@ namespace InternPortal.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("EducationLevel")
-                        .HasColumnType("int");
+                    b.Property<string>("EducationLevel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -231,6 +232,9 @@ namespace InternPortal.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsEmailVerified")
+                        .HasColumnType("bit");
+
                     b.Property<int>("MaxInternCount")
                         .HasColumnType("int");
 
@@ -266,6 +270,13 @@ namespace InternPortal.Infrastructure.Migrations
 
                     b.Property<string>("University")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VerificationCode")
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<DateTime?>("VerificationCodeExpiration")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -314,6 +325,42 @@ namespace InternPortal.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserSocialAccounts");
+                });
+
+            modelBuilder.Entity("KanbanComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("KanbanComments");
                 });
 
             modelBuilder.Entity("InternPortal.Domain.Entities.Application", b =>
@@ -399,6 +446,22 @@ namespace InternPortal.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("KanbanComment", b =>
+                {
+                    b.HasOne("InternPortal.Domain.Entities.KanbanTask", "KanbanTask")
+                        .WithMany("Comments")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("KanbanTask");
+                });
+
+            modelBuilder.Entity("InternPortal.Domain.Entities.KanbanTask", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("InternPortal.Domain.Entities.Role", b =>

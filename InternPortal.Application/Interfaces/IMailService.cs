@@ -10,5 +10,7 @@ namespace InternPortal.Application.Interfaces
         void SendTestEmail(string toEmail);
         void SendPasswordResetEmail(string toEmail, string resetLink);
         void SendPasswordResetCode(string toEmail, string resetCode);
+
+        void SendEmail(string toEmail, string subject, string body);
     }
 }

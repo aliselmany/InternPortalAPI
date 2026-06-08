@@ -41,6 +41,13 @@ public class User
     public string? PasswordResetCode { get; set; }
     public DateTime? PasswordResetCodeExpiration { get; set; }
 
+    public bool IsEmailVerified { get; set; } = false;
+
+    [MaxLength(6)]
+    public string? VerificationCode { get; set; }
+
+    public DateTime? VerificationCodeExpiration { get; set; }
+
     public bool IsDeleted { get; set; } = false;
 
     public virtual ICollection<User> Interns { get; set; } = new List<User>();

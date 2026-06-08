@@ -60,7 +60,6 @@ namespace InternPortal.Application.Services
             }
         }
 
-        
         public void SendPasswordResetCode(string toEmail, string resetCode)
         {
             string host = _configuration["MailSettings:Host"] ?? "localhost";
@@ -89,6 +88,27 @@ namespace InternPortal.Application.Services
                         <p style='font-size: 11px; color: #888888;'>Bu kod güvenlik nedeniyle kısa bir süre için geçerlidir. Talebi siz yapmadıysanız bu maili önemsemeyiniz.</p>
                     </div>";
 
+                client.Send(mailMessage);
+            }
+        }
+
+       
+        public void SendEmail(string toEmail, string subject, string body)
+        {
+            string host = _configuration["MailSettings:Host"] ?? "localhost";
+            int port = int.Parse(_configuration["MailSettings:Port"] ?? "2525");
+
+            using (SmtpClient client = new SmtpClient(host, port))
+            {
+                client.EnableSsl = false; 
+
+                MailMessage mailMessage = new MailMessage();
+                mailMessage.From = new MailAddress("sistem@internportal.com", "trex Digital");
+                mailMessage.To.Add(toEmail);
+          
+                mailMessage.Subject = subject;
+                mailMessage.Body = body;
+                mailMessage.IsBodyHtml = true; 
                 client.Send(mailMessage);
             }
         }

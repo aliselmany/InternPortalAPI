@@ -1,0 +1,148 @@
+﻿@{
+    ViewData["Title"] = "Kodu Doğrula";
+    ViewData["HideNavbar"] = true;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth-portal.css" asp-append-version="true" />
+}
+
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Tema Değiştir">
+    <i class="bi bi-sun-fill"></i>
+</button>
+
+<div class="auth-wrapper">
+    <div class="auth-card" style="max-width: 600px; padding: 4rem 4.5rem;">
+        <div class="text-center mb-5">
+            <div class="mb-4">
+                <img id="authLogo" src="~/assets/trex-logo-dark.png" alt="Logo" style="max-width: 160px; height: auto;">
+            </div>
+
+            <h2 class="fw-bold" style="letter-spacing: -1px; font-size: 2.5rem;">Kodu Doğrula</h2>
+            <p class="text-muted mt-2" style="font-size: 1.1rem;">
+                <b id="displayEmail" style="color: var(--text-main);">@ViewBag.Email</b> adresine gönderilen 6 haneli onay kodunu giriniz.
+            </p>
+        </div>
+
+        <form id="verifyForm">
+            <div class="mb-4">
+                <label class="form-label text-uppercase mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">6 Haneli Onay Kodu</label>
+                <input id="verificationCode" type="text" class="form-control form-control-lg text-center fw-bold fs-4" placeholder="••••••" maxlength="6" required autocomplete="off" style="letter-spacing: 12px;">
+            </div>
+
+            <button type="submit" id="btnSubmit" class="btn-auth mt-2">Kodu Onayla</button>
+
+            <div class="text-center mt-5">
+                <a asp-action="Login" asp-controller="Account" class="text-muted text-decoration-none small fw-bold">İptal ve Giriş Ekranına Dön</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function applyTheme(theme) {
+        const authLogo = document.getElementById('authLogo');
+        const themeBtn = document.getElementById('themeBtn');
+        if (!themeBtn) return;
+        const themeIcon = themeBtn.querySelector('i');
+        const version = new Date().getTime();
+
+        if (theme === 'dark') {
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        themeIcon.className = 'bi bi-moon-fill';
+        if (authLogo) authLogo.src = `/assets/trex-logo-light.png?v=${version}`;
+        } else {
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+        themeIcon.className = 'bi bi-sun-fill';
+        if (authLogo) authLogo.src = `/assets/trex-logo-dark.png?v=${version}`;
+        }
+        }
+
+        function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+        localStorage.setItem('portal-theme', newTheme);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('portal-theme') || 'dark';
+        applyTheme(savedTheme);
+
+        let emailText = document.getElementById('displayEmail').innerText.trim();
+        if(!emailText) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlEmail = urlParams.get('email');
+        if(urlEmail) {
+        document.getElementById('displayEmail').innerText = urlEmail;
+        }
+        }
+        });
+
+        function showThemedAlert(title, text, icon, timer = null, redirectUrl = null) {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const isDark = currentTheme === 'dark';
+
+        Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        timer: timer,
+        showConfirmButton: !timer,
+        confirmButtonText: 'Tamam',
+        background: isDark ? '#2b3035' : '#ffffff',
+        color: isDark ? '#f8f9fa' : '#212529',
+        confirmButtonColor: isDark ? '#0d6efd' : '#000000'
+        }).then(() => {
+        if (redirectUrl) {
+        window.location.href = redirectUrl;
+        }
+        });
+        }
+
+        document.getElementById('verifyForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('btnSubmit');
+        const code = document.getElementById('verificationCode').value.trim();
+        const email = document.getElementById('displayEmail').innerText.trim();
+
+        if (code.length !== 6) {
+        showThemedAlert('Eksik Bilgi', 'Lütfen 6 haneli kodu tam olarak giriniz.', 'warning');
+        return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = "Doğrulanıyor...";
+
+        try {
+        const response = await fetch('https://localhost:7166/api/Users/verify-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, code: code })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+        showThemedAlert(
+        'Başarılı!',
+        'Hesabınız onaylandı. Giriş ekranına yönlendiriliyorsunuz...',
+        'success',
+        2000,
+        '/Account/Login'
+        );
+        } else {
+        showThemedAlert('Doğrulama Başarısız', data.message || 'Hatalı kod girdiniz.', 'error');
+        }
+        } catch (error) {
+        showThemedAlert('Bağlantı Hatası', 'Sunucuya ulaşılamadı. Lütfen daha sonra tekrar deneyin.', 'error');
+        } finally {
+        btn.disabled = false;
+        btn.textContent = "Kodu Onayla";
+        }
+        });
+    </script>
+}

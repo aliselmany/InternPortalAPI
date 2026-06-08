@@ -19,7 +19,7 @@ public interface IUserService
     Task<List<UserResponseDto>> GetUsersByRoleNameAsync(string roleName);
     Task<IEnumerable<UserResponseDto>> GetMyInternsAsync(Guid staffId);
     Task<bool> SelectMentorAsync(Guid internId, Guid mentorId);
-
+    Task<ServiceResult> VerifyEmailAsync(string email, string code);
     Task<ServiceResult<UserResponseDto?>> GetUserByEmailAsync(string email);
 
     Task<ServiceResult> SavePasswordResetCodeAsync(Guid userId, string code, DateTime expiration);

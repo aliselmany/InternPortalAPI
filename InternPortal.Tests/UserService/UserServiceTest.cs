@@ -1,4 +1,5 @@
 ﻿using InternPortal.Application.Dtos;
+using InternPortal.Application.Interfaces;
 using InternPortal.Application.Services;
 using InternPortal.Domain.Entities;
 using InternPortal.Infrastructure.Persistence;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 
-namespace InternPortal.Tests.UnitTests;
+namespace InternPortal.Tests.UnitTests; 
 
 public class UserServiceTests
 {
@@ -20,7 +21,7 @@ public class UserServiceTests
         var databaseContext = new AppDbContext(options);
         databaseContext.Database.EnsureCreated();
 
- 
+
         if (!databaseContext.Roles.Any())
         {
             databaseContext.Roles.Add(new Role { Id = Guid.NewGuid(), Name = "Intern" });
@@ -35,7 +36,9 @@ public class UserServiceTests
     {
         using var context = GetDatabaseContext();
         var mockConfig = new Mock<IConfiguration>();
-        var service = new InternPortal.Application.Services.UserService(context, mockConfig.Object);
+        var mockMailService = new Mock<IMailService>();
+
+        var service = new InternPortal.Application.Services.UserService(context, mockConfig.Object, mockMailService.Object);
 
         var newUser = new CreateUserDto
         {
@@ -57,11 +60,13 @@ public class UserServiceTests
     {
         using var context = GetDatabaseContext();
         var mockConfig = new Mock<IConfiguration>();
-        var service = new InternPortal.Application.Services.UserService(context, mockConfig.Object);
+        var mockMailService = new Mock<IMailService>(); 
+
+        var service = new InternPortal.Application.Services.UserService(context, mockConfig.Object, mockMailService.Object);
 
         var email = "aliselmanly@gmail.com";
 
-  
+
         var existingUser = new User
         {
             Id = Guid.NewGuid(),

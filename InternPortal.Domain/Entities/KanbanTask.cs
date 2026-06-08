@@ -15,5 +15,7 @@ namespace InternPortal.Domain.Entities
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime? DueDate { get; set; }
         public bool IsDeleted { get; set; } = false;
+
+        public virtual ICollection<KanbanComment> Comments { get; set; } = new List<KanbanComment>();
     }
 }

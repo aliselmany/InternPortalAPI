@@ -590,10 +590,12 @@
         renderTable();
         }
 
+
         function formatForInput(dateStr) {
         if (!dateStr) return '';
         try {
-        return new Date(dateStr).toISOString().split('T')[0];
+
+        return dateStr.split('T')[0];
         } catch(e) { return ''; }
         }
 
@@ -621,7 +623,6 @@
         document.getElementById('fDetDept').value = app.departmentOfStudy || '';
         document.getElementById('fDetGrade').value = app.grade || '';
 
-       
         let eduValue = "0";
         if (app.educationLevel !== null && app.educationLevel !== undefined) {
         let levelStr = app.educationLevel.toString().toLowerCase();

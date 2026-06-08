@@ -18,11 +18,13 @@ public class UserService : IUserService
 {
     private readonly AppDbContext _context;
     private readonly IConfiguration _configuration;
+    private readonly IMailService _emailService;
 
-    public UserService(AppDbContext context, IConfiguration configuration)
+    public UserService(AppDbContext context, IConfiguration configuration, IMailService emailService)
     {
         _context = context;
         _configuration = configuration;
+        _emailService = emailService;
     }
 
     public async Task<ServiceResult> RegisterAsync(CreateUserDto dto)
@@ -31,7 +33,19 @@ public class UserService : IUserService
             return ServiceResult.Failure("Email address is already in use.");
 
         string hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-        var user = new User { Name = dto.Name, Surname = dto.Surname, Email = dto.Email, Password = hashedPassword };
+
+        string verificationCode = Random.Shared.Next(100000, 999999).ToString();
+
+        var user = new User
+        {
+            Name = dto.Name,
+            Surname = dto.Surname,
+            Email = dto.Email,
+            Password = hashedPassword,
+            IsEmailVerified = false,
+            VerificationCode = verificationCode,
+            VerificationCodeExpiration = DateTime.Now.AddMinutes(3)
+        };
 
         var internRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Intern");
         if (internRole != null)
@@ -39,6 +53,25 @@ public class UserService : IUserService
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
+
+        string mailBody = $@"
+            <div style='font-family: Arial, sans-serif; text-align: center; padding: 20px;'>
+                <h2>InternPortal'a Hoş Geldiniz!</h2>
+                <p>Sayın <b>{user.Name} {user.Surname}</b>, kaydınızı tamamlamak için son bir adım kaldı.</p>
+                <p>Lütfen aşağıdaki 6 haneli doğrulama kodunu ekrandaki alana giriniz:</p>
+                <h1 style='color: #0d6efd; letter-spacing: 5px; background: #f8f9fa; padding: 10px; border-radius: 8px; display: inline-block;'>{verificationCode}</h1>
+                <p style='color: #6c757d; font-size: 14px;'>Bu kodun geçerlilik süresi 3 dakikadır.</p>
+            </div>
+        ";
+
+        try
+        {
+            _emailService.SendEmail(user.Email, "InternPortal - E-Posta Doğrulama Kodu", mailBody);
+        }
+        catch
+        {
+        }
+
         return ServiceResult.Success();
     }
 
@@ -51,7 +84,34 @@ public class UserService : IUserService
         if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             return ServiceResult<LoginResponseDto>.Failure("Yanlış parola yada e-mail");
 
+        if (!user.IsEmailVerified)
+            return ServiceResult<LoginResponseDto>.Failure("Hesabınız henüz onaylanmamış. Lütfen e-postanıza gönderilen kod ile onaylayınız.");
+
         return ServiceResult<LoginResponseDto>.Success(new LoginResponseDto { Token = GenerateJwtToken(user), Email = user.Email });
+    }
+
+    public async Task<ServiceResult> VerifyEmailAsync(string email, string code)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+
+        if (user == null)
+            return ServiceResult.Failure("Kullanıcı bulunamadı.");
+
+        if (user.IsEmailVerified)
+            return ServiceResult.Failure("Bu hesap zaten doğrulanmış.");
+
+        if (string.IsNullOrEmpty(user.VerificationCode) || user.VerificationCode != code)
+            return ServiceResult.Failure("Girdiğiniz 6 haneli doğrulama kodu hatalı.");
+
+        if (user.VerificationCodeExpiration < DateTime.Now)
+            return ServiceResult.Failure("Kodun geçerlilik süresi (3 dakika) dolmuş. Lütfen yeni kod talep edin.");
+
+        user.IsEmailVerified = true;
+        user.VerificationCode = null; 
+        user.VerificationCodeExpiration = null;
+
+        await _context.SaveChangesAsync();
+        return ServiceResult.Success();
     }
 
     public async Task<UserResponseDto?> UserByIdAsync(Guid userId)
@@ -82,7 +142,6 @@ public class UserService : IUserService
             }).ToList()
         };
     }
-
 
     public async Task<IEnumerable<UserResponseDto>> GetMyInternsAsync(Guid staffId)
     {
@@ -270,6 +329,7 @@ public class UserService : IUserService
                 Surname = u.Surname,
                 Email = u.Email,
                 Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList(),
+                Department = u.Department,
                 Expertise = u.Expertise,
                 Biography = u.Biography,
                 MaxInternCount = u.MaxInternCount,
@@ -289,6 +349,7 @@ public class UserService : IUserService
                 Surname = u.Surname,
                 Email = u.Email,
                 Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList(),
+                Department = u.Department,
                 Expertise = u.Expertise,
                 Biography = u.Biography,
                 MaxInternCount = u.MaxInternCount,

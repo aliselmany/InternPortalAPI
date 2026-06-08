@@ -24,6 +24,12 @@ namespace InternPortal.WebUI.Controllers
         }
 
         [HttpGet]
+        public IActionResult VerifyEmail()
+        {
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult Register() => View();
 
         [HttpPost]
