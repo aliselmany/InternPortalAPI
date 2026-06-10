@@ -160,13 +160,15 @@ namespace InternPortalAPI.Controllers
             });
         }
 
-        [HttpDelete("delete{id}")]
+        [HttpDelete("{id}")] 
         public async Task<IActionResult> DeleteTask(int id)
         {
             var task = await _context.KanbanTasks.FindAsync(id);
             if (task == null) return NotFound();
 
-            _context.KanbanTasks.Remove(task);
+            
+            task.IsDeleted = true;
+
             await _context.SaveChangesAsync();
             return Ok();
         }

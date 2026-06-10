@@ -6,7 +6,6 @@ namespace InternPortal.Infrastructure.Persistence;
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<UserRoleMapping> UserRoleMappings { get; set; }
@@ -15,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<KanbanTask> KanbanTasks { get; set; }
     public DbSet<TaskComment> TaskComments { get; set; }
     public DbSet<KanbanComment> KanbanComments { get; set; }
+
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         foreach (var entry in ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted))

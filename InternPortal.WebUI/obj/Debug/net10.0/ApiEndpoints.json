@@ -38,6 +38,22 @@
   },
   {
     "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
+    "Method": "DeleteTask",
+    "RelativePath": "api/KanbanTasks/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
     "Method": "UpdateTaskDescription",
     "RelativePath": "api/KanbanTasks/{id}/description",
     "HttpMethod": "PUT",
@@ -104,22 +120,6 @@
     "Parameters": [
       {
         "Name": "commentId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
-    "Method": "DeleteTask",
-    "RelativePath": "api/KanbanTasks/delete{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
         "Type": "System.Int32",
         "IsRequired": true
       }

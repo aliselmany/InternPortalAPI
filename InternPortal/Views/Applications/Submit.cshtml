@@ -11,156 +11,166 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Staj Başvuru Formu</title>
-    
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/auth-portal.css" asp-append-version="true" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <style>
         html, body {
-            overflow-y: auto !important;
-            height: auto !important;
-            background: var(--bg-gradient) !important;
-            margin: 0; 
-            padding: 0;
+        overflow-y: auto !important;
+        height: auto !important;
+        background: var(--bg-gradient) !important;
+        margin: 0;
+        padding: 0;
         }
 
         .container-fluid {
-            padding: 40px 8%;
-            padding-bottom: 120px;
+        padding: 40px 8%;
+        padding-bottom: 120px;
         }
 
         .header-container {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 40px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--input-border);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 40px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--input-border);
         }
 
         .logo-box img {
-            max-width: 120px;
-            height: auto;
+        max-width: 120px;
+        height: auto;
         }
 
         .title-box h1 {
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 1.8rem;
-            margin: 0;
+        color: var(--text-main);
+        font-weight: 600;
+        font-size: 1.8rem;
+        margin: 0;
         }
 
         .title-box p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
         }
 
         .section-title {
-            color: var(--text-main);
-            font-size: 1rem;
-            font-weight: 700;
-            margin-top: 20px;
-            margin-bottom: 15px;
-            border-left: 4px solid var(--text-muted);
-            padding-left: 15px;
-            text-transform: uppercase;
+        color: var(--text-main);
+        font-size: 1rem;
+        font-weight: 700;
+        margin-top: 20px;
+        margin-bottom: 15px;
+        border-left: 4px solid var(--text-muted);
+        padding-left: 15px;
+        text-transform: uppercase;
         }
 
         .form-label {
-            color: var(--text-muted);
-            font-weight: 700;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            display: block;
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
         }
 
         .form-control, .form-select {
-            background-color: var(--input-bg) !important;
-            border: 2px solid var(--input-border) !important;
-            color: var(--text-main) !important;
-            border-radius: 12px;
-            padding: 12px;
-            transition: all 0.2s;
+        background-color: var(--input-bg) !important;
+        border: 2px solid var(--input-border) !important;
+        color: var(--text-main) !important;
+        border-radius: 12px;
+        padding: 12px;
+        transition: all 0.2s;
         }
 
         .form-control:focus, .form-select:focus {
-            border-color: var(--text-muted) !important;
-            box-shadow: none;
-            background-color: var(--card-bg) !important;
+        border-color: var(--text-muted) !important;
+        box-shadow: none;
+        background-color: var(--card-bg) !important;
+        }
+
+        input[type="date"] {
+        color: var(--text-main) !important;
+        font-weight: 500;
+        }
+
+        [data-bs-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
         }
 
         .file-upload-wrapper {
-            position: relative;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 50px;
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 50px;
         }
 
         .real-file-input {
-            opacity: 0;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-            z-index: 2;
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
         }
 
         .file-upload-text {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding-right: 10px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-right: 10px;
         }
 
         .file-upload-icon {
-            color: var(--text-muted);
-            font-size: 1.2rem;
+        color: var(--text-muted);
+        font-size: 1.2rem;
         }
 
         .btn-submit {
-            background: var(--btn-bg) !important;
-            color: var(--btn-text) !important;
-            height: 60px;
-            border-radius: 15px;
-            font-weight: 700;
-            width: 100%;
-            border: none;
-            box-shadow: 0 10px 20px var(--shadow);
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: all 0.2s;
+        background: var(--btn-bg) !important;
+        color: var(--btn-text) !important;
+        height: 60px;
+        border-radius: 15px;
+        font-weight: 700;
+        width: 100%;
+        border: none;
+        box-shadow: 0 10px 20px var(--shadow);
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: all 0.2s;
         }
 
         .btn-submit:hover {
-            filter: brightness(1.1);
-            transform: translateY(-2px);
+        filter: brightness(1.1);
+        transform: translateY(-2px);
         }
 
         .theme-toggle {
-            position: fixed;
-            top: 25px;
-            right: 25px;
-            background: var(--card-bg);
-            border: 1px solid var(--input-border);
-            width: 50px;
-            height: 50px;
-            border-radius: 15px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 5px 15px var(--shadow);
+        position: fixed;
+        top: 25px;
+        right: 25px;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        width: 50px;
+        height: 50px;
+        border-radius: 15px;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 1000;
+        box-shadow: 0 5px 15px var(--shadow);
         }
     </style>
 </head>
@@ -184,7 +194,7 @@
 
         <form id="applicationForm" enctype="multipart/form-data">
             <div class="row g-4">
-                
+
                 <div class="col-12">
                     <div class="section-title">Stajyer Kişisel Bilgileri</div>
                 </div>
@@ -226,7 +236,7 @@
                     <div class="col-md-4">
                         <label class="form-label">BÖLÜM *</label>
                         <input type="text" name="DepartmentOfStudy" class="form-control lise-input" placeholder="" disabled required>
-                    </div>  
+                    </div>
                     <div class="col-md-3">
                         <label class="form-label">SINIF *</label>
                         <select name="Grade" class="form-select lise-input" disabled required>
@@ -256,12 +266,12 @@
 
                 <div class="col-md-6">
                     <label asp-for="StartDate" class="form-label">BAŞLANGIÇ TARİHİ</label>
-                    <input asp-for="StartDate" name="StartDate" type="date" class="form-control" required>
+                    <input asp-for="StartDate" id="StartDate" name="StartDate" type="date" class="form-control" required>
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="EndDate" class="form-label">BİTİŞ TARİHİ</label>
-                    <input asp-for="EndDate" name="EndDate" type="date" class="form-control" required>
+                    <input asp-for="EndDate" id="EndDate" name="EndDate" type="date" class="form-control" required>
                 </div>
 
                 <div class="col-12">
@@ -323,7 +333,6 @@
     </div>
 
     <script>
- 
         const token = localStorage.getItem('token');
 
         async function checkAuthAndRedirect() {
@@ -343,7 +352,7 @@
 
         if (response.ok) {
         const applications = await response.json();
-                
+
         if (applications && applications.length > 0) {
         window.location.replace('https://localhost:7050/Applications/MyApplication');
         }
@@ -363,7 +372,7 @@
         checkAuthAndRedirect();
         }
         });
-   
+
         function updateUI(theme) {
         const logo = document.getElementById('portalLogo');
         const icon = document.getElementById('themeIcon');
@@ -398,15 +407,14 @@
         confirmButtonText: 'Tamam',
         background: isDark ? '#2b3035' : '#ffffff',
         color: isDark ? '#f8f9fa' : '#212529',
-        confirmButtonColor: isDark ? '#0d6efd' : '#000000'
+        confirmButtonColor: isDark ? '#ffffff' : '#000000'
         }).then(() => {
         if (redirectUrl) {
         window.location.href = redirectUrl;
         }
         });
         }
- 
- 
+
         function toggleFormSections() {
         const eduLevel = document.getElementById('EducationLevel').value;
         const uniSection = document.getElementById('uniFormSection');
@@ -417,13 +425,13 @@
         if (eduLevel === 'Lise') {
         uniSection.classList.add('d-none');
         liseSection.classList.remove('d-none');
-                    
+
         uniInputs.forEach(el => el.disabled = true);
         liseInputs.forEach(el => el.disabled = false);
         } else {
         liseSection.classList.add('d-none');
         uniSection.classList.remove('d-none');
-                
+
         liseInputs.forEach(el => el.disabled = true);
         uniInputs.forEach(el => el.disabled = false);
         }
@@ -433,6 +441,21 @@
         const savedTheme = localStorage.getItem('theme') || 'light';
         updateUI(savedTheme);
         toggleFormSections();
+
+        const todayObj = new Date();
+        todayObj.setMinutes(todayObj.getMinutes() - todayObj.getTimezoneOffset());
+        const minDateStr = todayObj.toISOString().split('T')[0];
+
+        const maxYearObj = new Date();
+        maxYearObj.setFullYear(maxYearObj.getFullYear() + 1);
+        maxYearObj.setMinutes(maxYearObj.getMinutes() - maxYearObj.getTimezoneOffset());
+        const maxDateStr = maxYearObj.toISOString().split('T')[0];
+
+        document.getElementById('StartDate').setAttribute('min', minDateStr);
+        document.getElementById('StartDate').setAttribute('max', maxDateStr);
+
+        document.getElementById('EndDate').setAttribute('min', minDateStr);
+        document.getElementById('EndDate').setAttribute('max', maxDateStr);
         });
 
         document.querySelectorAll('.real-file-input').forEach(input => {
@@ -451,10 +474,19 @@
         });
         });
 
-      
         document.getElementById('applicationForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-                    
+
+        const startDateVal = document.getElementById('StartDate').value;
+        const endDateVal = document.getElementById('EndDate').value;
+
+        if (startDateVal && endDateVal) {
+        if (startDateVal > endDateVal) {
+        showThemedAlert('Geçersiz Tarih Aralığı!', 'Bitiş tarihi, başlangıç tarihinden önce olamaz.', 'warning');
+        return;
+        }
+        }
+
         const btn = document.getElementById('btnSubmit');
         const formData = new FormData(this);
 

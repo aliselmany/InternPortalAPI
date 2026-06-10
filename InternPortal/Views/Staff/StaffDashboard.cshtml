@@ -35,8 +35,8 @@
         }
 
         .kanban-col {
-            min-width: 320px;
-            max-width: 320px;
+            min-width: 340px;
+            max-width: 340px;
             border-radius: 12px;
             display: flex;
             flex-direction: column;
@@ -51,6 +51,7 @@
 
         .kanban-col-header {
             padding: 1.2rem;
+            font-size: 1.15rem !important;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
@@ -91,6 +92,8 @@
             background: var(--input-bg);
             border: 1px solid var(--input-border);
             color: var(--text-main);
+            font-size: 1.05rem !important;
+            font-weight: 500 !important;
             box-shadow: 0 1px 3px var(--shadow);
             transition: transform 0.2s, border-color 0.2s;
         }
@@ -106,8 +109,8 @@
 
         .delete-task-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 12px;
+            right: 12px;
             opacity: 0;
             transition: all 0.2s;
             cursor: pointer;
@@ -546,6 +549,17 @@
         });
         });
 
+        // KURŞUN GEÇİRMEZ OLAY DELEGASYONU (SİLME İŞLEMİ İÇİN)
+        document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('delete-task-btn')) {
+        e.stopPropagation(); // Modalın açılmasını engeller
+        const taskId = e.target.getAttribute('data-delete-id');
+        if (taskId) {
+        deleteTask(taskId);
+        }
+        }
+        });
+
         async function loadInternData() {
         if (!currentStaffId) return;
 
@@ -682,10 +696,11 @@
         ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(id => document.getElementById(id).innerHTML = '');
 
         tasks.forEach(task => {
+        // BURASI GÜNCELLENDİ: onclick yerine data-delete-id eklendi.
         const cardHtml = `
         <div class="kanban-card shadow-sm" data-task-id="${task.id}" onclick="openTaskModal(${task.id})">
         ${task.title}
-        <i class="bi bi-trash3 delete-task-btn" onclick="event.stopPropagation(); deleteTask(${task.id})"></i>
+        <i class="bi bi-trash3 delete-task-btn" data-delete-id="${task.id}"></i>
         </div>`;
         document.getElementById(task.status).insertAdjacentHTML('beforeend', cardHtml);
         });
@@ -718,12 +733,11 @@
         const taskTitle = inputElement.value.trim();
         if (!taskTitle) { inputElement.focus(); return; }
 
-        const newTask = { title: taskTitle, internId: currentInternId, staffId: currentStaffId, status: status };
         try {
         const response = await fetch(`${API_URL}/api/KanbanTasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify(newTask)
+        body: JSON.stringify({ title: taskTitle, internId: currentInternId, staffId: currentStaffId, status: status })
         });
 
         if (response.ok) {
@@ -736,6 +750,7 @@
         } catch (error) { console.error("Ekleme hatası:", error); }
         }
 
+        // BURASI GÜNCELLENDİ: Sadece taskId bekliyor, event nesnesi yukarıdaki dinleyicide halledildi.
         async function deleteTask(taskId) {
         const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
         const result = await Swal.fire({
@@ -1021,7 +1036,7 @@
 
         if (response.ok) {
         const currentTaskId = document.getElementById('currentOpenTaskId').value;
-        loadTaskComments(currentTaskId); 
+        loadTaskComments(currentTaskId);
         } else {
         const err = await response.json();
         Swal.fire('Hata', err.message || 'Yorum silinemedi.', 'error');
