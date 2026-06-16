@@ -1,0 +1,311 @@
+﻿@{
+    ViewData["Title"] = "Tüm Stajyerler";
+    ViewData["HideNavbar"] = true;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/staff-portal.css" asp-append-version="true" />
+
+    <style>
+        body, html {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .workspace-section {
+            padding: 3rem 5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-bottom: 5rem;
+        }
+
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 25px;
+            margin-top: 2rem;
+        }
+
+        .intern-board-card {
+            border-radius: 12px;
+            height: 180px;
+            padding: 22px;
+            font-weight: 600;
+            font-size: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+            .intern-board-card .kanban-icon {
+                font-size: 1.9rem;
+                opacity: 0.3;
+                transition: opacity 0.3s;
+                cursor: pointer;
+            }
+
+            .intern-board-card:hover {
+                transform: translateY(-6px);
+                border-color: var(--text-main) !important;
+            }
+
+                .intern-board-card:hover .kanban-icon {
+                    opacity: 1;
+                    color: var(--text-main) !important;
+                }
+
+        .time-badge {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(108, 117, 125, 0.1);
+            border: 1px solid rgba(108, 117, 125, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .section-title {
+            letter-spacing: 1px;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .placeholder-card {
+            border-radius: 12px;
+            height: 180px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: default;
+            border-style: dashed;
+            border-width: 2px;
+        }
+
+        [data-bs-theme="dark"] body, [data-bs-theme="dark"] html {
+            background-color: #1a1d20;
+            color: #f8f9fa;
+        }
+
+        [data-bs-theme="dark"] .intern-board-card {
+            background: linear-gradient(135deg, #2b3035 0%, #1a1d20 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+            [data-bs-theme="dark"] .intern-board-card:hover {
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            }
+
+            [data-bs-theme="dark"] .intern-board-card .kanban-icon {
+                color: #ffffff;
+            }
+
+        [data-bs-theme="dark"] .section-title {
+            color: #f8f9fa;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        [data-bs-theme="dark"] .placeholder-card {
+            background: transparent;
+            border-color: rgba(255,255,255,0.2);
+        }
+
+            [data-bs-theme="dark"] .placeholder-card span {
+                color: #adb5bd !important;
+            }
+
+        [data-bs-theme="dark"] .time-badge {
+            color: #adb5bd;
+        }
+
+        [data-bs-theme="light"] body, [data-bs-theme="light"] html {
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        [data-bs-theme="light"] .intern-board-card {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            color: #212529;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+            [data-bs-theme="light"] .intern-board-card:hover {
+                box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            }
+
+            [data-bs-theme="light"] .intern-board-card .kanban-icon {
+                color: #212529;
+            }
+
+        [data-bs-theme="light"] .section-title {
+            color: #212529;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        [data-bs-theme="light"] .placeholder-card {
+            background: transparent;
+            border-color: #ced4da;
+        }
+
+            [data-bs-theme="light"] .placeholder-card span {
+                color: #6c757d !important;
+            }
+
+        [data-bs-theme="light"] .time-badge {
+            color: #6c757d;
+        }
+
+        .mentor-title-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+    </style>
+}
+
+<partial name="_StaffNavbarPartial" />
+
+<div class="workspace-section">
+    <h3 class="section-title">
+        <i class="bi bi-people-fill me-2"></i> Tüm Stajyerler Yönetimi
+    </h3>
+
+    <div class="board-grid" id="internBoardsContainer">
+        <div class="placeholder-card" id="placeholderCard">
+            <span class="text-secondary small fw-bold" id="placeholderText">Yükleniyor...</span>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ThemeScriptsPartial" />
+    <script>
+        const API_URL = "https://localhost:7166";
+        const token = localStorage.getItem('token');
+
+        if (!token) window.location.replace('/Account/Login');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileLink = document.querySelector('a[href="/Staff/StaffProfile"]');
+            if (profileLink) {
+                profileLink.setAttribute('href', '/Admin/Dashboard');
+                profileLink.innerHTML = '<i class="bi bi-speedometer2 fs-5"></i> Admin Dashboard';
+            }
+
+            const logoLink = document.querySelector('.navbar-brand') || document.querySelector('a[href="/Staff/StaffDashboardIndex"]');
+            if (logoLink) {
+                logoLink.setAttribute('href', '/Admin/Interns');
+            }
+
+            loadAllInterns();
+        });
+
+        function calculateRemainingTime(endDateString) {
+            if (!endDateString) return "Süre belirsiz";
+
+            const endDate = new Date(endDateString);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            endDate.setHours(0, 0, 0, 0);
+
+            if (endDate < today) return "Staj bitti";
+
+            let months = endDate.getMonth() - today.getMonth() + (12 * (endDate.getFullYear() - today.getFullYear()));
+            let days = endDate.getDate() - today.getDate();
+            if (days < 0) {
+                months--;
+                const previousMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate();
+                days += previousMonth;
+            }
+            if (months === 0 && days === 0) return "Son gün";
+
+            let result = "";
+            if (months > 0) result += `${months} ay `;
+            if (days > 0) result += `${days} gün `;
+            return result.trim() + " kaldı";
+        }
+
+        async function loadAllInterns() {
+            try {
+                const response = await fetch(`${API_URL}/api/Users/active-boards`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const interns = await response.json();
+
+                    // F12 KONSOLUNA BAK! Backend bize tam olarak ne gönderiyor görelim.
+                    console.log("API'DEN GELEN TÜM STAJYER VERİSİ:", interns);
+
+                    const placeholder = document.getElementById('placeholderCard');
+                    const placeholderText = document.getElementById('placeholderText');
+
+                    if (interns.length === 0) {
+                        placeholderText.innerHTML = "Aktif stajyer veya pano bulunamadı.";
+                        return;
+                    }
+
+                    interns.forEach(intern => {
+                     
+                        const rawDate = intern.endDate || intern.EndDate || intern.internshipEndDate || intern.InternshipEndDate;
+                        const rawMentorName = intern.mentorName || intern.MentorName || "Atanmadı";
+                        const rawFullName = intern.fullName || intern.FullName || "İsimsiz Stajyer";
+                        const rawId = intern.id || intern.Id;
+
+                        const remainingTime = calculateRemainingTime(rawDate);
+
+                        const cardHtml = `
+                        <div class="intern-board-card" onclick="goToBoard('${rawId}')" title="Panoya Git">
+                            <div>
+                                <div class="mentor-title-text">
+                                    SORUMLU STAFF: ${rawMentorName}
+                                </div>
+                                <div style="font-size: 1.35rem; color: var(--text-main); font-weight: 700;">
+                                    ${rawFullName}
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-end w-100">
+                                <span class="time-badge shadow-sm"><i class="bi bi-hourglass-split me-1"></i>${remainingTime}</span>
+                            </div>
+                        </div>`;
+
+                        placeholder.insertAdjacentHTML('beforebegin', cardHtml);
+                    });
+
+                    placeholder.style.display = 'none';
+
+                } else {
+                    document.getElementById('placeholderCard').innerHTML = `<span class="text-danger small fw-bold">Veritabanına ulaşılamadı (Hata Kodu: ${response.status}).</span>`;
+                }
+            } catch (error) {
+                document.getElementById('placeholderCard').innerHTML = '<span class="text-danger small fw-bold">API Bağlantı Hatası! Backend ayakta mı?</span>';
+            }
+        }
+
+        function goToBoard(internId) {
+            window.location.href = `/Admin/AdminDashboard?internId=${internId}`;
+        }
+    </script>
+}

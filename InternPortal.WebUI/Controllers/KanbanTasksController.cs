@@ -52,7 +52,7 @@ namespace InternPortalAPI.Controllers
 
             return Ok(comments);
         }
-        
+         
         [HttpPut("move")]
         public async Task<IActionResult> MoveTask([FromBody] MoveKanbanTaskDto dto)
         {

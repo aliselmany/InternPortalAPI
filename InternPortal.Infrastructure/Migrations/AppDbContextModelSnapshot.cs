@@ -112,6 +112,45 @@ namespace InternPortal.Infrastructure.Migrations
                     b.ToTable("Applications");
                 });
 
+            modelBuilder.Entity("InternPortal.Domain.Entities.InternTransferRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("FromStaffId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("InternId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ToStaffId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromStaffId");
+
+                    b.HasIndex("InternId");
+
+                    b.HasIndex("ToStaffId");
+
+                    b.ToTable("InternTransferRequests");
+                });
+
             modelBuilder.Entity("InternPortal.Domain.Entities.KanbanTask", b =>
                 {
                     b.Property<int>("Id")
@@ -372,6 +411,33 @@ namespace InternPortal.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("InternPortal.Domain.Entities.InternTransferRequest", b =>
+                {
+                    b.HasOne("InternPortal.Domain.Entities.User", "FromStaff")
+                        .WithMany()
+                        .HasForeignKey("FromStaffId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("InternPortal.Domain.Entities.User", "Intern")
+                        .WithMany()
+                        .HasForeignKey("InternId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("InternPortal.Domain.Entities.User", "ToStaff")
+                        .WithMany()
+                        .HasForeignKey("ToStaffId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromStaff");
+
+                    b.Navigation("Intern");
+
+                    b.Navigation("ToStaff");
                 });
 
             modelBuilder.Entity("InternPortal.Domain.Entities.KanbanTask", b =>

@@ -15,6 +15,9 @@ public class AppDbContext : DbContext
     public DbSet<TaskComment> TaskComments { get; set; }
     public DbSet<KanbanComment> KanbanComments { get; set; }
 
+
+    public DbSet<InternTransferRequest> InternTransferRequests { get; set; }
+
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         foreach (var entry in ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted))
@@ -36,7 +39,6 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
         modelBuilder.Entity<KanbanTask>().HasQueryFilter(k => !k.IsDeleted);
         modelBuilder.Entity<UserSocialAccount>().HasQueryFilter(s => !s.IsDeleted);
-
         modelBuilder.Entity<TaskComment>().HasQueryFilter(tc => !tc.IsDeleted);
 
         modelBuilder.Entity<UserRoleMapping>().ToTable("UserRoleMappings");
@@ -70,6 +72,25 @@ public class AppDbContext : DbContext
             .WithMany(u => u.SocialAccounts)
             .HasForeignKey(s => s.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+    
+        modelBuilder.Entity<InternTransferRequest>()
+            .HasOne(r => r.Intern)
+            .WithMany()
+            .HasForeignKey(r => r.InternId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<InternTransferRequest>()
+            .HasOne(r => r.FromStaff)
+            .WithMany()
+            .HasForeignKey(r => r.FromStaffId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<InternTransferRequest>()
+            .HasOne(r => r.ToStaff)
+            .WithMany()
+            .HasForeignKey(r => r.ToStaffId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         var appEntity = modelBuilder.Entity<InternPortal.Domain.Entities.Application>();
 

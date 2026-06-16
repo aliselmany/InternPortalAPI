@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Cryptography.X509Certificates;
 
 namespace InternPortal.WebUI.Controllers
 {
@@ -9,5 +11,20 @@ namespace InternPortal.WebUI.Controllers
         {
             return View();
         }
+
+        public IActionResult Interns()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult AdminDashboard(Guid internId)
+        {
+            ViewBag.InternId = internId;
+            return View();
+        }
+
+
     }
+
 }

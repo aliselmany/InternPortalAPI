@@ -344,6 +344,80 @@
         }
       }
     },
+    "/api/InternTransfers/request-transfer": {
+      "post": {
+        "tags": [
+          "InternTransfers"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateTransferRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateTransferRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateTransferRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/InternTransfers/pending-requests": {
+      "get": {
+        "tags": [
+          "InternTransfers"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/InternTransfers/respond-transfer": {
+      "post": {
+        "tags": [
+          "InternTransfers"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.RespondTransferRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.RespondTransferRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.RespondTransferRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/KanbanTasks/intern/{internId}": {
       "get": {
         "tags": [
@@ -1176,6 +1250,18 @@
         }
       }
     },
+    "/api/Users/active-boards": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Users/update-mentor-profile": {
       "put": {
         "tags": [
@@ -1455,6 +1541,24 @@
         },
         "additionalProperties": false
       },
+      "InternPortal.Application.Dtos.CreateTransferRequestDto": {
+        "type": "object",
+        "properties": {
+          "internId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "toStaffId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "InternPortal.Application.Dtos.CreateUserDto": {
         "required": [
           "email",
@@ -1537,6 +1641,19 @@
           "newOrderIndex": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InternPortal.Application.Dtos.RespondTransferRequestDto": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isApproved": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false

@@ -492,14 +492,23 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="fs-5 text-muted mb-4">Seçili stajyeri kendi sorumluluğunuzdan çıkarıp başka bir personele (mentöre) devretmek için aşağıdan seçim yapın.</p>
-                <label class="form-label text-muted fw-bold text-uppercase" style="letter-spacing: 1px;">Yeni Mentör Seçin:</label>
-                <select id="mentorSelect" class="form-select mb-4 shadow-sm" style="padding: 1rem !important; font-size: 1rem !important; background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 12px;">
-                    <option value="">Yükleniyor...</option>
-                </select>
+                <p class="fs-5 text-muted mb-4">Seçili stajyeri kendi sorumluluğunuzdan çıkarıp başka bir personele (mentöre) devretmek için admin onayına bir talep gönderin.</p>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">Yeni Mentör Seçin:</label>
+                    <select id="mentorSelect" class="form-select shadow-sm" style="padding: 1rem !important; font-size: 1rem !important; background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 12px;">
+                        <option value="">Yükleniyor...</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">Devir Sebebi (Opsiyonel):</label>
+                    <textarea id="transferReasonInput" class="form-control shadow-sm" rows="3" placeholder="Lütfen bu devir işleminin nedenini admin için kısaca açıklayın..." style="padding: 1rem !important; font-size: 1rem !important; background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 12px; resize: none;"></textarea>
+                </div>
+
                 <div class="d-flex justify-content-end mt-2">
                     <button class="btn btn-theme-custom px-5 py-3 fw-bold fs-5 rounded-3" onclick="executeTransfer()">
-                        Devret
+                        Talep Gönder
                     </button>
                 </div>
             </div>
@@ -549,10 +558,9 @@
         });
         });
 
-        // KURŞUN GEÇİRMEZ OLAY DELEGASYONU (SİLME İŞLEMİ İÇİN)
         document.addEventListener('click', function(e) {
         if (e.target && e.target.classList.contains('delete-task-btn')) {
-        e.stopPropagation(); // Modalın açılmasını engeller
+        e.stopPropagation(); 
         const taskId = e.target.getAttribute('data-delete-id');
         if (taskId) {
         deleteTask(taskId);
@@ -601,6 +609,7 @@
 
         const select = document.getElementById('mentorSelect');
         select.innerHTML = '<option value="">Mentörler aranıyor...</option>';
+        document.getElementById('transferReasonInput').value = ''; 
 
         try {
         const response = await fetch(`${API_URL}/api/Users/available-mentors`, {
@@ -625,6 +634,8 @@
 
         async function executeTransfer() {
         const mentorId = document.getElementById('mentorSelect').value;
+        const reasonText = document.getElementById('transferReasonInput').value.trim();
+
         if (!mentorId) {
         Swal.fire('Eksik Seçim', 'Lütfen devredeceğiniz personeli seçin.', 'warning');
         return;
@@ -636,10 +647,10 @@
 
         const result = await Swal.fire({
         title: 'Emin misiniz?',
-        text: `${internName} isimli stajyeri devretmek üzeresiniz.`,
+        text: `${internName} isimli stajyer için devir talebi oluşturulacak ve admin onayına sunulacaktır.`,
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Evet, Devret',
+        confirmButtonText: 'Evet, Talebi Gönder',
         cancelButtonText: 'İptal',
         background: isDark ? '#1e1e1e' : '#fff',
         color: isDark ? '#fff' : '#000',
@@ -652,33 +663,41 @@
 
         if (result.isConfirmed) {
         try {
-        const response = await fetch(`${API_URL}/api/Users/assign-mentor`, {
+        const response = await fetch(`${API_URL}/api/InternTransfers/request-transfer`, {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ internId: currentInternId, mentorId: mentorId })
+        body: JSON.stringify({
+        internId: currentInternId,
+        toStaffId: mentorId,
+        reason: reasonText
+        })
         });
 
         if (response.ok) {
-        bootstrap.Modal.getInstance(document.getElementById('transferModal')).hide();
-        Swal.fire({ icon: 'success', title: 'Başarıyla Devredildi', showConfirmButton: false, timer: 2000 });
+        const modalInstance = bootstrap.Modal.getInstance(document.getElementById('transferModal'));
+        if (modalInstance) modalInstance.hide();
 
-        currentInternId = null;
-        document.getElementById('kanbanBoard').innerHTML = '';
-        const navDisplay = document.getElementById('navbarInternNameDisplay');
-        if(navDisplay) navDisplay.innerHTML = `<i class="bi bi-person-workspace text-secondary me-2"></i> Stajyer Seçilmedi`;
-
-        setTimeout(() => {
-        window.location.href = '/Staff/StaffDashboardIndex';
-        }, 1500);
+        Swal.fire({
+        icon: 'success',
+        title: 'Talep Gönderildi',
+        text: 'Devir talebiniz başarıyla oluşturuldu. Admin onayından sonra devir işlemi gerçekleşecektir.',
+        confirmButtonColor: '#ffc107'
+        });
+    
+        document.getElementById('transferReasonInput').value = '';
+        loadTasks();
 
         } else {
         const err = await response.json();
-        Swal.fire('Hata', err.message || 'Devir işlemi başarısız oldu.', 'error');
+        Swal.fire('Hata', err.message || 'Devir talebi oluşturulamadı.', 'error');
         }
-        } catch (error) { console.error(error); }
+        } catch (error) {
+        console.error(error);
+        Swal.fire('Hata', 'Sunucuya bağlanırken teknik bir sorun oluştu.', 'error');
+        }
         }
         }
 
@@ -696,7 +715,6 @@
         ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(id => document.getElementById(id).innerHTML = '');
 
         tasks.forEach(task => {
-        // BURASI GÜNCELLENDİ: onclick yerine data-delete-id eklendi.
         const cardHtml = `
         <div class="kanban-card shadow-sm" data-task-id="${task.id}" onclick="openTaskModal(${task.id})">
         ${task.title}
@@ -750,7 +768,6 @@
         } catch (error) { console.error("Ekleme hatası:", error); }
         }
 
-        // BURASI GÜNCELLENDİ: Sadece taskId bekliyor, event nesnesi yukarıdaki dinleyicide halledildi.
         async function deleteTask(taskId) {
         const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
         const result = await Swal.fire({
@@ -1039,7 +1056,7 @@
         loadTaskComments(currentTaskId);
         } else {
         const err = await response.json();
-        Swal.fire('Hata', err.message || 'Yorum silinemedi.', 'error');
+        Swal.fire('Hata', err.message || 'Yorum silnemedi.', 'error');
         }
         } catch (error) {
         console.error("Yorum silme hatası:", error);

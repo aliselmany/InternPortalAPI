@@ -7,7 +7,7 @@ namespace InternPortal.WebUI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Intern")]
+[Authorize(Roles = "Admin")]
 public class RolesController : ControllerBase
 {
     private readonly IRolesService _rolesService;
@@ -33,7 +33,7 @@ public class RolesController : ControllerBase
 
         if (!result.IsSuccess)
         {
-            return BadRequest(new { message = result.Message });
+         return BadRequest(new { message = result.Message });
         }
 
         return Ok(new { message = "Role created successfully." });

@@ -1,5 +1,47 @@
 [
   {
+    "ContainingType": "InternPortal.WebUI.Controllers.InternTransfersController",
+    "Method": "GetPendingRequests",
+    "RelativePath": "api/InternTransfers/pending-requests",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.InternTransfersController",
+    "Method": "RequestTransfer",
+    "RelativePath": "api/InternTransfers/request-transfer",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "InternPortal.Application.Dtos.CreateTransferRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.InternTransfersController",
+    "Method": "RespondTransfer",
+    "RelativePath": "api/InternTransfers/respond-transfer",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "InternPortal.Application.Dtos.RespondTransferRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
     "Method": "CreateTask",
     "RelativePath": "api/KanbanTasks",
@@ -293,6 +335,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.UsersController",
+    "Method": "GetActiveKanbanBoards",
+    "RelativePath": "api/Users/active-boards",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

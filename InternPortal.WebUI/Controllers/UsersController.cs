@@ -1,10 +1,13 @@
 ﻿using InternPortal.Application.Common;
 using InternPortal.Application.Dtos;
 using InternPortal.Application.Interfaces;
+using InternPortal.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Text.RegularExpressions; 
+using System.Text.RegularExpressions;
+
 namespace InternPortal.WebUI.Controllers;
 
 [ApiController]
@@ -13,15 +16,19 @@ public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IMailService _mailService;
+    // ÇÖZÜM: GetActiveKanbanBoards metodunda kullandığın servis buraya eklendi
+    private readonly IApplicationService _applicationService;
 
     private static readonly Regex PasswordPolicyRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$");
 
     private const string PasswordPolicyErrorMessage = "Şifreniz kurallara uymuyor! Güvenliğiniz için şifreniz en az 8 karakter uzunluğunda olmalı; en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir.";
 
-    public UsersController(IUserService userService, IMailService mailService)
+    // ÇÖZÜM: IApplicationService Constructor (Yapıcı Metot) içerisine inject edildi
+    public UsersController(IUserService userService, IMailService mailService, IApplicationService applicationService)
     {
         _userService = userService;
         _mailService = mailService;
+        _applicationService = applicationService;
     }
 
     [HttpGet("me")]
@@ -143,6 +150,39 @@ public class UsersController : ControllerBase
 
         var usersByName = await _userService.GetUsersByRoleNameAsync(roleIdentifier);
         return Ok(usersByName);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("active-boards")]
+    public async Task<IActionResult> GetActiveKanbanBoards()
+    {
+        try
+        {
+            var allUsers = await _userService.GetAllUsersAsync(new GetUserFilterDto());
+
+            if (allUsers == null) return Ok(new List<object>());
+
+            var result = allUsers
+                .Where(u => u.Roles != null && (u.Roles.Contains("Stajyer") || u.Roles.Contains("Intern")))
+                .Select(u => new
+                {
+                    Id = u.Id,
+                    FullName = !string.IsNullOrEmpty(u.Surname) ? $"{u.Name} {u.Surname}" : u.Name,
+
+                    MentorName = u.MentorId.HasValue
+                        ? allUsers.FirstOrDefault(m => m.Id == u.MentorId.Value)?.Name + " " + allUsers.FirstOrDefault(m => m.Id == u.MentorId.Value)?.Surname
+                        : "Atanmadı",
+
+                    EndDate = u.EndDate
+                })
+                .ToList();
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Aktif panolar listelenirken sunucu hatası oluştu.", error = ex.Message });
+        }
     }
 
     [Authorize(Roles = "Admin,Staff")]
