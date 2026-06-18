@@ -8,13 +8,7 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
     <style>
-        body, html {
-            height: 100vh !important;
-            overflow: hidden !important;
-            margin: 0;
-            padding: 0;
-        }
-
+       
         .board-wrapper {
             height: calc(100vh - 85px);
             margin-top: 85px;
@@ -22,13 +16,15 @@
             flex-direction: column;
             overflow: hidden;
             width: 133.33vw;
+            position: relative;
         }
 
+     
         .kanban-canvas {
             flex-grow: 1;
             display: flex;
             align-items: flex-start;
-            padding: 2rem 4rem;
+            padding: 2rem 12rem 2rem 4rem;
             gap: 2rem;
             overflow-x: auto;
             overflow-y: hidden;
@@ -46,7 +42,6 @@
             background: var(--card-bg);
             border-color: var(--input-border);
             box-shadow: 0 4px 6px var(--shadow);
-            height: auto;
         }
 
         .kanban-col-header {
@@ -147,6 +142,35 @@
                 border-color: var(--text-muted);
             }
 
+        .add-card-form {
+            padding: 0 0.8rem 0.8rem 0.8rem;
+        }
+
+        .inline-add-input {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--input-border) !important;
+            border-radius: 8px !important;
+            resize: none !important;
+            font-size: 0.95rem !important;
+            padding: 0.8rem !important;
+        }
+
+            .inline-add-input:focus {
+                background-color: var(--card-bg) !important;
+                border-color: var(--text-muted) !important;
+                box-shadow: none !important;
+            }
+
+        .close-add-form {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+            .close-add-form:hover {
+                color: var(--text-main) !important;
+            }
+
         [data-bs-theme="dark"] .kanban-col {
             background: #212529;
         }
@@ -155,9 +179,19 @@
             background: #2b3035;
         }
 
-        .custom-task-modal .modal-dialog {
-            max-width: 65% !important;
-            margin-top: 5rem;
+       
+        #taskDetailModal .modal-dialog {
+            max-width: 1600px !important;
+            width: 80vw !important;
+            margin-top: 5rem !important;
+        }
+
+        #applyTemplateModal .modal-dialog {
+            max-width: 480px !important;
+        }
+
+        #transferModal .modal-dialog {
+            max-width: 45vw !important;
         }
 
         .custom-task-modal .modal-content {
@@ -207,33 +241,43 @@
                 opacity: 0.85;
             }
 
-        .inline-add-input {
+        
+        .comments-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .comments-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .comments-container::-webkit-scrollbar-thumb {
+            background-color: var(--input-border);
+            border-radius: 10px;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .template-list-item:hover {
+            background-color: var(--card-bg) !important;
+            cursor: default;
+        }
+
+        .dropdown-item:hover {
             background-color: var(--input-bg) !important;
+        }
+
+        .btn-outline-secondary:hover {
             color: var(--text-main) !important;
-            border: 1px solid var(--input-border) !important;
-            border-radius: 8px !important;
-            resize: none !important;
-            font-size: 0.95rem !important;
-            padding: 0.8rem !important;
-        }
-
-            .inline-add-input:focus {
-                background-color: var(--card-bg) !important;
-                border-color: var(--text-muted) !important;
-                box-shadow: none !important;
-            }
-
-        .close-add-form {
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-            .close-add-form:hover {
-                color: var(--text-main) !important;
-            }
-
-        .add-card-form {
-            padding: 0 0.8rem 0.8rem 0.8rem;
         }
 
         .editor-wrapper {
@@ -313,36 +357,91 @@
             font-style: normal;
         }
 
-        .comments-container::-webkit-scrollbar {
-            width: 6px;
+      
+        body.swal2-shown .swal2-input,
+        body.swal2-shown .swal2-textarea {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border: 2px solid var(--input-border) !important;
+            border-radius: 12px !important;
+            box-shadow: none !important;
+            box-sizing: border-box !important;
+            width: 90% !important; 
+            max-width: 100% !important;
+            margin: 1.5em auto !important; 
         }
 
-        .comments-container::-webkit-scrollbar-track {
-            background: transparent;
+        .swal2-input:focus, .swal2-textarea:focus, .form-control:focus {
+            box-shadow: none !important;
+            border-color: var(--text-muted) !important;
+            outline: none !important;
         }
 
-        .comments-container::-webkit-scrollbar-thumb {
-            background-color: var(--input-border);
-            border-radius: 10px;
+        body.swal2-shown .swal2-popup {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--input-border) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 15px 35px var(--shadow) !important;
+            padding: 2em !important;
         }
 
-        @@keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
+        body.swal2-shown .swal2-title {
+            color: var(--text-main) !important;
+            font-size: 1.5rem !important;
+            font-weight: 700 !important;
+        }
+
+        body.swal2-shown .swal2-html-container {
+            color: var(--text-muted) !important;
+        }
+
+        body.swal2-shown .swal2-actions {
+            gap: 15px;
+            margin-top: 1.8em;
+        }
+
+        [data-bs-theme="dark"] .modal-content .btn-theme-custom, [data-bs-theme="dark"] .swal2-popup .btn-theme-custom {
+            background-color: #2b3035 !important;
+            color: #f8f9fa !important;
+            border-color: #495057 !important;
+        }
+
+            [data-bs-theme="dark"] .modal-content .btn-theme-custom:hover, [data-bs-theme="dark"] .swal2-popup .btn-theme-custom:hover {
+                background-color: #343a40 !important;
+                border-color: #6c757d !important;
             }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        [data-bs-theme="dark"] .modal-content .btn-secondary, [data-bs-theme="dark"] .swal2-popup .btn-secondary {
+            background-color: #495057 !important;
+            color: #fff !important;
+            border-color: #495057 !important;
         }
+
+            [data-bs-theme="dark"] .modal-content .btn-secondary:hover, [data-bs-theme="dark"] .swal2-popup .btn-secondary:hover {
+                background-color: #343a40 !important;
+                border-color: #495057 !important;
+            }
     </style>
 }
 
 <partial name="_StaffNavbarPartial" />
 
 <div class="board-wrapper">
+
+    <div class="dropdown" id="boardActionDropdown" style="display: none; position: absolute; top: 1.5rem; right: 4rem; z-index: 100;">
+        <button class="btn btn-outline-secondary btn-sm px-3 py-2 fw-bold dropdown-toggle" type="button" data-bs-toggle="dropdown" style="border-radius: 8px; border-color: var(--input-border); color: var(--text-muted); background-color: var(--card-bg);">
+            <i class="bi bi-gear me-1"></i>  Pano İşlemleri
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow" style="background-color: var(--card-bg); border-color: var(--input-border); border-radius: 12px; padding: 0.5rem 0;">
+            <li>
+                <a class="dropdown-item py-2 fw-semibold" href="#" onclick="saveAsTemplate()" style="color: var(--text-main);">
+                    <i class="bi bi-bookmark-plus me-2 text-primary"></i>Panoyu Taslak Olarak Kaydet
+                </a>
+            </li>
+        </ul>
+    </div>
+
     <div class="kanban-canvas" id="kanbanBoard">
         <div class="kanban-col">
             <div class="kanban-col-header"><span>Yapılacaklar</span><i class="bi bi-three-dots"></i></div>
@@ -352,7 +451,10 @@
                 <textarea class="form-control mb-2 inline-add-input shadow-none" id="input-ToDo" rows="2" placeholder="Bir başlık girin..."></textarea>
                 <div class="d-flex align-items-center gap-2">
                     <button class="btn btn-theme-custom btn-sm px-3 fw-bold" onclick="submitNewTask('ToDo')">Kart Ekle</button>
-                    <i class="bi bi-x-lg fs-5 text-muted close-add-form" onclick="hideAddCardForm('ToDo')"></i>
+                    <button class="btn btn-outline-secondary btn-sm px-2 fw-bold" onclick="openApplyTemplateModal()" title="Taslaktan Pano Oluştur" style="border-color: var(--input-border); color: var(--text-muted);">
+                        <i class="bi bi-layout-three-columns"></i> Taslaklar
+                    </button>
+                    <i class="bi bi-x-lg fs-5 text-muted close-add-form ms-auto" onclick="hideAddCardForm('ToDo')"></i>
                 </div>
             </div>
             <button class="add-card-btn" id="addBtn-ToDo" onclick="showAddCardForm('ToDo')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
@@ -366,7 +468,10 @@
                 <textarea class="form-control mb-2 inline-add-input shadow-none" id="input-InProgress" rows="2" placeholder="Bir başlık girin..."></textarea>
                 <div class="d-flex align-items-center gap-2">
                     <button class="btn btn-theme-custom btn-sm px-3 fw-bold" onclick="submitNewTask('InProgress')">Kart Ekle</button>
-                    <i class="bi bi-x-lg fs-5 text-muted close-add-form" onclick="hideAddCardForm('InProgress')"></i>
+                    <button class="btn btn-outline-secondary btn-sm px-2 fw-bold" onclick="openApplyTemplateModal()" title="Taslaktan Pano Oluştur" style="border-color: var(--input-border); color: var(--text-muted);">
+                        <i class="bi bi-layout-three-columns"></i> Taslaklar
+                    </button>
+                    <i class="bi bi-x-lg fs-5 text-muted close-add-form ms-auto" onclick="hideAddCardForm('InProgress')"></i>
                 </div>
             </div>
             <button class="add-card-btn" id="addBtn-InProgress" onclick="showAddCardForm('InProgress')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
@@ -380,7 +485,10 @@
                 <textarea class="form-control mb-2 inline-add-input shadow-none" id="input-InReview" rows="2" placeholder="Bir başlık girin..."></textarea>
                 <div class="d-flex align-items-center gap-2">
                     <button class="btn btn-theme-custom btn-sm px-3 fw-bold" onclick="submitNewTask('InReview')">Kart Ekle</button>
-                    <i class="bi bi-x-lg fs-5 text-muted close-add-form" onclick="hideAddCardForm('InReview')"></i>
+                    <button class="btn btn-outline-secondary btn-sm px-2 fw-bold" onclick="openApplyTemplateModal()" title="Taslaktan Pano Oluştur" style="border-color: var(--input-border); color: var(--text-muted);">
+                        <i class="bi bi-layout-three-columns"></i> Taslaklar
+                    </button>
+                    <i class="bi bi-x-lg fs-5 text-muted close-add-form ms-auto" onclick="hideAddCardForm('InReview')"></i>
                 </div>
             </div>
             <button class="add-card-btn" id="addBtn-InReview" onclick="showAddCardForm('InReview')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
@@ -394,7 +502,10 @@
                 <textarea class="form-control mb-2 inline-add-input shadow-none" id="input-Done" rows="2" placeholder="Bir başlık girin..."></textarea>
                 <div class="d-flex align-items-center gap-2">
                     <button class="btn btn-theme-custom btn-sm px-3 fw-bold" onclick="submitNewTask('Done')">Kart Ekle</button>
-                    <i class="bi bi-x-lg fs-5 text-muted close-add-form" onclick="hideAddCardForm('Done')"></i>
+                    <button class="btn btn-outline-secondary btn-sm px-2 fw-bold" onclick="openApplyTemplateModal()" title="Taslaktan Pano Oluştur" style="border-color: var(--input-border); color: var(--text-muted);">
+                        <i class="bi bi-layout-three-columns"></i> Taslaklar
+                    </button>
+                    <i class="bi bi-x-lg fs-5 text-muted close-add-form ms-auto" onclick="hideAddCardForm('Done')"></i>
                 </div>
             </div>
             <button class="add-card-btn" id="addBtn-Done" onclick="showAddCardForm('Done')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
@@ -402,8 +513,26 @@
     </div>
 </div>
 
+<div class="modal fade custom-task-modal" id="applyTemplateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px !important;">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                <h4 class="modal-title fw-bold m-0" style="color: var(--text-main);">
+                    <i class="bi bi-layout-three-columns me-2 text-secondary"></i>Taslaklar
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 pb-4 pt-3">
+                <p class="text-muted mb-4" style="font-size: 0.95rem;">Daha önce kaydettiğiniz taslaklardan birini seçerek bu panoyu anında doldurun.</p>
+                <div id="templateList" style="max-height: 350px; overflow-y: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade custom-task-modal" id="taskDetailModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
 
             <div class="modal-header border-0 pb-0 px-4 pt-4 d-flex justify-content-between align-items-center">
@@ -469,7 +598,7 @@
                         </div>
 
                         <div class="add-comment-box mt-auto pt-2 border-top" style="border-color: var(--input-border) !important;">
-                            <textarea id="newCommentInput" class="form-control mb-2 shadow-none" rows="2" placeholder="Bir yorum yazın..." style="background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 8px; resize: none; font-size: 0.95rem;"></textarea>
+                            <textarea id="newCommentInput" class="form-control mb-2 shadow-none" rows="2" placeholder="Personel olarak yorum yazın..." style="background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 8px; resize: none; font-size: 0.95rem;"></textarea>
                             <button class="btn btn-theme-custom w-100 fw-bold py-2" onclick="addComment()" style="border-radius: 8px;">
                                 Gönder
                             </button>
@@ -483,7 +612,7 @@
 </div>
 
 <div class="modal fade custom-task-modal" id="transferModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog" style="max-width: 45% !important; margin-top: 5rem;">
+    <div class="modal-dialog" style="max-width: 45vw !important; margin-top: 5rem;">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title fw-bold m-0" style="color: var(--text-main);">
@@ -492,7 +621,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="fs-5 text-muted mb-4">Seçili stajyeri kendi sorumluluğunuzdan çıkarıp başka bir personele (mentöre) devretmek için admin onayına bir talep gönderin.</p>
+                <p class="fs-5 text-muted mb-4">Seçili stajyerin sorumluluğunu başka bir personele (mentöre) devretmek için aşağıdan seçim yapın.</p>
 
                 <div class="mb-4">
                     <label class="form-label text-muted fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">Yeni Mentör Seçin:</label>
@@ -551,20 +680,16 @@
 
         quillEditor = new Quill('#taskDescriptionEditor', {
         theme: 'snow',
-        modules: {
-        toolbar: '#quillToolbar'
-        },
+        modules: { toolbar: '#quillToolbar' },
         placeholder: 'Bu görev için detaylı bir açıklama girin...'
         });
         });
 
         document.addEventListener('click', function(e) {
         if (e.target && e.target.classList.contains('delete-task-btn')) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         const taskId = e.target.getAttribute('data-delete-id');
-        if (taskId) {
-        deleteTask(taskId);
-        }
+        if (taskId) { deleteTask(taskId); }
         }
         });
 
@@ -583,6 +708,7 @@
 
         if (interns.length === 0) {
         if(navDisplay) navDisplay.innerHTML = `<i class="bi bi-person-workspace text-secondary me-2"></i> Stajyer Bulunmuyor`;
+        document.getElementById('boardActionDropdown').style.display = 'none';
         return;
         }
 
@@ -609,7 +735,7 @@
 
         const select = document.getElementById('mentorSelect');
         select.innerHTML = '<option value="">Mentörler aranıyor...</option>';
-        document.getElementById('transferReasonInput').value = ''; 
+        document.getElementById('transferReasonInput').value = '';
 
         try {
         const response = await fetch(`${API_URL}/api/Users/available-mentors`, {
@@ -624,12 +750,8 @@
         select.innerHTML += `<option value="${m.id}">${m.fullName} (Doluluk: ${m.currentCount}/${m.maxCapacity})</option>`;
         }
         });
-        } else {
-        select.innerHTML = '<option value="">Mentör listesi çekilemedi.</option>';
-        }
-        } catch (error) {
-        select.innerHTML = '<option value="">Bir hata oluştu.</option>';
-        }
+        } else { select.innerHTML = '<option value="">Mentör listesi çekilemedi.</option>'; }
+        } catch (error) { select.innerHTML = '<option value="">Bir hata oluştu.</option>'; }
         }
 
         async function executeTransfer() {
@@ -654,10 +776,7 @@
         cancelButtonText: 'İptal',
         background: isDark ? '#1e1e1e' : '#fff',
         color: isDark ? '#fff' : '#000',
-        customClass: {
-        confirmButton: 'btn btn-theme-custom px-4 me-2',
-        cancelButton: 'btn btn-secondary px-4'
-        },
+        customClass: { confirmButton: 'btn btn-theme-custom px-4 me-2', cancelButton: 'btn btn-secondary px-4' },
         buttonsStyling: false
         });
 
@@ -665,15 +784,8 @@
         try {
         const response = await fetch(`${API_URL}/api/InternTransfers/request-transfer`, {
         method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-        internId: currentInternId,
-        toStaffId: mentorId,
-        reason: reasonText
-        })
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ internId: currentInternId, toStaffId: mentorId, reason: reasonText })
         });
 
         if (response.ok) {
@@ -681,12 +793,11 @@
         if (modalInstance) modalInstance.hide();
 
         Swal.fire({
-        icon: 'success',
-        title: 'Talep Gönderildi',
+        icon: 'success', title: 'Talep Gönderildi',
         text: 'Devir talebiniz başarıyla oluşturuldu. Admin onayından sonra devir işlemi gerçekleşecektir.',
         confirmButtonColor: '#ffc107'
         });
-    
+
         document.getElementById('transferReasonInput').value = '';
         loadTasks();
 
@@ -694,10 +805,7 @@
         const err = await response.json();
         Swal.fire('Hata', err.message || 'Devir talebi oluşturulamadı.', 'error');
         }
-        } catch (error) {
-        console.error(error);
-        Swal.fire('Hata', 'Sunucuya bağlanırken teknik bir sorun oluştu.', 'error');
-        }
+        } catch (error) { console.error(error); Swal.fire('Hata', 'Sunucuya bağlanırken teknik bir sorun oluştu.', 'error'); }
         }
         }
 
@@ -713,6 +821,13 @@
         globalTasksData = tasks;
 
         ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(id => document.getElementById(id).innerHTML = '');
+
+        const dropActions = document.getElementById('boardActionDropdown');
+        if (tasks.length === 0) {
+        dropActions.style.display = 'none';
+        } else {
+        dropActions.style.display = 'inline-block';
+        }
 
         tasks.forEach(task => {
         const cardHtml = `
@@ -732,10 +847,7 @@
         const inputElement = document.getElementById(`input-${status}`);
         inputElement.focus();
         inputElement.onkeydown = function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        submitNewTask(status);
-        }
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitNewTask(status); }
         };
         }
 
@@ -768,31 +880,167 @@
         } catch (error) { console.error("Ekleme hatası:", error); }
         }
 
+        async function saveAsTemplate() {
+        if (!currentInternId) return;
+
+        const { value: templateName } = await Swal.fire({
+        title: 'Taslak Olarak Kaydet',
+        text: 'Panodaki mevcut tüm kartları gelecekte kullanmak üzere kaydetmek için bir isim belirleyin:',
+        input: 'text',
+        inputPlaceholder: 'Örn: Zorunlu Staj Temel Seviye',
+        showCancelButton: true,
+        confirmButtonText: 'Kaydet',
+        cancelButtonText: 'İptal',
+        background: 'var(--card-bg)', color: 'var(--text-main)',
+        customClass: { confirmButton: 'btn btn-theme-custom px-4 py-2 me-2 fw-bold', cancelButton: 'btn btn-secondary px-4 py-2 fw-bold', input: 'form-control modal-form-control' },
+        buttonsStyling: false,
+        inputValidator: (value) => { if (!value) return 'Lütfen taslak için bir isim girin!'; }
+        });
+
+        if (templateName) {
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTemplates/from-board`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ templateName: templateName, sourceInternId: currentInternId })
+        });
+
+        if (response.ok) {
+        Swal.fire({ icon: 'success', title: 'Başarılı', text: 'Pano başarıyla taslak olarak kaydedildi.', background: 'var(--card-bg)', color: 'var(--text-main)', customClass: { confirmButton: 'btn btn-theme-custom px-4 py-2 fw-bold' }, buttonsStyling: false });
+        } else {
+        const err = await response.json();
+        Swal.fire({ icon: 'error', title: 'Hata', text: err.message, background: 'var(--card-bg)', color: 'var(--text-main)', customClass: { confirmButton: 'btn btn-theme-custom px-4 py-2 fw-bold' }, buttonsStyling: false });
+        }
+        } catch (e) { Swal.fire({ icon: 'error', title: 'Hata', text: 'Sunucuya bağlanılamadı.', background: 'var(--card-bg)', color: 'var(--text-main)', customClass: { confirmButton: 'btn btn-theme-custom px-4 py-2 fw-bold' }, buttonsStyling: false }); }
+        }
+        }
+
+        async function openApplyTemplateModal() {
+        if (!currentInternId) return;
+
+        const modal = new bootstrap.Modal(document.getElementById('applyTemplateModal'));
+        modal.show();
+
+        const listEl = document.getElementById('templateList');
+        listEl.innerHTML = `
+        <div class="text-center py-5">
+        <div class="spinner-border text-secondary mb-3" role="status"></div>
+        <h6 class="text-muted m-0 fw-semibold">Taslaklar aranıyor...</h6>
+        </div>`;
+
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTemplates/my-templates`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+        const templates = await response.json();
+        listEl.innerHTML = '';
+
+        if (templates.length === 0) {
+        listEl.innerHTML = `
+        <div class="text-center py-4 rounded-3" style="background: var(--input-bg); border: 1px dashed var(--input-border);">
+        <i class="bi bi-inbox fs-1 d-block mb-2 text-muted opacity-50"></i>
+        <h6 class="fw-semibold text-muted">Kayıtlı taslağınız bulunmuyor.</h6>
+        <small class="text-muted">Önce dolu bir panodan taslak kaydetmelisiniz.</small>
+        </div>`;
+        return;
+        }
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'd-flex flex-column gap-2';
+
+        templates.forEach(t => {
+        const date = new Date(t.createdAt).toLocaleDateString('tr-TR');
+        wrapper.innerHTML += `
+        <div class="d-flex justify-content-between align-items-center p-3 rounded-3" style="background: var(--input-bg); border: 1px solid var(--input-border); transition: 0.2s;">
+        <div>
+        <h6 class="mb-1 fw-bold" style="color: var(--text-main);">${t.name}</h6>
+        <small class="text-muted" style="font-size: 0.8rem;">
+        <i class="bi bi-card-list me-1"></i>${t.taskCount} Kart &nbsp;&bull;&nbsp; ${date}
+        </small>
+        </div>
+        <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-danger px-2 py-1" onclick="deleteTemplate('${t.id}')" title="Sil"><i class="bi bi-trash3"></i></button>
+        <button class="btn btn-sm btn-theme-custom px-3 py-1 fw-bold" onclick="applyTemplate('${t.id}', '${t.name}')">Seç</button>
+        </div>
+        </div>
+        `;
+        });
+        listEl.appendChild(wrapper);
+        }
+        } catch (e) {
+        listEl.innerHTML = '<div class="text-center py-4 text-danger rounded-3" style="background: var(--input-bg);">Yüklenirken teknik bir hata oluştu.</div>';
+        }
+        }
+
+        async function applyTemplate(templateId, templateName) {
+        const result = await Swal.fire({
+        title: 'Emin misiniz?',
+        text: `"${templateName}" taslağındaki tüm kartlar bu panoya eklenecek.`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Evet, Uygula',
+        cancelButtonText: 'İptal',
+        background: 'var(--card-bg)', color: 'var(--text-main)',
+        customClass: { confirmButton: 'btn btn-theme-custom px-4 py-2 me-2 fw-bold', cancelButton: 'btn btn-secondary px-4 py-2 fw-bold' }, buttonsStyling: false
+        });
+
+        if (result.isConfirmed) {
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTemplates/apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ templateId: templateId, targetInternId: currentInternId })
+        });
+
+        if (response.ok) {
+        const modalInstance = bootstrap.Modal.getInstance(document.getElementById('applyTemplateModal'));
+        if (modalInstance) modalInstance.hide();
+
+        Swal.fire({ icon: 'success', title: 'Uygulandı', text: 'Görevler panoya başarıyla aktarıldı.', background: 'var(--card-bg)', color: 'var(--text-main)', customClass: { confirmButton: 'btn btn-theme-custom px-4 py-2 fw-bold' }, buttonsStyling: false });
+        loadTasks();
+        } else {
+        const err = await response.json();
+        Swal.fire({ icon: 'error', title: 'Hata', text: err.message, background: 'var(--card-bg)', color: 'var(--text-main)', customClass: { confirmButton: 'btn btn-theme-custom px-4 py-2 fw-bold' }, buttonsStyling: false });
+        }
+        } catch (e) { Swal.fire({ icon: 'error', title: 'Hata', text: 'Sunucuya bağlanılamadı.', background: 'var(--card-bg)', color: 'var(--text-main)', customClass: { confirmButton: 'btn btn-theme-custom px-4 py-2 fw-bold' }, buttonsStyling: false }); }
+        }
+        }
+
+        async function deleteTemplate(templateId) {
+        const result = await Swal.fire({
+        title: 'Silinsin mi?', text: 'Taslak kalıcı olarak silinecek!', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sil', cancelButtonText: 'Vazgeç',
+        background: 'var(--card-bg)', color: 'var(--text-main)', customClass: { confirmButton: 'btn btn-danger px-4 py-2 me-2 fw-bold', cancelButton: 'btn btn-secondary px-4 py-2 fw-bold' }, buttonsStyling: false
+        });
+
+        if (result.isConfirmed) {
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTemplates/${templateId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+        if (response.ok) { openApplyTemplateModal(); }
+        else {
+        const err = await response.json();
+        Swal.fire({ icon: 'error', title: 'Hata', text: err.message, background: 'var(--card-bg)', color: 'var(--text-main)', customClass: { confirmButton: 'btn btn-theme-custom px-4 py-2 fw-bold' }, buttonsStyling: false });
+        }
+        } catch (e) { Swal.fire({ icon: 'error', title: 'Hata', text: 'Sunucuya bağlanılamadı.', background: 'var(--card-bg)', color: 'var(--text-main)', customClass: { confirmButton: 'btn btn-theme-custom px-4 py-2 fw-bold' }, buttonsStyling: false }); }
+        }
+        }
+
         async function deleteTask(taskId) {
         const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
         const result = await Swal.fire({
-        title: 'Silinsin mi?',
-        text: "Bu görev kalıcı olarak silinecek!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sil',
-        cancelButtonText: 'Vazgeç',
-        background: isDark ? '#1e1e1e' : '#fff',
-        color: isDark ? '#fff' : '#000',
-        customClass: { confirmButton: 'btn btn-danger px-4 me-2', cancelButton: 'btn btn-secondary px-4' },
-        buttonsStyling: false
+        title: 'Silinsin mi?', text: "Bu görev kalıcı olarak silinecek!", icon: 'warning',
+        showCancelButton: true, confirmButtonText: 'Sil', cancelButtonText: 'Vazgeç',
+        background: isDark ? '#1e1e1e' : '#fff', color: isDark ? '#fff' : '#000',
+        customClass: { confirmButton: 'btn btn-danger px-4 me-2', cancelButton: 'btn btn-secondary px-4' }, buttonsStyling: false
         });
 
         if (result.isConfirmed) {
         try {
         const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+        method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (response.ok) {
-        loadTasks();
-        Swal.fire({ icon: 'success', title: 'Silindi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
-        }
+        if (response.ok) { loadTasks(); Swal.fire({ icon: 'success', title: 'Silindi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 }); }
         } catch (error) { console.error("Silme hatası:", error); }
         }
         }
@@ -803,29 +1051,21 @@
 
         const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
         const result = await Swal.fire({
-        title: 'Görev Silinecek!',
-        text: "Bu işlem geri alınamaz. Onaylıyor musunuz?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Evet, Sil',
-        cancelButtonText: 'İptal',
-        background: isDark ? '#1e1e1e' : '#fff',
-        color: isDark ? '#fff' : '#000',
-        customClass: { confirmButton: 'btn btn-danger px-4 me-2', cancelButton: 'btn btn-secondary px-4' },
-        buttonsStyling: false
+        title: 'Görev Silinecek!', text: "Bu işlem geri alınamaz. Onaylıyor musunuz?", icon: 'warning',
+        showCancelButton: true, confirmButtonText: 'Evet, Sil', cancelButtonText: 'İptal',
+        background: isDark ? '#1e1e1e' : '#fff', color: isDark ? '#fff' : '#000',
+        customClass: { confirmButton: 'btn btn-danger px-4 me-2', cancelButton: 'btn btn-secondary px-4' }, buttonsStyling: false
         });
 
         if (result.isConfirmed) {
         try {
         const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+        method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
         const myModalEl = document.getElementById('taskDetailModal');
         const modal = bootstrap.Modal.getInstance(myModalEl);
         modal.hide();
-
         loadTasks();
         Swal.fire({ icon: 'success', title: 'Görev başarıyla silindi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
         }
@@ -838,9 +1078,7 @@
         const el = document.getElementById(colId);
         if (el) {
         new Sortable(el, {
-        group: 'kanban',
-        animation: 150,
-        ghostClass: 'bg-secondary',
+        group: 'kanban', animation: 150, ghostClass: 'bg-secondary',
         onEnd: function (evt) {
         const taskId = evt.item.getAttribute('data-task-id');
         const newStatus = evt.to.getAttribute('data-status');
@@ -855,8 +1093,7 @@
         async function updateTaskPosition(taskId, newStatus, newOrderIndex) {
         try {
         await fetch(`${API_URL}/api/KanbanTasks/move`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ taskId: parseInt(taskId), newStatus, newOrderIndex })
         });
         } catch (error) { loadTasks(); }
@@ -865,27 +1102,20 @@
         async function loadTaskComments(taskId) {
         const commentsList = document.getElementById('commentsList');
         commentsList.innerHTML = '<div class="text-center text-muted mt-5"><div class="spinner-border spinner-border-sm me-2"></div>Yorumlar Yükleniyor...</div>';
-
         const myUserId = getUserIdFromToken(token);
 
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/comments`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-        });
-
+        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/comments`, { headers: { 'Authorization': `Bearer ${token}` } });
         if (response.ok) {
         const comments = await response.json();
         commentsList.innerHTML = '';
-
         if (comments.length === 0) {
         commentsList.innerHTML = `
         <div class="text-center text-muted mt-5" id="noCommentText" style="font-size: 0.9rem;">
-        <i class="bi bi-chat-square-dots fs-1 mb-2 d-block opacity-50"></i>
-        Henüz yorum yapılmamış.
+        <i class="bi bi-chat-square-dots fs-1 mb-2 d-block opacity-50"></i>Henüz yorum yapılmamış.
         </div>`;
         return;
         }
-
         comments.forEach(c => {
         let deleteButtonHtml = '';
         if (c.userId === myUserId) {
@@ -894,30 +1124,18 @@
         style="cursor: pointer; transition: color 0.2s;"
         onmouseover="this.classList.remove('text-muted'); this.classList.add('text-danger');"
         onmouseout="this.classList.remove('text-danger'); this.classList.add('text-muted');"
-        onclick="deleteTaskComment(${c.id})"
-        title="Yorumu Sil"></i>
-        `;
+        onclick="deleteTaskComment(${c.id})" title="Yorumu Sil"></i>`;
         }
-
         const commentHtml = `
         <div class="comment-item mb-3 p-3 rounded-3" style="background-color: var(--input-bg); border: 1px solid var(--input-border); animation: fadeIn 0.3s ease;">
         <div class="d-flex justify-content-between align-items-start mb-2">
-        <div>
-        <strong style="color: var(--text-main); font-size: 0.9rem;">${c.userName}</strong>
-        <small class="text-muted ms-2" style="font-size: 0.75rem;">${c.createdAt}</small>
-        </div>
-        ${deleteButtonHtml}
-        </div>
-        <p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${c.text}</p>
-        </div>`;
+        <div><strong style="color: var(--text-main); font-size: 0.9rem;">${c.userName}</strong><small class="text-muted ms-2" style="font-size: 0.75rem;">${c.createdAt}</small></div>
+        ${deleteButtonHtml}</div><p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${c.text}</p></div>`;
         commentsList.insertAdjacentHTML('beforeend', commentHtml);
         });
-
         commentsList.scrollTop = commentsList.scrollHeight;
         }
-        } catch (error) {
-        commentsList.innerHTML = '<div class="text-center text-danger mt-5">Yorumlar yüklenirken bir hata oluştu.</div>';
-        }
+        } catch (error) { commentsList.innerHTML = '<div class="text-center text-danger mt-5">Yorumlar yüklenirken bir hata oluştu.</div>'; }
         }
 
         function openTaskModal(taskId) {
@@ -926,7 +1144,6 @@
 
         document.getElementById('currentOpenTaskId').value = taskId;
         document.getElementById('taskDetailModalLabel').innerHTML = `<i class="bi bi-card-checklist me-2"></i>${task.title}`;
-
         quillEditor.root.innerHTML = task.description || '';
 
         const badge = document.getElementById('taskStatusBadge');
@@ -934,7 +1151,6 @@
         badge.className = `badge text-dark px-3 py-2 bg-${task.status === 'Done' ? 'success' : 'warning'}`;
 
         loadTaskComments(taskId);
-
         const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
         modal.show();
         }
@@ -945,20 +1161,12 @@
 
         try {
         const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/description`, {
-        method: 'PUT',
-        headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-        },
+        method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ description: newDescription })
         });
-
         if (response.ok) {
-        Swal.fire({ icon: 'success', title: 'Açıklama kaydedildi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
         loadTasks();
-        } else {
-        Swal.fire('Hata', 'Açıklama kaydedilemedi.', 'error');
-        }
+        } else { Swal.fire('Hata', 'Açıklama kaydedilemedi.', 'error'); }
         } catch (error) { console.error("Kaydetme hatası:", error); }
         }
 
@@ -968,22 +1176,16 @@
         const commentText = input.value.trim();
 
         if (!commentText || !taskId) return;
-
         input.disabled = true;
 
         try {
         const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/comments`, {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-        },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ text: commentText })
         });
 
         if (response.ok) {
         const newComment = await response.json();
-
         const commentsList = document.getElementById('commentsList');
         const noCommentText = document.getElementById('noCommentText');
         if (noCommentText) noCommentText.style.display = 'none';
@@ -992,75 +1194,45 @@
         let deleteButtonHtml = '';
         if (newComment.userId === myUserId) {
         deleteButtonHtml = `
-        <i class="bi bi-trash3 text-muted ms-2"
-        style="cursor: pointer; transition: color 0.2s;"
+        <i class="bi bi-trash3 text-muted ms-2" style="cursor: pointer; transition: color 0.2s;"
         onmouseover="this.classList.remove('text-muted'); this.classList.add('text-danger');"
         onmouseout="this.classList.remove('text-danger'); this.classList.add('text-muted');"
-        onclick="deleteTaskComment(${newComment.id})"
-        title="Yorumu Sil"></i>
-        `;
+        onclick="deleteTaskComment(${newComment.id})" title="Yorumu Sil"></i>`;
         }
 
         const commentHtml = `
         <div class="comment-item mb-3 p-3 rounded-3" style="background-color: var(--input-bg); border: 1px solid var(--input-border); animation: fadeIn 0.3s ease;">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-        <div>
-        <strong style="color: var(--text-main); font-size: 0.9rem;">${newComment.userName}</strong>
-        <small class="text-muted ms-2" style="font-size: 0.75rem;">${newComment.createdAt}</small>
-        </div>
-        ${deleteButtonHtml}
-        </div>
-        <p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${newComment.text}</p>
-        </div>`;
+        <div class="d-flex justify-content-between align-items-start mb-2"><div><strong style="color: var(--text-main); font-size: 0.9rem;">${newComment.userName}</strong><small class="text-muted ms-2" style="font-size: 0.75rem;">${newComment.createdAt}</small></div>${deleteButtonHtml}</div>
+        <p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${newComment.text}</p></div>`;
 
         commentsList.insertAdjacentHTML('beforeend', commentHtml);
         input.value = '';
         commentsList.scrollTop = commentsList.scrollHeight;
-        } else {
-        Swal.fire('Hata', 'Yorum gönderilirken bir sorun oluştu.', 'error');
-        }
-        } catch (error) {
-        console.error("Yorum gönderme hatası:", error);
-        Swal.fire('Bağlantı Hatası', 'Sunucuya ulaşılamadı.', 'error');
-        } finally {
-        input.disabled = false;
-        input.focus();
-        }
+        } else { Swal.fire('Hata', 'Yorum gönderilirken bir sorun oluştu.', 'error'); }
+        } catch (error) { console.error("Yorum gönderme hatası:", error); Swal.fire('Bağlantı Hatası', 'Sunucuya ulaşılamadı.', 'error'); }
+        finally { input.disabled = false; input.focus(); }
         }
 
         async function deleteTaskComment(commentId) {
         const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-
         const result = await Swal.fire({
-        title: 'Yorum Silinecek!',
-        text: "Bu yorumu silmek istediğinize emin misiniz?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Evet, Sil',
-        cancelButtonText: 'İptal',
-        background: isDark ? '#1e1e1e' : '#fff',
-        color: isDark ? '#fff' : '#000',
-        customClass: { confirmButton: 'btn btn-danger px-4 me-2', cancelButton: 'btn btn-secondary px-4' },
-        buttonsStyling: false
+        title: 'Yorum Silinecek!', text: "Bu yorumu silmek istediğinize emin misiniz?", icon: 'warning',
+        showCancelButton: true, confirmButtonText: 'Evet, Sil', cancelButtonText: 'İptal',
+        background: isDark ? '#1e1e1e' : '#fff', color: isDark ? '#fff' : '#000',
+        customClass: { confirmButton: 'btn btn-danger px-4 me-2', cancelButton: 'btn btn-secondary px-4' }, buttonsStyling: false
         });
 
         if (result.isConfirmed) {
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/comments/${commentId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-        });
-
+        const response = await fetch(`${API_URL}/api/KanbanTasks/comments/${commentId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
         if (response.ok) {
         const currentTaskId = document.getElementById('currentOpenTaskId').value;
         loadTaskComments(currentTaskId);
         } else {
         const err = await response.json();
-        Swal.fire('Hata', err.message || 'Yorum silnemedi.', 'error');
+        Swal.fire('Hata', err.message || 'Yorum silinemedi.', 'error');
         }
-        } catch (error) {
-        console.error("Yorum silme hatası:", error);
-        }
+        } catch (error) { console.error("Yorum silme hatası:", error); }
         }
         }
     </script>

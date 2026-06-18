@@ -6,6 +6,7 @@ namespace InternPortal.Infrastructure.Persistence;
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<UserRoleMapping> UserRoleMappings { get; set; }
@@ -14,9 +15,10 @@ public class AppDbContext : DbContext
     public DbSet<KanbanTask> KanbanTasks { get; set; }
     public DbSet<TaskComment> TaskComments { get; set; }
     public DbSet<KanbanComment> KanbanComments { get; set; }
-
-
     public DbSet<InternTransferRequest> InternTransferRequests { get; set; }
+
+    public DbSet<KanbanBoardTemplate> KanbanBoardTemplates { get; set; }
+    public DbSet<KanbanTemplateTask> KanbanTemplateTasks { get; set; }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -73,7 +75,6 @@ public class AppDbContext : DbContext
             .HasForeignKey(s => s.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-    
         modelBuilder.Entity<InternTransferRequest>()
             .HasOne(r => r.Intern)
             .WithMany()
@@ -128,5 +129,16 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(tc => tc.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<KanbanBoardTemplate>()
+            .HasOne(t => t.Staff)
+            .WithMany()
+            .HasForeignKey(t => t.StaffId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<KanbanTemplateTask>()
+            .HasOne(tt => tt.Template)
+            .WithMany(t => t.Tasks)
+            .HasForeignKey(tt => tt.TemplateId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

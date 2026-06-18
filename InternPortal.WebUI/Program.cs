@@ -1,19 +1,19 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using InternPortal.Infrastructure.Persistence;
 using InternPortal.Application.Interfaces;
 using InternPortal.Application.Services;
-using InternPortal.Infrastructure.Persistence;
-using InternPortal.Api.Filters;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using InternPortal.Api.Filters;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
+options.UseSqlServer(connectionString));
 
 builder.Services.AddCors(options =>
 {
@@ -33,6 +33,7 @@ builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddScoped<ITaskCommentService, TaskCommentService>();
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IInternTransferService, InternTransferService>();
+builder.Services.AddScoped<IKanbanTemplateService, KanbanTemplateService>();
 
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -52,10 +53,10 @@ builder.Services.AddAuthentication(options => {
 });
 
 builder.Services.AddControllersWithViews()
-   .AddJsonOptions(options =>
-   {
-       options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-   });
+.AddJsonOptions(options =>
+{
+ options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -116,5 +117,4 @@ app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
-
 app.Run();

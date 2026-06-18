@@ -694,6 +694,103 @@
         }
       }
     },
+    "/api/KanbanTemplates/from-board": {
+      "post": {
+        "tags": [
+          "KanbanTemplates"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateTemplateRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateTemplateRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateTemplateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/KanbanTemplates/my-templates": {
+      "get": {
+        "tags": [
+          "KanbanTemplates"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/KanbanTemplates/apply": {
+      "post": {
+        "tags": [
+          "KanbanTemplates"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.ApplyTemplateRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.ApplyTemplateRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.ApplyTemplateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/KanbanTemplates/{templateId}": {
+      "delete": {
+        "tags": [
+          "KanbanTemplates"
+        ],
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Roles/all": {
       "get": {
         "tags": [
@@ -1509,6 +1606,20 @@
         },
         "additionalProperties": false
       },
+      "InternPortal.Application.Dtos.ApplyTemplateRequestDto": {
+        "type": "object",
+        "properties": {
+          "templateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "targetInternId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
       "InternPortal.Application.Dtos.AssignMentorRequest": {
         "type": "object",
         "properties": {
@@ -1535,6 +1646,20 @@
             "format": "uuid"
           },
           "staffId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InternPortal.Application.Dtos.CreateTemplateRequestDto": {
+        "type": "object",
+        "properties": {
+          "templateName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceInternId": {
             "type": "string",
             "format": "uuid"
           }

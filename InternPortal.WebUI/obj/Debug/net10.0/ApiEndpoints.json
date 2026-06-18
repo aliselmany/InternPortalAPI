@@ -201,6 +201,64 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "InternPortal.WebUI.Controllers.KanbanTemplatesController",
+    "Method": "DeleteTemplate",
+    "RelativePath": "api/KanbanTemplates/{templateId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "templateId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.KanbanTemplatesController",
+    "Method": "ApplyTemplate",
+    "RelativePath": "api/KanbanTemplates/apply",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "InternPortal.Application.Dtos.ApplyTemplateRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.KanbanTemplatesController",
+    "Method": "CreateFromBoard",
+    "RelativePath": "api/KanbanTemplates/from-board",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "InternPortal.Application.Dtos.CreateTemplateRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortal.WebUI.Controllers.KanbanTemplatesController",
+    "Method": "GetMyTemplates",
+    "RelativePath": "api/KanbanTemplates/my-templates",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "InternPortal.WebUI.Controllers.RolesController",
     "Method": "DeleteRole",
     "RelativePath": "api/Roles/{id}",
