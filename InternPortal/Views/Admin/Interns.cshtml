@@ -255,8 +255,7 @@
 
                 if (response.ok) {
                     const interns = await response.json();
-
-                    // F12 KONSOLUNA BAK! Backend bize tam olarak ne gönderiyor görelim.
+         
                     console.log("API'DEN GELEN TÜM STAJYER VERİSİ:", interns);
 
                     const placeholder = document.getElementById('placeholderCard');

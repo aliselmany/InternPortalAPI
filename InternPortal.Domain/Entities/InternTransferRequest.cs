@@ -7,7 +7,6 @@ public class InternTransferRequest
 {
     public Guid Id { get; set; }
 
-    
     public Guid InternId { get; set; }
     public User Intern { get; set; }
 
@@ -24,6 +23,7 @@ public class InternTransferRequest
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? ResolvedAt { get; set; }
 }
+
 public enum TransferRequestStatus
 {
     Pending = 0,

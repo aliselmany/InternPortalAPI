@@ -19,13 +19,6 @@ public class RolesController : ControllerBase
         _userService = userService;
     }
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAllRoles()
-    {
-        var result = await _rolesService.GetAllRolesAsync();
-        return Ok(result.Data);
-    }
-
     [HttpPost("create")]
     public async Task<IActionResult> CreateRole([FromBody] CreateRoleDto dto)
     {
@@ -38,6 +31,15 @@ public class RolesController : ControllerBase
 
         return Ok(new { message = "Role created successfully." });
     }
+
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllRoles()
+    {
+        var result = await _rolesService.GetAllRolesAsync();
+        return Ok(result.Data);
+    }
+
+    
     
     [HttpPut("users/{id}/role")]
     public async Task<IActionResult> UpdateUserRole(Guid id, [FromQuery] string roleName)

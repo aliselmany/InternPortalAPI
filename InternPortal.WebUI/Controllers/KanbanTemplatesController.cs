@@ -34,21 +34,6 @@ public class KanbanTemplatesController : ControllerBase
         return Ok(new { message = "Pano başarıyla taslak olarak kaydedildi." });
     }
 
-  
-    [HttpGet("my-templates")]
-    public async Task<IActionResult> GetMyTemplates()
-    {
-        var staffId = GetCurrentUserId();
-        if (staffId == Guid.Empty) return Unauthorized(new { message = "Yetkisiz erişim." });
-
-        var result = await _templateService.GetMyTemplatesAsync(staffId);
-        if (!result.IsSuccess)
-            return BadRequest(new { message = result.Message });
-
-        return Ok(result.Data);
-    }
-
-  
     [HttpPost("apply")]
     public async Task<IActionResult> ApplyTemplate([FromBody] ApplyTemplateRequestDto dto)
     {
@@ -62,6 +47,19 @@ public class KanbanTemplatesController : ControllerBase
         return Ok(new { message = "Taslaktaki tüm görevler stajyerin panosuna başarıyla uygulandı." });
     }
 
+  
+    [HttpGet("my-templates")]
+    public async Task<IActionResult> GetMyTemplates()
+    {
+        var staffId = GetCurrentUserId();
+        if (staffId == Guid.Empty) return Unauthorized(new { message = "Yetkisiz erişim." });
+
+        var result = await _templateService.GetMyTemplatesAsync(staffId);
+        if (!result.IsSuccess)
+            return BadRequest(new { message = result.Message });
+
+        return Ok(result.Data);
+    }
    
     [HttpDelete("{templateId}")]
     public async Task<IActionResult> DeleteTemplate(Guid templateId)

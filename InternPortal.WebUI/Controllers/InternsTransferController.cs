@@ -37,19 +37,6 @@ public class InternTransfersController : ControllerBase
         return Ok(new { message = "Stajyer devir talebiniz başarıyla oluşturuldu, Admin onayına gönderildi." });
     }
 
-    
-    [HttpGet("pending-requests")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetPendingRequests()
-    {
-        var result = await _transferService.GetPendingRequestsAsync();
-        if (!result.IsSuccess)
-            return BadRequest(new { message = result.Message });
-
-        return Ok(result.Data);
-    }
-
-  
     [HttpPost("respond-transfer")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RespondTransfer([FromBody] RespondTransferRequestDto dto)
@@ -60,5 +47,16 @@ public class InternTransfersController : ControllerBase
 
         string statusMessage = dto.IsApproved ? "onaylandı ve stajyer yeni mentörüne devredildi." : "reddedildi.";
         return Ok(new { message = $"Devir talebi başarıyla {statusMessage}" });
+    }
+    
+    [HttpGet("pending-requests")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetPendingRequests()
+    {
+        var result = await _transferService.GetPendingRequestsAsync();
+        if (!result.IsSuccess)
+            return BadRequest(new { message = result.Message });
+
+        return Ok(result.Data);
     }
 }

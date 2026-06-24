@@ -21,102 +21,7 @@ namespace InternPortalAPI.Controllers
             _context = context;
         }
 
-
-        [HttpGet("intern/{internId}")]
-        public async Task<IActionResult> GetTasksByIntern(Guid internId)
-        {
-            var tasks = await _context.KanbanTasks
-                .Where(t => t.InternId == internId)
-                .OrderBy(t => t.Status)
-                .ThenBy(t => t.OrderIndex)
-                .ToListAsync();
-
-            return Ok(tasks);
-        }
-
-        [HttpGet("{taskId}/comments")]
-        public async Task<IActionResult> GetComments(int taskId)
-        {
-            var comments = await _context.KanbanComments
-                .Where(c => c.TaskId == taskId && !c.IsDeleted) 
-                .OrderBy(c => c.CreatedAt)
-                .Select(c => new
-                {
-                    c.Id,
-                    c.UserId, 
-                    c.UserName,
-                    c.Text,
-                    CreatedAt = c.CreatedAt.ToString("HH:mm - dd.MM.yyyy")
-                })
-                .ToListAsync();
-
-            return Ok(comments);
-        }
-         
-        [HttpPut("move")]
-        public async Task<IActionResult> MoveTask([FromBody] MoveKanbanTaskDto dto)
-        {
-            var task = await _context.KanbanTasks.FindAsync(dto.TaskId);
-            if (task == null) return NotFound();
-
-            task.Status = dto.NewStatus;
-            task.OrderIndex = dto.NewOrderIndex;
-
-            await _context.SaveChangesAsync();
-            return Ok();
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTask(int id, [FromBody] UpdateKanbanTaskDto dto)
-        {
-            var task = await _context.KanbanTasks.FindAsync(id);
-            if (task == null) return NotFound();
-
-            task.Title = dto.Title;
-            task.Description = dto.Description;
-            task.DueDate = dto.DueDate;
-
-            await _context.SaveChangesAsync();
-            return Ok();
-        }
-
-        [HttpPut("{id}/description")]
-        public async Task<IActionResult> UpdateTaskDescription(int id, [FromBody] TaskDescriptionUpdateModel model)
-        {
-            var task = await _context.KanbanTasks.FindAsync(id);
-            if (task == null)
-                return NotFound(new { message = "Görev bulunamadı!" });
-
-            task.Description = model.Description;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Açıklama başarıyla güncellendi." });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateTask([FromBody] CreateKanbanTaskDto dto)
-        {
-            var lastOrder = await _context.KanbanTasks
-                .Where(t => t.InternId == dto.InternId && t.Status == "ToDo")
-                .MaxAsync(t => (int?)t.OrderIndex) ?? 0;
-
-            var newTask = new KanbanTask
-            {
-                Title = dto.Title,
-                InternId = dto.InternId,
-                StaffId = dto.StaffId,
-                Status = "ToDo",
-                OrderIndex = lastOrder + 1,
-                CreatedDate = DateTime.Now
-            };
-
-            _context.KanbanTasks.Add(newTask);
-            await _context.SaveChangesAsync();
-
-            return Ok(newTask);
-        }
-
-        [HttpPost("{taskId}/comments")]
+        [HttpPost("comments/add-to-task/{taskId}")] 
         public async Task<IActionResult> AddComment(int taskId, [FromBody] CommentCreateDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Text))
@@ -159,21 +64,107 @@ namespace InternPortalAPI.Controllers
                 CreatedAt = comment.CreatedAt.ToString("HH:mm")
             });
         }
+        
 
-        [HttpDelete("{id}")] 
-        public async Task<IActionResult> DeleteTask(int id)
+        [HttpPost("create")] 
+        public async Task<IActionResult> CreateTask([FromBody] CreateKanbanTaskDto dto)
         {
-            var task = await _context.KanbanTasks.FindAsync(id);
+            var lastOrder = await _context.KanbanTasks
+                .Where(t => t.InternId == dto.InternId && t.Status == "ToDo")
+                .MaxAsync(t => (int?)t.OrderIndex) ?? 0;
+
+            var newTask = new KanbanTask
+            {
+                Title = dto.Title,
+                InternId = dto.InternId,
+                StaffId = dto.StaffId,
+                Status = "ToDo",
+                OrderIndex = lastOrder + 1,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.KanbanTasks.Add(newTask);
+            await _context.SaveChangesAsync();
+
+            return Ok(newTask);
+        }
+
+        [HttpGet("by-intern/{internId}")]
+        public async Task<IActionResult> GetTasksByIntern(Guid internId)
+        {
+            var tasks = await _context.KanbanTasks
+                .Where(t => t.InternId == internId)
+                .OrderBy(t => t.Status)
+                .ThenBy(t => t.OrderIndex)
+                .ToListAsync();
+
+            return Ok(tasks);
+        }
+
+        [HttpGet("comments/by-task/{taskId}")] 
+        public async Task<IActionResult> GetComments(int taskId)
+        {
+            var comments = await _context.KanbanComments
+                .Where(c => c.TaskId == taskId && !c.IsDeleted)
+                .OrderBy(c => c.CreatedAt)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.UserId,
+                    c.UserName,
+                    c.Text,
+                    CreatedAt = c.CreatedAt.ToString("HH:mm - dd.MM.yyyy")
+                })
+                .ToListAsync();
+
+            return Ok(comments);
+        }
+
+        [HttpPut("move")]
+        public async Task<IActionResult> MoveTask([FromBody] MoveKanbanTaskDto dto)
+        {
+            var task = await _context.KanbanTasks.FindAsync(dto.TaskId);
             if (task == null) return NotFound();
 
-            
-            task.IsDeleted = true;
+            task.Status = dto.NewStatus;
+            task.OrderIndex = dto.NewOrderIndex;
 
             await _context.SaveChangesAsync();
             return Ok();
         }
 
-        [HttpDelete("comments/{commentId}")]
+        [HttpPut("update/{id}")] 
+        public async Task<IActionResult> UpdateTask(int id, [FromBody] UpdateKanbanTaskDto dto)
+        {
+            var task = await _context.KanbanTasks.FindAsync(id);
+            if (task == null) return NotFound();
+
+            task.Title = dto.Title;
+            task.Description = dto.Description;
+            task.DueDate = dto.DueDate;
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPut("update-description/{id}")] 
+        public async Task<IActionResult> UpdateTaskDescription(int id, [FromBody] TaskDescriptionUpdateModel model)
+        {
+            var task = await _context.KanbanTasks.FindAsync(id);
+            if (task == null)
+                return NotFound(new { message = "Görev bulunamadı!" });
+
+            task.Description = model.Description;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Açıklama başarıyla güncellendi." });
+        }
+
+        
+
+       
+
+        [HttpDelete("comments/delete/{commentId}")] 
         public async Task<IActionResult> DeleteComment(int commentId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -190,7 +181,27 @@ namespace InternPortalAPI.Controllers
 
             return Ok(new { message = "Yorum başarıyla silindi." });
         }
+    
+        [HttpDelete("delete/{id}")] 
+        public async Task<IActionResult> DeleteTask(int id)
+        {
+            var task = await _context.KanbanTasks.FindAsync(id);
+            if (task == null) return NotFound();
+
+            task.IsDeleted = true;
+            await _context.SaveChangesAsync();
+            return Ok();
+        }    
+
+        
+
+
+
+        
+
+
     }
+
 
     public record TaskDescriptionUpdateModel(string Description);
 

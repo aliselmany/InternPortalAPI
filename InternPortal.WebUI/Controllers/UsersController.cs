@@ -16,40 +16,17 @@ public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IMailService _mailService;
-    // ÇÖZÜM: GetActiveKanbanBoards metodunda kullandığın servis buraya eklendi
+  
     private readonly IApplicationService _applicationService;
 
     private static readonly Regex PasswordPolicyRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$");
 
     private const string PasswordPolicyErrorMessage = "Şifreniz kurallara uymuyor! Güvenliğiniz için şifreniz en az 8 karakter uzunluğunda olmalı; en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir.";
-
-    // ÇÖZÜM: IApplicationService Constructor (Yapıcı Metot) içerisine inject edildi
     public UsersController(IUserService userService, IMailService mailService, IApplicationService applicationService)
     {
         _userService = userService;
         _mailService = mailService;
         _applicationService = applicationService;
-    }
-
-    [HttpGet("me")]
-    [Authorize]
-    public async Task<IActionResult> GetMyProfile()
-    {
-        var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        if (currentUserIdClaim == null) return Unauthorized(new { message = "Yetkisiz erişim." });
-
-        var userId = Guid.Parse(currentUserIdClaim.Value);
-        var user = await _userService.UserByIdAsync(userId);
-
-        if (user == null) return NotFound(new { message = "Kullanıcı bulunamadı." });
-
-        return Ok(new
-        {
-            name = user.Name,
-            surname = user.Surname,
-            email = user.Email,
-            phoneNumber = user.PhoneNumber
-        });
     }
 
     [HttpPost("select-mentor")]
@@ -78,6 +55,7 @@ public class UsersController : ControllerBase
         return Ok(new { message = "Registration successful" });
     }
 
+   
     [HttpPost("verify-email")]
     [AllowAnonymous]
     public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequestDto dto)
@@ -98,6 +76,84 @@ public class UsersController : ControllerBase
         return Ok(new { token = result.Data.Token, message = "Giriş başarılı" });
     }
 
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto model)
+    {
+        var userResult = await _userService.GetUserByEmailAsync(model.Email);
+        if (!userResult.IsSuccess || userResult.Data == null)
+        {
+            return BadRequest(new { message = "Bu e-posta adresi sistemde kayıtlı değil." });
+        }
+
+        Random random = new Random();
+        string resetCode = random.Next(100000, 999999).ToString();
+
+        var saveResult = await _userService.SavePasswordResetCodeAsync(userResult.Data.Id, resetCode, DateTime.Now.AddMinutes(3));
+        if (!saveResult.IsSuccess)
+        {
+            return BadRequest(new { message = "Onay kodu oluşturulurken bir teknik hata oluştu." });
+        }
+
+        _mailService.SendPasswordResetCode(model.Email, resetCode);
+
+        return Ok(new { message = "6 haneli onay kodu e-posta adresinize gönderildi." });
+    }
+
+    [HttpPost("verify-reset-code")]
+    [AllowAnonymous]
+    public async Task<IActionResult> VerifyResetCode([FromBody] VerifyResetCodeDto model)
+    {
+        var verifyResult = await _userService.VerifyResetCodeAsync(model.Email, model.Code);
+        if (!verifyResult.IsSuccess)
+        {
+            return BadRequest(new { message = verifyResult.Message });
+        }
+
+        return Ok(new { message = "Onay kodu başarıyla doğrulandı." });
+    }
+
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
+    {
+        if (model.NewPassword != model.ConfirmPassword)
+        {
+            return BadRequest(new { message = "Girdiğiniz şifreler birbiriyle uyuşmuyor." });
+        }
+
+        if (string.IsNullOrEmpty(model.NewPassword) || !PasswordPolicyRegex.IsMatch(model.NewPassword))
+        {
+            return BadRequest(new { message = PasswordPolicyErrorMessage });
+        }
+
+        var verifyResult = await _userService.VerifyResetCodeAsync(model.Email, model.Code);
+        if (!verifyResult.IsSuccess)
+        {
+            return BadRequest(new { message = "Doğrulama süresi dolmuş veya geçersiz işlem. Lütfen baştan başlayın." });
+        }
+
+        var userResult = await _userService.GetUserByEmailAsync(model.Email);
+        if (!userResult.IsSuccess || userResult.Data == null)
+        {
+            return BadRequest(new { message = "Kullanıcı bulunamadı." });
+        }
+
+        var oldPasswordCheck = await _userService.CheckOldPasswordAsync(userResult.Data.Id, model.NewPassword);
+        if (!oldPasswordCheck.IsSuccess)
+        {
+            return BadRequest(new { message = oldPasswordCheck.Message });
+        }
+
+        var updateResult = await _userService.UpdatePasswordAsync(userResult.Data.Id, model.NewPassword);
+        if (!updateResult.IsSuccess)
+        {
+            return BadRequest(new { message = "Şifre güncellenirken bir hata oluştu." });
+        }
+
+        return Ok(new { message = "Şifreniz başarıyla güncellendi. Yeni şifrenizle giriş yapabilirsiniz." });
+    }
+
     [Authorize(Roles = "Admin,Staff")]
     [HttpPost("assign-mentor")]
     public async Task<IActionResult> AssignMentor([FromBody] AssignMentorRequest request)
@@ -105,6 +161,27 @@ public class UsersController : ControllerBase
         var result = await _userService.AssignMentorAsync(request.InternId, request.MentorId);
         if (!result.IsSuccess) return BadRequest(new { message = result.Message });
         return Ok(new { message = "Mentor assigned successfully." });
+    }
+
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetMyProfile()
+    {
+        var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (currentUserIdClaim == null) return Unauthorized(new { message = "Yetkisiz erişim." });
+
+        var userId = Guid.Parse(currentUserIdClaim.Value);
+        var user = await _userService.UserByIdAsync(userId);
+
+        if (user == null) return NotFound(new { message = "Kullanıcı bulunamadı." });
+
+        return Ok(new
+        {
+            name = user.Name,
+            surname = user.Surname,
+            email = user.Email,
+            phoneNumber = user.PhoneNumber
+        });
     }
 
     [HttpGet("my-interns/{staffId}")]
@@ -214,83 +291,7 @@ public class UsersController : ControllerBase
         return Ok(new { message = "User deleted successfully." });
     }
 
-    [HttpPost("forgot-password")]
-    [AllowAnonymous]
-    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto model)
-    {
-        var userResult = await _userService.GetUserByEmailAsync(model.Email);
-        if (!userResult.IsSuccess || userResult.Data == null)
-        {
-            return BadRequest(new { message = "Bu e-posta adresi sistemde kayıtlı değil." });
-        }
 
-        Random random = new Random();
-        string resetCode = random.Next(100000, 999999).ToString();
-
-        var saveResult = await _userService.SavePasswordResetCodeAsync(userResult.Data.Id, resetCode, DateTime.Now.AddMinutes(3));
-        if (!saveResult.IsSuccess)
-        {
-            return BadRequest(new { message = "Onay kodu oluşturulurken bir teknik hata oluştu." });
-        }
-
-        _mailService.SendPasswordResetCode(model.Email, resetCode);
-
-        return Ok(new { message = "6 haneli onay kodu e-posta adresinize gönderildi." });
-    }
-
-    [HttpPost("verify-reset-code")]
-    [AllowAnonymous]
-    public async Task<IActionResult> VerifyResetCode([FromBody] VerifyResetCodeDto model)
-    {
-        var verifyResult = await _userService.VerifyResetCodeAsync(model.Email, model.Code);
-        if (!verifyResult.IsSuccess)
-        {
-            return BadRequest(new { message = verifyResult.Message });
-        }
-
-        return Ok(new { message = "Onay kodu başarıyla doğrulandı." });
-    }
-
-    [HttpPost("reset-password")]
-    [AllowAnonymous]
-    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
-    {
-        if (model.NewPassword != model.ConfirmPassword)
-        {
-            return BadRequest(new { message = "Girdiğiniz şifreler birbiriyle uyuşmuyor." });
-        }
-
-        if (string.IsNullOrEmpty(model.NewPassword) || !PasswordPolicyRegex.IsMatch(model.NewPassword))
-        {
-            return BadRequest(new { message = PasswordPolicyErrorMessage });
-        }
-
-        var verifyResult = await _userService.VerifyResetCodeAsync(model.Email, model.Code);
-        if (!verifyResult.IsSuccess)
-        {
-            return BadRequest(new { message = "Doğrulama süresi dolmuş veya geçersiz işlem. Lütfen baştan başlayın." });
-        }
-
-        var userResult = await _userService.GetUserByEmailAsync(model.Email);
-        if (!userResult.IsSuccess || userResult.Data == null)
-        {
-            return BadRequest(new { message = "Kullanıcı bulunamadı." });
-        }
-
-        var oldPasswordCheck = await _userService.CheckOldPasswordAsync(userResult.Data.Id, model.NewPassword);
-        if (!oldPasswordCheck.IsSuccess)
-        {
-            return BadRequest(new { message = oldPasswordCheck.Message });
-        }
-
-        var updateResult = await _userService.UpdatePasswordAsync(userResult.Data.Id, model.NewPassword);
-        if (!updateResult.IsSuccess)
-        {
-            return BadRequest(new { message = "Şifre güncellenirken bir hata oluştu." });
-        }
-
-        return Ok(new { message = "Şifreniz başarıyla güncellendi. Yeni şifrenizle giriş yapabilirsiniz." });
-    }
 }
 
 public class ForgotPasswordDto

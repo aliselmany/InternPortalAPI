@@ -15,13 +15,6 @@ public class TaskCommentsController : ControllerBase
         _commentService = commentService;
     }
 
-    [HttpGet("task/{taskId}")]
-    public async Task<IActionResult> GetCommentsByTaskId(int taskId)
-    {
-        var comments = await _commentService.GetCommentsByTaskIdAsync(taskId);
-        return Ok(comments);
-    }
-
     [HttpPost("add")]
     public async Task<IActionResult> AddComment([FromBody] CreateCommentDto commentDto)
     {
@@ -30,6 +23,13 @@ public class TaskCommentsController : ControllerBase
 
         var result = await _commentService.AddCommentAsync(commentDto);
         return Ok(result);
+    }
+
+    [HttpGet("task/{taskId}")]
+    public async Task<IActionResult> GetCommentsByTaskId(int taskId)
+    {
+        var comments = await _commentService.GetCommentsByTaskIdAsync(taskId);
+        return Ok(comments);
     }
 
     [HttpDelete("delete/{id}")]

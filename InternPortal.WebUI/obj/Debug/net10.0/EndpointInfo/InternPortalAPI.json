@@ -375,18 +375,6 @@
         }
       }
     },
-    "/api/InternTransfers/pending-requests": {
-      "get": {
-        "tags": [
-          "InternTransfers"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/InternTransfers/respond-transfer": {
       "post": {
         "tags": [
@@ -418,21 +406,10 @@
         }
       }
     },
-    "/api/KanbanTasks/intern/{internId}": {
+    "/api/InternTransfers/pending-requests": {
       "get": {
         "tags": [
-          "KanbanTasks"
-        ],
-        "parameters": [
-          {
-            "name": "internId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
+          "InternTransfers"
         ],
         "responses": {
           "200": {
@@ -441,28 +418,7 @@
         }
       }
     },
-    "/api/KanbanTasks/{taskId}/comments": {
-      "get": {
-        "tags": [
-          "KanbanTasks"
-        ],
-        "parameters": [
-          {
-            "name": "taskId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
+    "/api/KanbanTasks/comments/add-to-task/{taskId}": {
       "post": {
         "tags": [
           "KanbanTasks"
@@ -497,6 +453,83 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/KanbanTasks/create": {
+      "post": {
+        "tags": [
+          "KanbanTasks"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateKanbanTaskDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateKanbanTaskDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateKanbanTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/KanbanTasks/by-intern/{internId}": {
+      "get": {
+        "tags": [
+          "KanbanTasks"
+        ],
+        "parameters": [
+          {
+            "name": "internId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/KanbanTasks/comments/by-task/{taskId}": {
+      "get": {
+        "tags": [
+          "KanbanTasks"
+        ],
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -535,7 +568,7 @@
         }
       }
     },
-    "/api/KanbanTasks/{id}": {
+    "/api/KanbanTasks/update/{id}": {
       "put": {
         "tags": [
           "KanbanTasks"
@@ -575,30 +608,9 @@
             "description": "OK"
           }
         }
-      },
-      "delete": {
-        "tags": [
-          "KanbanTasks"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
       }
     },
-    "/api/KanbanTasks/{id}/description": {
+    "/api/KanbanTasks/update-description/{id}": {
       "put": {
         "tags": [
           "KanbanTasks"
@@ -640,38 +652,7 @@
         }
       }
     },
-    "/api/KanbanTasks": {
-      "post": {
-        "tags": [
-          "KanbanTasks"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateKanbanTaskDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateKanbanTaskDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.Application.Dtos.CreateKanbanTaskDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/KanbanTasks/comments/{commentId}": {
+    "/api/KanbanTasks/comments/delete/{commentId}": {
       "delete": {
         "tags": [
           "KanbanTasks"
@@ -679,6 +660,29 @@
         "parameters": [
           {
             "name": "commentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/KanbanTasks/delete/{id}": {
+      "delete": {
+        "tags": [
+          "KanbanTasks"
+        ],
+        "parameters": [
+          {
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -725,18 +729,6 @@
         }
       }
     },
-    "/api/KanbanTemplates/my-templates": {
-      "get": {
-        "tags": [
-          "KanbanTemplates"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/KanbanTemplates/apply": {
       "post": {
         "tags": [
@@ -768,6 +760,18 @@
         }
       }
     },
+    "/api/KanbanTemplates/my-templates": {
+      "get": {
+        "tags": [
+          "KanbanTemplates"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/KanbanTemplates/{templateId}": {
       "delete": {
         "tags": [
@@ -783,18 +787,6 @@
               "format": "uuid"
             }
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Roles/all": {
-      "get": {
-        "tags": [
-          "Roles"
         ],
         "responses": {
           "200": {
@@ -827,6 +819,18 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roles/all": {
+      "get": {
+        "tags": [
+          "Roles"
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -934,29 +938,6 @@
         }
       }
     },
-    "/api/TaskComments/task/{taskId}": {
-      "get": {
-        "tags": [
-          "TaskComments"
-        ],
-        "parameters": [
-          {
-            "name": "taskId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/TaskComments/add": {
       "post": {
         "tags": [
@@ -988,6 +969,29 @@
         }
       }
     },
+    "/api/TaskComments/task/{taskId}": {
+      "get": {
+        "tags": [
+          "TaskComments"
+        ],
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/TaskComments/delete/{id}": {
       "delete": {
         "tags": [
@@ -1011,18 +1015,6 @@
               "format": "uuid"
             }
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Users/me": {
-      "get": {
-        "tags": [
-          "Users"
         ],
         "responses": {
           "200": {
@@ -1158,6 +1150,99 @@
         }
       }
     },
+    "/api/Users/forgot-password": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ForgotPasswordDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ForgotPasswordDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/verify-reset-code": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.VerifyResetCodeDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.VerifyResetCodeDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.VerifyResetCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/reset-password": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ResetPasswordDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ResetPasswordDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Users/assign-mentor": {
       "post": {
         "tags": [
@@ -1182,6 +1267,18 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/me": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -1416,99 +1513,6 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Users/forgot-password": {
-      "post": {
-        "tags": [
-          "Users"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ForgotPasswordDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ForgotPasswordDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ForgotPasswordDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Users/verify-reset-code": {
-      "post": {
-        "tags": [
-          "Users"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.VerifyResetCodeDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.VerifyResetCodeDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.VerifyResetCodeDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Users/reset-password": {
-      "post": {
-        "tags": [
-          "Users"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ResetPasswordDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ResetPasswordDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternPortal.WebUI.Controllers.ResetPasswordDto"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "OK"

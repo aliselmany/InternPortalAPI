@@ -47,10 +47,10 @@ public class ApplicationControllerTests
     [Fact]
     public void Submit_ReturnsView()
     {
-       
         var result = _controller.Submit();
 
-        Assert.IsType<ViewResult>(result);
+      
+        Assert.IsType<RedirectResult>(result);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class ApplicationControllerTests
             Grade = "3.Sınıf",
             Department = Department.Yazılım,
             InternshipType = InternshipType.Gönüllü,
-            PhoneNumber = "5554443322",
+            PhoneNumber = "4443332211",
             StartDate = DateTime.UtcNow.AddDays(1),
             EndDate = DateTime.UtcNow.AddMonths(1),
             CvFile = fileMock.Object

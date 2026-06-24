@@ -1,0 +1,29 @@
+2026-06-23T12:23:04.0137567+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Version: 1.9.1+cb5afc3bb9bb01ebd75b57f89e8358b914ee2a49
+2026-06-23T12:23:04.0234240+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Logging mode: asynchronous
+2026-06-23T12:23:04.0240127+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Logging level: Information
+2026-06-23T12:23:04.0240174+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION CreateBuilderAsync entry time: 12:23:03.998
+2026-06-23T12:23:04.0240762+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION PID: 32604
+2026-06-23T12:23:04.0240979+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Runtime information: win-x64 - .NET 10.0.9
+2026-06-23T12:23:04.0241091+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Runtime location: C:\Program Files\dotnet\shared\Microsoft.NETCore.App\10.0.9\System.Private.CoreLib.dll
+2026-06-23T12:23:04.0241154+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION IsDynamicCodeSupported: True
+2026-06-23T12:23:04.0241738+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Test module: C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.Tests\bin\Debug\net10.0\InternPortal.Tests.dll
+2026-06-23T12:23:04.0242688+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Command line arguments: '--server --diagnostic --diagnostic-verbosity Information --diagnostic-output-directory C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.Tests\bin\Debug\net10.0\Log --results-directory C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\TestResults --client-port 58408'
+2026-06-23T12:23:04.0248234+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION TESTINGPLATFORM_DEFAULT_HANG_TIMEOUT: ''
+2026-06-23T12:23:04.0376147+00:00 Microsoft.Testing.Platform.Hosts.TestHostBuilder INFORMATION Setting RegisterEnvironmentVariablesConfigurationSource: 'True'
+2026-06-23T12:23:04.0468235+00:00 Microsoft.Testing.Platform.Hosts.TestHostBuilder INFORMATION Setting PlatformExitProcessOnUnhandledException: 'False', config file: False environment variable: 
+2026-06-23T12:23:04.2069452+00:00 Microsoft.Testing.Platform.Requests.TestHostTestFrameworkInvoker INFORMATION Test framework UID: '30ea7c6e-dd24-4152-a360-1387158cd41d' Version: '3.2.2' DisplayName: 'xUnit.net v3 Microsoft.Testing.Platform test framework' Description: 'xUnit.net v3 Microsoft.Testing.Platform test framework'
+2026-06-23T12:23:04.2139103+00:00 xUnit.net INFORMATION xUnit.net v3 In-Process Runner v3.2.2+728c1dce01 (64-bit .NET 10.0.9)
+2026-06-23T12:23:04.2465725+00:00 xUnit.net INFORMATION   Discovering: InternPortal.Tests
+2026-06-23T12:23:04.2760523+00:00 xUnit.net INFORMATION   Discovered:  InternPortal.Tests
+2026-06-23T12:23:04.2922914+00:00 xUnit.net INFORMATION   Starting:    InternPortal.Tests
+2026-06-23T12:23:04.4669987+00:00 xUnit.net ERROR     InternPortal.Tests.ApplicationsService.ApplicationControllerTests.Submit_ReturnsView [FAIL]
+2026-06-23T12:23:04.4672684+00:00 xUnit.net INFORMATION       Assert.IsType() Failure: Value is not the exact type
+2026-06-23T12:23:04.4672786+00:00 xUnit.net INFORMATION       Expected: typeof(Microsoft.AspNetCore.Mvc.ViewResult)
+2026-06-23T12:23:04.4672810+00:00 xUnit.net INFORMATION       Actual:   typeof(Microsoft.AspNetCore.Mvc.RedirectResult)
+2026-06-23T12:23:04.4675146+00:00 xUnit.net INFORMATION       Stack Trace:
+2026-06-23T12:23:04.4680453+00:00 xUnit.net INFORMATION         C:\Users\Ali\source\repos\aliselmany\InternPortalAPI\InternPortal.Tests\ApplicationsService\ApplicationsServiceTest.cs(53,0): at InternPortal.Tests.ApplicationsService.ApplicationControllerTests.Submit_ReturnsView()
+2026-06-23T12:23:04.4680582+00:00 xUnit.net INFORMATION            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+2026-06-23T12:23:04.4680628+00:00 xUnit.net INFORMATION            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+2026-06-23T12:23:05.1958605+00:00 xUnit.net INFORMATION   Finished:    InternPortal.Tests (ID = 'f6708186f72f18c2d30fbced53dd42d1026b3da71b9259928dac217edf7ba1db')
+2026-06-23T12:23:05.1994949+00:00 xUnit.net INFORMATION === TEST EXECUTION SUMMARY ===
+2026-06-23T12:23:05.2025837+00:00 xUnit.net INFORMATION    InternPortal.Tests  Total: 5, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: 0,906s

@@ -43,89 +43,15 @@
   },
   {
     "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
-    "Method": "CreateTask",
-    "RelativePath": "api/KanbanTasks",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "InternPortal.Application.Dtos.CreateKanbanTaskDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
-    "Method": "UpdateTask",
-    "RelativePath": "api/KanbanTasks/{id}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "dto",
-        "Type": "InternPortal.Application.Dtos.UpdateKanbanTaskDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
-    "Method": "DeleteTask",
-    "RelativePath": "api/KanbanTasks/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
-    "Method": "UpdateTaskDescription",
-    "RelativePath": "api/KanbanTasks/{id}/description",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "model",
-        "Type": "InternPortalAPI.Controllers.TaskDescriptionUpdateModel",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
-    "Method": "GetComments",
-    "RelativePath": "api/KanbanTasks/{taskId}/comments",
+    "Method": "GetTasksByIntern",
+    "RelativePath": "api/KanbanTasks/by-intern/{internId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "taskId",
-        "Type": "System.Int32",
+        "Name": "internId",
+        "Type": "System.Guid",
         "IsRequired": true
       }
     ],
@@ -134,7 +60,7 @@
   {
     "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
     "Method": "AddComment",
-    "RelativePath": "api/KanbanTasks/{taskId}/comments",
+    "RelativePath": "api/KanbanTasks/comments/add-to-task/{taskId}",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -154,8 +80,24 @@
   },
   {
     "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
+    "Method": "GetComments",
+    "RelativePath": "api/KanbanTasks/comments/by-task/{taskId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "taskId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
     "Method": "DeleteComment",
-    "RelativePath": "api/KanbanTasks/comments/{commentId}",
+    "RelativePath": "api/KanbanTasks/comments/delete/{commentId}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -170,15 +112,31 @@
   },
   {
     "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
-    "Method": "GetTasksByIntern",
-    "RelativePath": "api/KanbanTasks/intern/{internId}",
-    "HttpMethod": "GET",
+    "Method": "CreateTask",
+    "RelativePath": "api/KanbanTasks/create",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "internId",
-        "Type": "System.Guid",
+        "Name": "dto",
+        "Type": "InternPortal.Application.Dtos.CreateKanbanTaskDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
+    "Method": "DeleteTask",
+    "RelativePath": "api/KanbanTasks/delete/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
@@ -195,6 +153,48 @@
       {
         "Name": "dto",
         "Type": "InternPortal.Application.Dtos.MoveKanbanTaskDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
+    "Method": "UpdateTaskDescription",
+    "RelativePath": "api/KanbanTasks/update-description/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "InternPortalAPI.Controllers.TaskDescriptionUpdateModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
+    "Method": "UpdateTask",
+    "RelativePath": "api/KanbanTasks/update/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "InternPortal.Application.Dtos.UpdateKanbanTaskDto",
         "IsRequired": true
       }
     ],

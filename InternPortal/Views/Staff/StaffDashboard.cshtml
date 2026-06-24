@@ -1182,7 +1182,7 @@
         const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/comments`, {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ text: commentText })
-        });
+        });     
 
         if (response.ok) {
         const newComment = await response.json();
