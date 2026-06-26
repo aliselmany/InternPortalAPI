@@ -10,6 +10,9 @@ using InternPortal.Domain.Entities;
 using InternPortal.Application.Dtos;
 using InternPortal.Infrastructure.Persistence;
 using InternPortalAPI.Controllers;
+using Moq; 
+using Microsoft.AspNetCore.SignalR; 
+using InternPortalAPI.Hubs; 
 
 namespace InternPortal.Tests.KanbanTasksService;
 
@@ -17,6 +20,7 @@ public class KanbanTasksControllerTests : IDisposable
 {
     private readonly AppDbContext _context;
     private readonly KanbanTasksController _controller;
+    private readonly Mock<IHubContext<KanbanHub>> _mockHubContext;
 
     public KanbanTasksControllerTests()
     {
@@ -25,7 +29,15 @@ public class KanbanTasksControllerTests : IDisposable
             .Options;
 
         _context = new AppDbContext(options);
-        _controller = new KanbanTasksController(_context);
+
+        _mockHubContext = new Mock<IHubContext<KanbanHub>>();
+        var mockClients = new Mock<IHubClients>();
+        var mockClientProxy = new Mock<IClientProxy>();
+
+        mockClients.Setup(c => c.Group(It.IsAny<string>())).Returns(mockClientProxy.Object);
+        _mockHubContext.Setup(h => h.Clients).Returns(mockClients.Object);
+
+        _controller = new KanbanTasksController(_context, _mockHubContext.Object);
     }
 
     private void MockUser(Guid userId)
@@ -50,7 +62,6 @@ public class KanbanTasksControllerTests : IDisposable
 
         var result = await _controller.GetTasksByIntern(internId);
 
- 
         var okResult = Assert.IsType<OkObjectResult>(result);
         var tasks = Assert.IsAssignableFrom<List<KanbanTask>>(okResult.Value);
 
@@ -78,7 +89,6 @@ public class KanbanTasksControllerTests : IDisposable
         Assert.Equal(1, createdTask.OrderIndex);
     }
 
-   
     public void Dispose()
     {
         _context.Database.EnsureDeleted();

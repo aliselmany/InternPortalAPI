@@ -1,27 +1,32 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using InternPortal.Infrastructure.Persistence;
+using InternPortal.Api.Filters;
 using InternPortal.Application.Interfaces;
 using InternPortal.Application.Services;
-using Microsoft.IdentityModel.Tokens;
-using System.Text.Json.Serialization;
+using InternPortal.Infrastructure.Persistence;
+using InternPortalAPI.Hubs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using InternPortal.Api.Filters;
 using System.Text;
+using System.Text.Json.Serialization;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowWebUI", policy =>
     {
-        policy.AllowAnyOrigin()
+    
+        policy.SetIsOriginAllowed(origin => true)
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials(); 
     });
 });
 
@@ -34,6 +39,8 @@ builder.Services.AddScoped<ITaskCommentService, TaskCommentService>();
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IInternTransferService, InternTransferService>();
 builder.Services.AddScoped<IKanbanTemplateService, KanbanTemplateService>();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -50,12 +57,26 @@ builder.Services.AddAuthentication(options => {
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/kanbanHub"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddControllersWithViews()
 .AddJsonOptions(options =>
 {
- options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -105,10 +126,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-app.UseCors("AllowWebUI");
 
+app.UseCors("AllowWebUI");
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -117,4 +137,8 @@ app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
+
+
+app.MapHub<KanbanHub>("/kanbanHub");
+
 app.Run();

@@ -43,6 +43,22 @@
   },
   {
     "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
+    "Method": "GetTaskLogs",
+    "RelativePath": "api/KanbanTasks/{taskId}/logs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "taskId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternPortalAPI.Controllers.KanbanTasksController",
     "Method": "GetTasksByIntern",
     "RelativePath": "api/KanbanTasks/by-intern/{internId}",
     "HttpMethod": "GET",

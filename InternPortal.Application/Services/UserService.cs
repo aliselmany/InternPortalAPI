@@ -135,9 +135,14 @@ public class UserService : IUserService
             Biography = user.Biography,
             MaxInternCount = user.MaxInternCount,
             MentorId = user.MentorId,
+    
+            StartDate = await _context.Applications
+                                  .Where(a => a.UserId == user.Id)
+                                  .Select(a => (DateTime?)a.StartDate)
+                                  .FirstOrDefaultAsync(),
             EndDate = await _context.Applications
-                                  .Where(a => a.UserId == user.Id && a.Status == ApplicationStatus.Onaylandı)
-                                  .Select(a => a.EndDate)
+                                  .Where(a => a.UserId == user.Id)
+                                  .Select(a => (DateTime?)a.EndDate)
                                   .FirstOrDefaultAsync(),
             SocialAccounts = user.SocialAccounts.Select(s => new SocialAccountDto
             {
@@ -164,9 +169,14 @@ public class UserService : IUserService
                 Biography = u.Biography,
                 MaxInternCount = u.MaxInternCount,
                 MentorId = u.MentorId,
+            
+                StartDate = _context.Applications
+                                  .Where(a => a.UserId == u.Id)
+                                  .Select(a => (DateTime?)a.StartDate)
+                                  .FirstOrDefault(),
                 EndDate = _context.Applications
-                                  .Where(a => a.UserId == u.Id && a.Status == ApplicationStatus.Onaylandı)
-                                  .Select(a => a.EndDate)
+                                  .Where(a => a.UserId == u.Id)
+                                  .Select(a => (DateTime?)a.EndDate)
                                   .FirstOrDefault()
             }).ToListAsync();
     }
@@ -194,9 +204,14 @@ public class UserService : IUserService
             Biography = u.Biography,
             MaxInternCount = u.MaxInternCount,
             MentorId = u.MentorId,
+         
+            StartDate = _context.Applications
+                              .Where(a => a.UserId == u.Id)
+                              .Select(a => (DateTime?)a.StartDate)
+                              .FirstOrDefault(),
             EndDate = _context.Applications
-                              .Where(a => a.UserId == u.Id && a.Status == ApplicationStatus.Onaylandı)
-                              .Select(a => a.EndDate)
+                              .Where(a => a.UserId == u.Id)
+                              .Select(a => (DateTime?)a.EndDate)
                               .FirstOrDefault()
         }).ToListAsync();
     }
@@ -341,9 +356,14 @@ public class UserService : IUserService
                 Biography = u.Biography,
                 MaxInternCount = u.MaxInternCount,
                 MentorId = u.MentorId,
+
+                StartDate = _context.Applications
+                                  .Where(a => a.UserId == u.Id)
+                                  .Select(a => (DateTime?)a.StartDate)
+                                  .FirstOrDefault(),
                 EndDate = _context.Applications
-                                  .Where(a => a.UserId == u.Id && a.Status == ApplicationStatus.Onaylandı)
-                                  .Select(a => a.EndDate)
+                                  .Where(a => a.UserId == u.Id)
+                                  .Select(a => (DateTime?)a.EndDate)
                                   .FirstOrDefault()
             }).ToListAsync();
     }
@@ -364,10 +384,15 @@ public class UserService : IUserService
                 Expertise = u.Expertise,
                 Biography = u.Biography,
                 MaxInternCount = u.MaxInternCount,
-                MentorId = u.MentorId,        
+                MentorId = u.MentorId,
+ 
+                StartDate = _context.Applications
+                                  .Where(a => a.UserId == u.Id)
+                                  .Select(a => (DateTime?)a.StartDate)
+                                  .FirstOrDefault(),
                 EndDate = _context.Applications
-                                  .Where(a => a.UserId == u.Id && a.Status == ApplicationStatus.Onaylandı)
-                                  .Select(a => a.EndDate)
+                                  .Where(a => a.UserId == u.Id)
+                                  .Select(a => (DateTime?)a.EndDate)
                                   .FirstOrDefault()
             }).ToListAsync();
     }

@@ -1,4 +1,22 @@
-﻿<nav class="admin-nav d-flex w-100 justify-content-between align-items-center" style="min-height: 85px !important; padding: 0 3.5rem !important; background: var(--card-bg); border-bottom: 1px solid var(--input-border); transition: background-color 0.3s ease, border-color 0.3s ease;">
+﻿<style>
+    .dropdown-text {
+        color: var(--text-main) !important;
+    }
+
+    .dropdown-item:hover {
+        background-color: var(--input-bg) !important;
+    }
+
+    .dropdown-item.dropdown-text:hover {
+        color: var(--text-main) !important;
+    }
+
+    .dropdown-item.text-danger:hover {
+        color: #dc3545 !important;
+    }
+</style>
+
+<nav class="admin-nav d-flex w-100 justify-content-between align-items-center" style="height: 85px !important; min-height: 85px !important; padding: 0 3.5rem !important; background: var(--card-bg); border-bottom: 1px solid var(--input-border); transition: background-color 0.3s ease, border-color 0.3s ease; box-sizing: border-box;">
 
     <div class="d-flex align-items-center">
         <a href="/Staff/StaffDashboardIndex">
@@ -11,24 +29,24 @@
     <div class="d-flex align-items-center gap-4">
 
         <div class="theme-toggle-btn" onclick="toggleTheme()" style="cursor:pointer;">
-            <i class="bi bi-sun-fill" id="themeIcon" style="font-size: 1.5rem !important;"></i>
+            <i class="bi bi-sun-fill" id="themeIcon" style="font-size: 1.5rem !important; color: var(--text-main);"></i>
         </div>
 
         <div class="dropdown">
             <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-                <i class="bi bi-person-circle text-secondary" id="profileIcon" style="font-size: 2rem !important; transition: color 0.3s ease;"></i>
+                <i class="bi bi-person-circle" id="profileIcon" style="font-size: 2rem !important; color: var(--text-main); transition: color 0.3s ease;"></i>
             </div>
 
             <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="background-color: var(--card-bg); border-color: var(--input-border);">
 
                 <li>
-                    <a class="dropdown-item d-flex align-items-center gap-3 py-2" style="color: var(--text-color);" href="/Staff/StaffProfile">
+                    <a class="dropdown-item d-flex align-items-center gap-3 py-2 dropdown-text" href="/Staff/StaffProfile">
                         <i class="bi bi-person fs-5"></i> Profil
                     </a>
                 </li>
 
                 <li>
-                    <a class="dropdown-item d-flex align-items-center gap-3 py-2" style="color: var(--text-color);" href="javascript:void(0)" onclick="if(window.openTransferModal) { window.openTransferModal(); } else { typeof Swal !== 'undefined' ? Swal.fire('Uyarı', 'Bu işlem sadece Çalışma Alanı panosunda yapılabilir.', 'info') : alert('Bu işlem sadece Çalışma Alanı panosunda yapılabilir.'); }">
+                    <a class="dropdown-item d-flex align-items-center gap-3 py-2 dropdown-text" href="javascript:void(0)" onclick="if(window.openTransferModal) { window.openTransferModal(); } else { typeof Swal !== 'undefined' ? Swal.fire('Uyarı', 'Bu işlem sadece Çalışma Alanı panosunda yapılabilir.', 'info') : alert('Bu işlem sadece Çalışma Alanı panosunda yapılabilir.'); }">
                         <i class="bi bi-arrow-left-right fs-5"></i> Stajyeri Devret
                     </a>
                 </li>
@@ -44,9 +62,3 @@
         </div>
     </div>
 </nav>
-
-<style>
-    .dropdown-item:hover {
-        background-color: var(--input-bg);
-    }
-</style>

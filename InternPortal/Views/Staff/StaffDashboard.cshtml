@@ -8,7 +8,13 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
     <style>
-       
+        body, html {
+            height: 100vh !important;
+            overflow: hidden !important;
+            margin: 0;
+            padding: 0;
+        }
+
         .board-wrapper {
             height: calc(100vh - 85px);
             margin-top: 85px;
@@ -19,7 +25,6 @@
             position: relative;
         }
 
-     
         .kanban-canvas {
             flex-grow: 1;
             display: flex;
@@ -42,6 +47,7 @@
             background: var(--card-bg);
             border-color: var(--input-border);
             box-shadow: 0 4px 6px var(--shadow);
+            height: auto;
         }
 
         .kanban-col-header {
@@ -142,10 +148,6 @@
                 border-color: var(--text-muted);
             }
 
-        .add-card-form {
-            padding: 0 0.8rem 0.8rem 0.8rem;
-        }
-
         .inline-add-input {
             background-color: var(--input-bg) !important;
             color: var(--text-main) !important;
@@ -171,6 +173,10 @@
                 color: var(--text-main) !important;
             }
 
+        .add-card-form {
+            padding: 0 0.8rem 0.8rem 0.8rem;
+        }
+
         [data-bs-theme="dark"] .kanban-col {
             background: #212529;
         }
@@ -179,7 +185,6 @@
             background: #2b3035;
         }
 
-       
         #taskDetailModal .modal-dialog {
             max-width: 1600px !important;
             width: 80vw !important;
@@ -241,16 +246,18 @@
                 opacity: 0.85;
             }
 
-        
-        .comments-container::-webkit-scrollbar {
+        .comments-container::-webkit-scrollbar,
+        .history-container::-webkit-scrollbar {
             width: 6px;
         }
 
-        .comments-container::-webkit-scrollbar-track {
+        .comments-container::-webkit-scrollbar-track,
+        .history-container::-webkit-scrollbar-track {
             background: transparent;
         }
 
-        .comments-container::-webkit-scrollbar-thumb {
+        .comments-container::-webkit-scrollbar-thumb,
+        .history-container::-webkit-scrollbar-thumb {
             background-color: var(--input-border);
             border-radius: 10px;
         }
@@ -357,24 +364,15 @@
             font-style: normal;
         }
 
-      
         body.swal2-shown .swal2-input,
         body.swal2-shown .swal2-textarea {
             background-color: var(--input-bg) !important;
             color: var(--text-main) !important;
-            border: 2px solid var(--input-border) !important;
-            border-radius: 12px !important;
-            box-shadow: none !important;
-            box-sizing: border-box !important;
-            width: 90% !important; 
-            max-width: 100% !important;
-            margin: 1.5em auto !important; 
-        }
-
-        .swal2-input:focus, .swal2-textarea:focus, .form-control:focus {
-            box-shadow: none !important;
-            border-color: var(--text-muted) !important;
-            outline: none !important;
+            border: 1px solid var(--input-border) !important;
+            border-radius: 8px !important;
+            resize: none !important;
+            font-size: 0.95rem !important;
+            padding: 0.8rem !important;
         }
 
         body.swal2-shown .swal2-popup {
@@ -383,45 +381,43 @@
             border: 1px solid var(--input-border) !important;
             border-radius: 16px !important;
             box-shadow: 0 15px 35px var(--shadow) !important;
-            padding: 2em !important;
         }
 
         body.swal2-shown .swal2-title {
             color: var(--text-main) !important;
-            font-size: 1.5rem !important;
-            font-weight: 700 !important;
         }
 
         body.swal2-shown .swal2-html-container {
             color: var(--text-muted) !important;
         }
 
-        body.swal2-shown .swal2-actions {
-            gap: 15px;
-            margin-top: 1.8em;
-        }
-
-        [data-bs-theme="dark"] .modal-content .btn-theme-custom, [data-bs-theme="dark"] .swal2-popup .btn-theme-custom {
+        [data-bs-theme="dark"] .swal2-popup .swal2-confirm.btn-theme-custom {
             background-color: #2b3035 !important;
             color: #f8f9fa !important;
             border-color: #495057 !important;
         }
 
-            [data-bs-theme="dark"] .modal-content .btn-theme-custom:hover, [data-bs-theme="dark"] .swal2-popup .btn-theme-custom:hover {
+            [data-bs-theme="dark"] .swal2-popup .swal2-confirm.btn-theme-custom:hover {
                 background-color: #343a40 !important;
                 border-color: #6c757d !important;
             }
 
-        [data-bs-theme="dark"] .modal-content .btn-secondary, [data-bs-theme="dark"] .swal2-popup .btn-secondary {
+        [data-bs-theme="dark"] .swal2-popup .swal2-cancel.btn-secondary {
             background-color: #495057 !important;
             color: #fff !important;
             border-color: #495057 !important;
         }
 
-            [data-bs-theme="dark"] .modal-content .btn-secondary:hover, [data-bs-theme="dark"] .swal2-popup .btn-secondary:hover {
+            [data-bs-theme="dark"] .swal2-popup .swal2-cancel.btn-secondary:hover {
                 background-color: #343a40 !important;
                 border-color: #495057 !important;
             }
+
+        .swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=-left],
+        .swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=-right],
+        .swal2-icon.swal2-success .swal2-success-fix {
+            background-color: transparent !important;
+        }
     </style>
 }
 
@@ -586,22 +582,46 @@
                     </div>
 
                     <div class="col-lg-4 ps-4 d-flex flex-column" style="max-height: 460px;">
-                        <h5 class="text-uppercase text-muted fw-bold m-0 mb-3" style="letter-spacing: 1px;">
-                            <i class="bi bi-chat-left-text me-2"></i>Yorumlar
-                        </h5>
 
-                        <div class="comments-container flex-grow-1 overflow-auto mb-3 pe-2" id="commentsList">
-                            <div class="text-center text-muted mt-5" id="noCommentText" style="font-size: 0.9rem;">
-                                <i class="bi bi-chat-square-dots fs-1 mb-2 d-block opacity-50"></i>
-                                Henüz yorum yapılmamış.
+                        <ul class="nav nav-pills mb-3 border-bottom pb-2" id="taskTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold px-3 py-1" id="comments-tab" data-bs-toggle="pill" data-bs-target="#commentsPanel" type="button" role="tab" style="color: var(--text-main);">
+                                    <i class="bi bi-chat-left-text me-1"></i> Yorumlar
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold px-3 py-1" id="history-tab" data-bs-toggle="pill" data-bs-target="#historyPanel" type="button" role="tab" style="color: var(--text-muted);">
+                                    <i class="bi bi-clock-history me-1"></i> Geçmiş
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content flex-grow-1 overflow-auto pe-2 d-flex flex-column" id="taskTabsContent">
+
+                            <div class="tab-pane fade show active d-flex flex-column h-100" id="commentsPanel" role="tabpanel">
+                                <div class="comments-container flex-grow-1 overflow-auto mb-3" id="commentsList">
+                                    <div class="text-center text-muted mt-5" id="noCommentText" style="font-size: 0.9rem;">
+                                        <i class="bi bi-chat-square-dots fs-1 mb-2 d-block opacity-50"></i>
+                                        Henüz yorum yapılmamış.
+                                    </div>
+                                </div>
+
+                                <div class="add-comment-box mt-auto pt-2 border-top" style="border-color: var(--input-border) !important;">
+                                    <textarea id="newCommentInput" class="form-control mb-2 shadow-none" rows="2" placeholder="Personel olarak yorum yazın..." style="background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 8px; resize: none; font-size: 0.95rem;"></textarea>
+                                    <button class="btn btn-theme-custom w-100 fw-bold py-2" onclick="addComment()" style="border-radius: 8px;">
+                                        Gönder
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="add-comment-box mt-auto pt-2 border-top" style="border-color: var(--input-border) !important;">
-                            <textarea id="newCommentInput" class="form-control mb-2 shadow-none" rows="2" placeholder="Personel olarak yorum yazın..." style="background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 8px; resize: none; font-size: 0.95rem;"></textarea>
-                            <button class="btn btn-theme-custom w-100 fw-bold py-2" onclick="addComment()" style="border-radius: 8px;">
-                                Gönder
-                            </button>
+                            <div class="tab-pane fade" id="historyPanel" role="tabpanel">
+                                <div class="history-container overflow-auto" id="historyList">
+                                    <div class="text-center text-muted mt-5" style="font-size: 0.9rem;">
+                                        <div class="spinner-border spinner-border-sm me-2"></div> Yükleniyor...
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -652,6 +672,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
     <script>
         const token = localStorage.getItem('token');
@@ -674,7 +695,66 @@
         const urlParams = new URLSearchParams(window.location.search);
         let currentInternId = urlParams.get('internId');
 
+        const connection = new signalR.HubConnectionBuilder()
+        .withUrl(`${API_URL}/kanbanHub?access_token=${token}`)
+        .withAutomaticReconnect()
+        .build();
+
+        connection.on("BoardUpdated", function () {
+        console.log("Panoda değişiklik algılandı, veriler güncelleniyor...");
+        loadTasks();
+
+        const openTaskId = document.getElementById('currentOpenTaskId').value;
+        if (openTaskId) {
+        loadTaskComments(openTaskId);
+        loadTaskHistory(openTaskId);
+        }
+        });
+
+        let notificationCount = 0;
+        connection.on("ReceiveNotification", function (message) {
+        console.log("Yeni Bildirim Geldi:", message);
+
+        const badge = document.getElementById('inboxBadge');
+        if (badge) {
+        notificationCount++;
+        badge.innerText = notificationCount;
+        badge.classList.remove('d-none');
+        }
+
+        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'info',
+        title: 'Yeni Bildirim',
+        text: message,
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+        background: isDark ? '#2b3035' : '#ffffff',
+        color: isDark ? '#f8f9fa' : '#212529'
+        });
+        });
+
+        async function startSignalR() {
+        try {
+        await connection.start();
+        console.log("SignalR Bağlantısı Başarılı!");
+        if (currentInternId) {
+        await connection.invoke("JoinInternBoard", currentInternId);
+        console.log(`Odaya katılındı: ${currentInternId}`);
+        }
+        } catch (err) {
+        console.error("SignalR Bağlantı Hatası:", err);
+        setTimeout(startSignalR, 5000);
+        }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+
+        startSignalR();
+
         initSortable();
         loadInternData();
 
@@ -793,26 +873,48 @@
         if (modalInstance) modalInstance.hide();
 
         Swal.fire({
-        icon: 'success', title: 'Talep Gönderildi',
+        icon: 'success',
+        title: 'Talep Gönderildi',
         text: 'Devir talebiniz başarıyla oluşturuldu. Admin onayından sonra devir işlemi gerçekleşecektir.',
-        confirmButtonColor: '#ffc107'
+        background: isDark ? '#1e1e1e' : '#fff',
+        color: isDark ? '#fff' : '#000',
+        customClass: { confirmButton: 'btn btn-theme-custom px-4' },
+        buttonsStyling: false
         });
 
         document.getElementById('transferReasonInput').value = '';
         loadTasks();
-
         } else {
         const err = await response.json();
-        Swal.fire('Hata', err.message || 'Devir talebi oluşturulamadı.', 'error');
+        Swal.fire({
+        icon: 'error',
+        title: 'Hata',
+        text: err.message || 'Devir talebi oluşturulamadı.',
+        background: isDark ? '#1e1e1e' : '#fff',
+        color: isDark ? '#fff' : '#000',
+        customClass: { confirmButton: 'btn btn-theme-custom px-4' },
+        buttonsStyling: false
+        });
         }
-        } catch (error) { console.error(error); Swal.fire('Hata', 'Sunucuya bağlanırken teknik bir sorun oluştu.', 'error'); }
+        } catch (error) {
+        console.error(error);
+        Swal.fire({
+        icon: 'error',
+        title: 'Hata',
+        text: 'Sunucuya bağlanırken teknik bir sorun oluştu.',
+        background: isDark ? '#1e1e1e' : '#fff',
+        color: isDark ? '#fff' : '#000',
+        customClass: { confirmButton: 'btn btn-theme-custom px-4' },
+        buttonsStyling: false
+        });
+        }
         }
         }
 
         async function loadTasks() {
         if (!currentInternId) return;
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/intern/${currentInternId}`, {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/by-intern/${currentInternId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -864,7 +966,7 @@
         if (!taskTitle) { inputElement.focus(); return; }
 
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks`, {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ title: taskTitle, internId: currentInternId, staffId: currentStaffId, status: status })
@@ -1037,7 +1139,7 @@
 
         if (result.isConfirmed) {
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}`, {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/delete/${taskId}`, {
         method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) { loadTasks(); Swal.fire({ icon: 'success', title: 'Silindi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 }); }
@@ -1059,7 +1161,7 @@
 
         if (result.isConfirmed) {
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}`, {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/delete/${taskId}`, {
         method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -1078,7 +1180,9 @@
         const el = document.getElementById(colId);
         if (el) {
         new Sortable(el, {
-        group: 'kanban', animation: 150, ghostClass: 'bg-secondary',
+        group: 'kanban',
+        animation: 150,
+        ghostClass: 'bg-secondary',
         onEnd: function (evt) {
         const taskId = evt.item.getAttribute('data-task-id');
         const newStatus = evt.to.getAttribute('data-status');
@@ -1092,11 +1196,30 @@
 
         async function updateTaskPosition(taskId, newStatus, newOrderIndex) {
         try {
-        await fetch(`${API_URL}/api/KanbanTasks/move`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ taskId: parseInt(taskId), newStatus, newOrderIndex })
+        const payload = {
+        taskId: parseInt(taskId),
+        id: parseInt(taskId),
+        newStatus: newStatus,
+        status: newStatus,
+        newOrderIndex: newOrderIndex,
+        orderIndex: newOrderIndex
+        };
+
+        const response = await fetch(`${API_URL}/api/KanbanTasks/move`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(payload)
         });
-        } catch (error) { loadTasks(); }
+
+        if (!response.ok) {
+        const err = await response.json();
+        console.error("Kart taşınırken DTO uyuşmazlığı oldu! Backend'in hatası:", err);
+        loadTasks();
+        }
+        } catch (error) {
+        console.error("İstek hiç atılamadı:", error);
+        loadTasks();
+        }
         }
 
         async function loadTaskComments(taskId) {
@@ -1105,7 +1228,7 @@
         const myUserId = getUserIdFromToken(token);
 
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/comments`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`${API_URL}/api/TaskComments/task/${taskId}`, { headers: { 'Authorization': `Bearer ${token}` } });
         if (response.ok) {
         const comments = await response.json();
         commentsList.innerHTML = '';
@@ -1118,24 +1241,73 @@
         }
         comments.forEach(c => {
         let deleteButtonHtml = '';
-        if (c.userId === myUserId) {
+
+        const commenterName = c.userName || c.UserName || c.userFullName || c.UserFullName || c.name || c.Name || "Bilinmeyen Kullanıcı";
+        const commentDate = c.createdAt || c.CreatedAt || c.createdDate || c.CreatedDate || "Tarih Belirsiz";
+        const commentText = c.content || c.Content || c.text || c.Text || "";
+        const commenterId = c.userId || c.UserId;
+        const commentId = c.id || c.Id;
+
+        if (commenterId === currentStaffId) {
         deleteButtonHtml = `
         <i class="bi bi-trash3 text-muted ms-2"
         style="cursor: pointer; transition: color 0.2s;"
         onmouseover="this.classList.remove('text-muted'); this.classList.add('text-danger');"
         onmouseout="this.classList.remove('text-danger'); this.classList.add('text-muted');"
-        onclick="deleteTaskComment(${c.id})" title="Yorumu Sil"></i>`;
+        onclick="deleteTaskComment(${commentId})" title="Yorumu Sil"></i>`;
         }
         const commentHtml = `
         <div class="comment-item mb-3 p-3 rounded-3" style="background-color: var(--input-bg); border: 1px solid var(--input-border); animation: fadeIn 0.3s ease;">
         <div class="d-flex justify-content-between align-items-start mb-2">
-        <div><strong style="color: var(--text-main); font-size: 0.9rem;">${c.userName}</strong><small class="text-muted ms-2" style="font-size: 0.75rem;">${c.createdAt}</small></div>
-        ${deleteButtonHtml}</div><p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${c.text}</p></div>`;
+        <div><strong style="color: var(--text-main); font-size: 0.9rem;">${commenterName}</strong><small class="text-muted ms-2" style="font-size: 0.75rem;">${commentDate}</small></div>
+        ${deleteButtonHtml}
+        </div><p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${commentText}</p>
+        </div>`;
         commentsList.insertAdjacentHTML('beforeend', commentHtml);
         });
         commentsList.scrollTop = commentsList.scrollHeight;
         }
         } catch (error) { commentsList.innerHTML = '<div class="text-center text-danger mt-5">Yorumlar yüklenirken bir hata oluştu.</div>'; }
+        }
+
+        async function loadTaskHistory(taskId) {
+        const historyList = document.getElementById('historyList');
+        historyList.innerHTML = '<div class="text-center text-muted mt-5"><div class="spinner-border spinner-border-sm me-2"></div>Geçmiş Yükleniyor...</div>';
+
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/logs`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+        const logs = await response.json();
+        historyList.innerHTML = '';
+
+        if (logs.length === 0) {
+        historyList.innerHTML = `
+        <div class="text-center text-muted mt-5" style="font-size: 0.9rem;">
+        <i class="bi bi-journal-x fs-1 mb-2 d-block opacity-50"></i>
+        Kayıtlı işlem bulunmuyor.
+        </div>`;
+        return;
+        }
+
+        logs.forEach(log => {
+        const logHtml = `
+        <div class="mb-3 pb-3 border-bottom" style="border-color: var(--input-border) !important;">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+        <strong style="color: var(--text-main); font-size: 0.85rem;"><i class="bi bi-person-fill me-1"></i>${log.userName}</strong>
+        <small class="text-muted" style="font-size: 0.75rem;">${log.createdAt}</small>
+        </div>
+        <div class="badge bg-secondary text-light mb-1" style="font-size: 0.7rem;">${log.actionType}</div>
+        <p class="m-0 text-muted" style="font-size: 0.85rem;">${log.details}</p>
+        </div>`;
+        historyList.insertAdjacentHTML('beforeend', logHtml);
+        });
+        }
+        } catch (error) {
+        historyList.innerHTML = '<div class="text-center text-danger mt-5">Geçmiş yüklenirken hata oluştu.</div>';
+        }
         }
 
         function openTaskModal(taskId) {
@@ -1151,6 +1323,14 @@
         badge.className = `badge text-dark px-3 py-2 bg-${task.status === 'Done' ? 'success' : 'warning'}`;
 
         loadTaskComments(taskId);
+        loadTaskHistory(taskId);
+
+        const commentsTabBtn = document.getElementById('comments-tab');
+        if (commentsTabBtn) {
+        const tabInstance = new bootstrap.Tab(commentsTabBtn);
+        tabInstance.show();
+        }
+
         const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
         modal.show();
         }
@@ -1160,12 +1340,13 @@
         const newDescription = quillEditor.root.innerHTML.trim();
 
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/description`, {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/update-description/${taskId}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ description: newDescription })
         });
         if (response.ok) {
         loadTasks();
+        Swal.fire({ icon: 'success', title: 'Açıklama kaydedildi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
         } else { Swal.fire('Hata', 'Açıklama kaydedilemedi.', 'error'); }
         } catch (error) { console.error("Kaydetme hatası:", error); }
         }
@@ -1179,35 +1360,14 @@
         input.disabled = true;
 
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/comments`, {
+        const response = await fetch(`${API_URL}/api/TaskComments/add`, {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ text: commentText })
-        });     
+        body: JSON.stringify({ taskId: parseInt(taskId), content: commentText, userId: currentStaffId })
+        });
 
         if (response.ok) {
-        const newComment = await response.json();
-        const commentsList = document.getElementById('commentsList');
-        const noCommentText = document.getElementById('noCommentText');
-        if (noCommentText) noCommentText.style.display = 'none';
-
-        const myUserId = getUserIdFromToken(token);
-        let deleteButtonHtml = '';
-        if (newComment.userId === myUserId) {
-        deleteButtonHtml = `
-        <i class="bi bi-trash3 text-muted ms-2" style="cursor: pointer; transition: color 0.2s;"
-        onmouseover="this.classList.remove('text-muted'); this.classList.add('text-danger');"
-        onmouseout="this.classList.remove('text-danger'); this.classList.add('text-muted');"
-        onclick="deleteTaskComment(${newComment.id})" title="Yorumu Sil"></i>`;
-        }
-
-        const commentHtml = `
-        <div class="comment-item mb-3 p-3 rounded-3" style="background-color: var(--input-bg); border: 1px solid var(--input-border); animation: fadeIn 0.3s ease;">
-        <div class="d-flex justify-content-between align-items-start mb-2"><div><strong style="color: var(--text-main); font-size: 0.9rem;">${newComment.userName}</strong><small class="text-muted ms-2" style="font-size: 0.75rem;">${newComment.createdAt}</small></div>${deleteButtonHtml}</div>
-        <p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${newComment.text}</p></div>`;
-
-        commentsList.insertAdjacentHTML('beforeend', commentHtml);
+        loadTaskComments(taskId);
         input.value = '';
-        commentsList.scrollTop = commentsList.scrollHeight;
         } else { Swal.fire('Hata', 'Yorum gönderilirken bir sorun oluştu.', 'error'); }
         } catch (error) { console.error("Yorum gönderme hatası:", error); Swal.fire('Bağlantı Hatası', 'Sunucuya ulaşılamadı.', 'error'); }
         finally { input.disabled = false; input.focus(); }
@@ -1224,7 +1384,10 @@
 
         if (result.isConfirmed) {
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/comments/${commentId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`${API_URL}/api/TaskComments/delete/${commentId}?userId=${currentStaffId}`, {
+        method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
+        });
+
         if (response.ok) {
         const currentTaskId = document.getElementById('currentOpenTaskId').value;
         loadTaskComments(currentTaskId);

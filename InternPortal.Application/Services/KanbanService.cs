@@ -69,7 +69,6 @@ namespace InternPortal.Application.Services
 
             task.Title = dto.Title;
             task.Description = dto.Description;
-            task.DueDate = dto.DueDate;
 
             await _context.SaveChangesAsync();
             return true;

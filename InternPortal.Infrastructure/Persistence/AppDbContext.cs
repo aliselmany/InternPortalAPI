@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<TaskComment> TaskComments { get; set; }
     public DbSet<KanbanComment> KanbanComments { get; set; }
     public DbSet<InternTransferRequest> InternTransferRequests { get; set; }
+    public DbSet<TaskActivityLog> TaskActivityLogs { get; set; }
 
     public DbSet<KanbanBoardTemplate> KanbanBoardTemplates { get; set; }
     public DbSet<KanbanTemplateTask> KanbanTemplateTasks { get; set; }

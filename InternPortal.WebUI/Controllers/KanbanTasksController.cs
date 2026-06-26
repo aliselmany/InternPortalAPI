@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using System;
 using System.Security.Claims;
+using Microsoft.AspNetCore.SignalR;
+using InternPortalAPI.Hubs;
 
 namespace InternPortalAPI.Controllers
 {
@@ -15,13 +17,15 @@ namespace InternPortalAPI.Controllers
     public class KanbanTasksController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IHubContext<KanbanHub> _hubContext;
 
-        public KanbanTasksController(AppDbContext context)
+        public KanbanTasksController(AppDbContext context, IHubContext<KanbanHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
-        [HttpPost("comments/add-to-task/{taskId}")] 
+        [HttpPost("comments/add-to-task/{taskId}")]
         public async Task<IActionResult> AddComment(int taskId, [FromBody] CommentCreateDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Text))
@@ -55,6 +59,14 @@ namespace InternPortalAPI.Controllers
             _context.KanbanComments.Add(comment);
             await _context.SaveChangesAsync();
 
+            var task = await _context.KanbanTasks.FindAsync(taskId);
+            if (task != null)
+            {
+                await LogActivityAsync(task.Id, "Yorum Eklendi", $"{userName} göreve yeni bir yorum yaptı.");
+                await _hubContext.Clients.Group(task.InternId.ToString()).SendAsync("BoardUpdated");
+                await _hubContext.Clients.Group(task.InternId.ToString()).SendAsync("ReceiveNotification", $"{userName} bir yorum yaptı: {dto.Text}");
+            }
+
             return Ok(new
             {
                 comment.Id,
@@ -64,9 +76,8 @@ namespace InternPortalAPI.Controllers
                 CreatedAt = comment.CreatedAt.ToString("HH:mm")
             });
         }
-        
 
-        [HttpPost("create")] 
+        [HttpPost("create")]
         public async Task<IActionResult> CreateTask([FromBody] CreateKanbanTaskDto dto)
         {
             var lastOrder = await _context.KanbanTasks
@@ -86,6 +97,11 @@ namespace InternPortalAPI.Controllers
             _context.KanbanTasks.Add(newTask);
             await _context.SaveChangesAsync();
 
+            await LogActivityAsync(newTask.Id, "Görev Oluşturuldu", "Görev panoya eklendi.");
+
+            await _hubContext.Clients.Group(newTask.InternId.ToString()).SendAsync("BoardUpdated");
+            await _hubContext.Clients.Group(newTask.InternId.ToString()).SendAsync("ReceiveNotification", $"Panoya yeni bir görev eklendi: {dto.Title}");
+
             return Ok(newTask);
         }
 
@@ -101,7 +117,7 @@ namespace InternPortalAPI.Controllers
             return Ok(tasks);
         }
 
-        [HttpGet("comments/by-task/{taskId}")] 
+        [HttpGet("comments/by-task/{taskId}")]
         public async Task<IActionResult> GetComments(int taskId)
         {
             var comments = await _context.KanbanComments
@@ -120,6 +136,24 @@ namespace InternPortalAPI.Controllers
             return Ok(comments);
         }
 
+        [HttpGet("{taskId}/logs")]
+        public async Task<IActionResult> GetTaskLogs(int taskId)
+        {
+            var logs = await _context.TaskActivityLogs
+                .Where(l => l.TaskId == taskId)
+                .OrderByDescending(l => l.CreatedAt)
+                .Select(l => new
+                {
+                    l.UserName,
+                    l.ActionType,
+                    l.Details,
+                    CreatedAt = l.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                })
+                .ToListAsync();
+
+            return Ok(logs);
+        }
+
         [HttpPut("move")]
         public async Task<IActionResult> MoveTask([FromBody] MoveKanbanTaskDto dto)
         {
@@ -130,10 +164,16 @@ namespace InternPortalAPI.Controllers
             task.OrderIndex = dto.NewOrderIndex;
 
             await _context.SaveChangesAsync();
+
+            await LogActivityAsync(task.Id, "Durum Değişti", $"Görev yeni bir sütuna taşındı: {dto.NewStatus}");
+
+            await _hubContext.Clients.Group(task.InternId.ToString()).SendAsync("BoardUpdated");
+            await _hubContext.Clients.Group(task.InternId.ToString()).SendAsync("ReceiveNotification", $"Bir görev taşındı: Yeni Durum -> {dto.NewStatus}");
+
             return Ok();
         }
 
-        [HttpPut("update/{id}")] 
+        [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateTask(int id, [FromBody] UpdateKanbanTaskDto dto)
         {
             var task = await _context.KanbanTasks.FindAsync(id);
@@ -141,13 +181,17 @@ namespace InternPortalAPI.Controllers
 
             task.Title = dto.Title;
             task.Description = dto.Description;
-            task.DueDate = dto.DueDate;
 
             await _context.SaveChangesAsync();
+
+            await LogActivityAsync(task.Id, "Görev Güncellendi", "Görevin başlık veya detay bilgileri güncellendi.");
+
+            await _hubContext.Clients.Group(task.InternId.ToString()).SendAsync("BoardUpdated");
+
             return Ok();
         }
 
-        [HttpPut("update-description/{id}")] 
+        [HttpPut("update-description/{id}")]
         public async Task<IActionResult> UpdateTaskDescription(int id, [FromBody] TaskDescriptionUpdateModel model)
         {
             var task = await _context.KanbanTasks.FindAsync(id);
@@ -157,14 +201,14 @@ namespace InternPortalAPI.Controllers
             task.Description = model.Description;
             await _context.SaveChangesAsync();
 
+            await LogActivityAsync(task.Id, "Açıklama Güncellendi", "Görevin açıklaması değiştirildi.");
+
+            await _hubContext.Clients.Group(task.InternId.ToString()).SendAsync("BoardUpdated");
+
             return Ok(new { message = "Açıklama başarıyla güncellendi." });
         }
 
-        
-
-       
-
-        [HttpDelete("comments/delete/{commentId}")] 
+        [HttpDelete("comments/delete/{commentId}")]
         public async Task<IActionResult> DeleteComment(int commentId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -179,10 +223,18 @@ namespace InternPortalAPI.Controllers
             comment.IsDeleted = true;
             await _context.SaveChangesAsync();
 
+            var task = await _context.KanbanTasks.FindAsync(comment.TaskId);
+            if (task != null)
+            {
+           
+                await LogActivityAsync(task.Id, "Yorum Silindi", "Bir yorum silindi.");
+                await _hubContext.Clients.Group(task.InternId.ToString()).SendAsync("BoardUpdated");
+            }
+
             return Ok(new { message = "Yorum başarıyla silindi." });
         }
-    
-        [HttpDelete("delete/{id}")] 
+
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteTask(int id)
         {
             var task = await _context.KanbanTasks.FindAsync(id);
@@ -190,18 +242,38 @@ namespace InternPortalAPI.Controllers
 
             task.IsDeleted = true;
             await _context.SaveChangesAsync();
+
+            await _hubContext.Clients.Group(task.InternId.ToString()).SendAsync("BoardUpdated");
+
             return Ok();
-        }    
+        }
 
-        
+       
+        private async Task LogActivityAsync(int taskId, string actionType, string details)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = "Sistem/Bilinmeyen";
 
+            if (Guid.TryParse(userId, out Guid parsedUserId))
+            {
+                var user = await _context.Users.FindAsync(parsedUserId);
+                if (user != null) userName = $"{user.Name} {user.Surname}";
+            }
 
+            var log = new TaskActivityLog
+            {
+                TaskId = taskId,
+                UserId = userId,
+                UserName = userName,
+                ActionType = actionType,
+                Details = details,
+                CreatedAt = DateTime.Now
+            };
 
-        
-
-
+            _context.TaskActivityLogs.Add(log);
+            await _context.SaveChangesAsync();
+        }
     }
-
 
     public record TaskDescriptionUpdateModel(string Description);
 

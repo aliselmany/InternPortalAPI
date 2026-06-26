@@ -250,6 +250,7 @@ public class UsersController : ControllerBase
                         ? allUsers.FirstOrDefault(m => m.Id == u.MentorId.Value)?.Name + " " + allUsers.FirstOrDefault(m => m.Id == u.MentorId.Value)?.Surname
                         : "Atanmadı",
 
+                    StartDate = u.StartDate,
                     EndDate = u.EndDate
                 })
                 .ToList();

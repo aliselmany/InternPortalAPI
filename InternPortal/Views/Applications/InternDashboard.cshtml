@@ -265,46 +265,59 @@
                     transform: translateY(-1px) !important;
                 }
 
-        [data-bs-theme="dark"] .ql-snow .ql-stroke {
-            stroke: #adb5bd;
-        }
+        [data-bs-theme="dark"] .ql-snow .ql-stroke { stroke: #adb5bd; }
+        [data-bs-theme="dark"] .ql-snow .ql-fill { fill: #adb5bd; }
+        [data-bs-theme="dark"] .ql-snow .ql-picker { color: #adb5bd; }
+        [data-bs-theme="dark"] .ql-editor.ql-blank::before { color: #6c757d; font-style: normal; }
 
-        [data-bs-theme="dark"] .ql-snow .ql-fill {
-            fill: #adb5bd;
-        }
-
-        [data-bs-theme="dark"] .ql-snow .ql-picker {
-            color: #adb5bd;
-        }
-
-        [data-bs-theme="dark"] .ql-editor.ql-blank::before {
-            color: #6c757d;
-            font-style: normal;
-        }
-
-        .comments-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .comments-container::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .comments-container::-webkit-scrollbar-thumb {
+        .comments-container::-webkit-scrollbar,
+        .history-container::-webkit-scrollbar { width: 6px; }
+        .comments-container::-webkit-scrollbar-track,
+        .history-container::-webkit-scrollbar-track { background: transparent; }
+        .comments-container::-webkit-scrollbar-thumb,
+        .history-container::-webkit-scrollbar-thumb {
             background-color: var(--input-border);
             border-radius: 10px;
         }
 
         @@keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        body.swal2-shown .swal2-popup {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--input-border) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 15px 35px var(--shadow) !important;
+        }
+        body.swal2-shown .swal2-title {
+            color: var(--text-main) !important;
+        }
+        body.swal2-shown .swal2-html-container {
+            color: var(--text-muted) !important;
+        }
+        body.swal2-shown .swal2-input,
+        body.swal2-shown .swal2-textarea {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--input-border) !important;
+        }
+        [data-bs-theme="dark"] .swal2-popup .swal2-confirm.btn-theme-custom {
+            background-color: #2b3035 !important;
+            color: #f8f9fa !important;
+            border-color: #495057 !important;
+        }
+        [data-bs-theme="dark"] .swal2-popup .swal2-confirm.btn-theme-custom:hover {
+            background-color: #343a40 !important;
+            border-color: #6c757d !important;
+        }
+
+        .swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=-left],
+        .swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=-right],
+        .swal2-icon.swal2-success .swal2-success-fix {
+            background-color: transparent !important;
         }
     </style>
 }
@@ -392,22 +405,46 @@
                     </div>
 
                     <div class="col-lg-4 ps-4 d-flex flex-column" style="max-height: 460px;">
-                        <h5 class="text-uppercase text-muted fw-bold m-0 mb-3" style="letter-spacing: 1px;">
-                            <i class="bi bi-chat-left-text me-2"></i>Yorumlar
-                        </h5>
+                        
+                        <ul class="nav nav-pills mb-3 border-bottom pb-2" id="taskTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold px-3 py-1" id="comments-tab" data-bs-toggle="pill" data-bs-target="#commentsPanel" type="button" role="tab" style="color: var(--text-main);">
+                                    <i class="bi bi-chat-left-text me-1"></i> Yorumlar
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold px-3 py-1" id="history-tab" data-bs-toggle="pill" data-bs-target="#historyPanel" type="button" role="tab" style="color: var(--text-muted);">
+                                    <i class="bi bi-clock-history me-1"></i> Geçmiş
+                                </button>
+                            </li>
+                        </ul>
 
-                        <div class="comments-container flex-grow-1 overflow-auto mb-3 pe-2" id="commentsList">
-                            <div class="text-center text-muted mt-5" id="noCommentText" style="font-size: 0.9rem;">
-                                <i class="bi bi-chat-square-dots fs-1 mb-2 d-block opacity-50"></i>
-                                Henüz yorum yapılmamış.
+                        <div class="tab-content flex-grow-1 overflow-auto pe-2 d-flex flex-column" id="taskTabsContent">
+                            
+                            <div class="tab-pane fade show active d-flex flex-column h-100" id="commentsPanel" role="tabpanel">
+                                <div class="comments-container flex-grow-1 overflow-auto mb-3" id="commentsList">
+                                    <div class="text-center text-muted mt-5" id="noCommentText" style="font-size: 0.9rem;">
+                                        <i class="bi bi-chat-square-dots fs-1 mb-2 d-block opacity-50"></i>
+                                        Henüz yorum yapılmamış.
+                                    </div>
+                                </div>
+
+                                <div class="add-comment-box mt-auto pt-2 border-top" style="border-color: var(--input-border) !important;">
+                                    <textarea id="newCommentInput" class="form-control mb-2 shadow-none" rows="2" placeholder="Bir yorum yazın..." style="background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 8px; resize: none; font-size: 0.95rem;"></textarea>
+                                    <button class="btn btn-theme-custom w-100 fw-bold py-2" onclick="addComment()" style="border-radius: 8px;">
+                                        Gönder
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="add-comment-box mt-auto pt-2 border-top" style="border-color: var(--input-border) !important;">
-                            <textarea id="newCommentInput" class="form-control mb-2 shadow-none" rows="2" placeholder="Bir yorum yazın..." style="background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 8px; resize: none; font-size: 0.95rem;"></textarea>
-                            <button class="btn btn-theme-custom w-100 fw-bold py-2" onclick="addComment()" style="border-radius: 8px;">
-                                Gönder
-                            </button>
+                            <div class="tab-pane fade" id="historyPanel" role="tabpanel">
+                                <div class="history-container overflow-auto" id="historyList">
+                                    <div class="text-center text-muted mt-5" style="font-size: 0.9rem;">
+                                        <div class="spinner-border spinner-border-sm me-2"></div> Yükleniyor...
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -456,6 +493,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
     <script>
         const API_URL = "https://localhost:7166";
@@ -467,456 +505,547 @@
         if (!token) window.location.replace('/Account/Login');
 
         function getUserIdFromToken(jwt) {
-        try {
-        const payload = JSON.parse(atob(jwt.split('.')[1]));
-        return payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-        } catch (e) {
-        return null;
-        }
+            try {
+                const payload = JSON.parse(atob(jwt.split('.')[1]));
+                return payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+            } catch (e) {
+                return null;
+            }
         }
 
         const currentInternId = getUserIdFromToken(token);
         const isUserStaff = false;
 
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`${API_URL}/kanbanHub?access_token=${token}`)
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("BoardUpdated", function () {
+            console.log("Panoda değişiklik algılandı, veriler güncelleniyor...");
+            loadTasks();
+            
+            const openTaskId = document.getElementById('currentOpenTaskId').value;
+            if (openTaskId) {
+                loadTaskComments(openTaskId);
+                loadTaskHistory(openTaskId);
+            }
+        });
+
+        let notificationCount = 0;
+        connection.on("ReceiveNotification", function (message) {
+            console.log("Yeni Bildirim:", message);
+            
+            const badge = document.getElementById('inboxBadge'); 
+            if (badge) {
+                notificationCount++;
+                badge.innerText = notificationCount;
+                badge.classList.remove('d-none');
+            }
+
+            const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'info',
+                title: 'Yeni Bildirim',
+                text: message,
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true,
+                background: isDark ? '#2b3035' : '#ffffff',
+                color: isDark ? '#f8f9fa' : '#212529'
+            });
+        });
+
+        async function startSignalR() {
+            try {
+                await connection.start();
+                console.log("SignalR Bildirim Ağına Bağlanıldı.");
+                
+                if (currentInternId) {
+                    await connection.invoke("JoinInternBoard", currentInternId);
+                    console.log(`Odaya katılındı: ${currentInternId}`);
+                }
+            } catch (err) {
+                console.error("SignalR Bağlantı Hatası:", err);
+                setTimeout(startSignalR, 5000);
+            }
+        }
+
+
         let currentUser = {
-        name: "Yükleniyor...",
-        surname: "",
-        email: "Yükleniyor...",
-        phone: "Yükleniyor..."
+            name: "Yükleniyor...",
+            surname: "",
+            email: "Yükleniyor...",
+            phone: "Yükleniyor..."
         };
 
         async function fetchUserProfile() {
-        if (!currentInternId) return;
-        try {
-        const res = await fetch(`${API_URL}/api/Users/get-by-id/${currentInternId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-        });
+            if (!currentInternId) return;
+            try {
+                const res = await fetch(`${API_URL}/api/Users/get-by-id/${currentInternId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
-        if (res.ok) {
-        const user = await res.json();
-        currentUser.name = user.name || user.Name || "İsimsiz";
-        currentUser.surname = user.surname || user.Surname || "";
-        currentUser.email = user.email || user.Email || "-";
-        currentUser.phone = user.phoneNumber || user.PhoneNumber || "-";
-        }
-        } catch (err) {
-        console.error("Profil bilgisi çekilirken hata oluştu:", err);
-        }
+                if (res.ok) {
+                    const user = await res.json();
+                    currentUser.name = user.name || user.Name || "İsimsiz";
+                    currentUser.surname = user.surname || user.Surname || "";
+                    currentUser.email = user.email || user.Email || "-";
+                    currentUser.phone = user.phoneNumber || user.PhoneNumber || "-";
+                }
+            } catch (err) {
+                console.error("Profil bilgisi çekilirken hata oluştu:", err);
+            }
         }
 
         window.showProfile = function() {
-        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-        const isDark = currentTheme === 'dark';
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const isDark = currentTheme === 'dark';
 
-        Swal.fire({
-        title: 'Profil Bilgileri',
-        html: `
-        <div class="text-start mt-3" style="font-size: 1.1rem;">
-        <div class="mb-2"><strong class="text-muted">Ad Soyad:</strong> <span class="ms-2" style="color: var(--text-main);">${currentUser.name} ${currentUser.surname}</span></div>
-        <div class="mb-2"><strong class="text-muted">E-posta:</strong> <span class="ms-2" style="color: var(--text-main);">${currentUser.email}</span></div>
-        <div class="mb-2"><strong class="text-muted">Telefon:</strong> <span class="ms-2" style="color: var(--text-main);">${currentUser.phone}</span></div>
-        <hr style="border-color: var(--input-border);">
-        <span class="badge bg-primary px-3 py-2">Stajyer Adayı</span>
-        </div>
-        `,
-        icon: 'info',
-        confirmButtonText: 'Kapat',
-        confirmButtonColor: '#ffc107',
-        background: 'var(--card-bg)',
-        color: 'var(--text-main)'
-        });
+            Swal.fire({
+                title: 'Profil Bilgileri',
+                html: `
+                <div class="text-start mt-3" style="font-size: 1.1rem;">
+                    <div class="mb-2"><strong class="text-muted">Ad Soyad:</strong> <span class="ms-2" style="color: var(--text-main);">${currentUser.name} ${currentUser.surname}</span></div>
+                    <div class="mb-2"><strong class="text-muted">E-posta:</strong> <span class="ms-2" style="color: var(--text-main);">${currentUser.email}</span></div>
+                    <div class="mb-2"><strong class="text-muted">Telefon:</strong> <span class="ms-2" style="color: var(--text-main);">${currentUser.phone}</span></div>
+                    <hr style="border-color: var(--input-border);">
+                    <span class="badge bg-primary px-3 py-2">Stajyer Adayı</span>
+                </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Kapat',
+                confirmButtonColor: '#ffc107',
+                background: 'var(--card-bg)',
+                color: 'var(--text-main)'
+            });
         };
 
         document.addEventListener('DOMContentLoaded', async () => {
-        await checkMentorStatus();
-        initSortable();
-        loadTasks();
-        await fetchUserProfile();
 
-        quillEditor = new Quill('#taskDescriptionEditor', {
-        theme: 'snow',
-        modules: {
-        toolbar: '#quillToolbar'
-        },
-        placeholder: 'Bu görev için detaylı bir açıklama girin...'
-        });
+            startSignalR();
+
+            await checkMentorStatus();
+            initSortable();
+            loadTasks();
+            await fetchUserProfile();
+
+            quillEditor = new Quill('#taskDescriptionEditor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: '#quillToolbar'
+                },
+                placeholder: 'Bu görev için detaylı bir açıklama girin...'
+            });
         });
 
         async function checkMentorStatus() {
-        if (!currentInternId) return;
+            if (!currentInternId) return;
 
-        try {
-        const response = await fetch(`${API_URL}/api/Users/get-by-id/${currentInternId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-        });
+            try {
+                const response = await fetch(`${API_URL}/api/Users/get-by-id/${currentInternId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
-        if (response.ok) {
-        const user = await response.json();
+                if (response.ok) {
+                    const user = await response.json();
 
-        if (!user.mentorId || user.mentorId === "00000000-0000-0000-0000-000000000000") {
-        window.location.replace('/Applications/MentorSelection');
-        }
-        }
-        } catch (error) {
-        console.error("Erişim kontrolü başarısız:", error);
-        }
+                    if (!user.mentorId || user.mentorId === "00000000-0000-0000-0000-000000000000") {
+                        window.location.replace('/Applications/MentorSelection');
+                    }
+                }
+            } catch (error) {
+                console.error("Erişim kontrolü başarısız:", error);
+            }
         }
 
         async function loadTasks() {
-        if (!currentInternId) return;
+            if (!currentInternId) return;
 
-        try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/intern/${currentInternId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-        });
+            try {
+                const response = await fetch(`${API_URL}/api/KanbanTasks/by-intern/${currentInternId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
-        if (response.ok) {
-        const tasks = await response.json();
+                if (response.ok) {
+                    const tasks = await response.json();
 
-        globalTasksData = tasks;
+                    globalTasksData = tasks;
 
-        ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.innerHTML = '';
-        });
+                    ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if(el) el.innerHTML = '';
+                    });
 
-        tasks.forEach(task => {
-        const deleteBtnHtml = isUserStaff ? `<i class="bi bi-trash3 delete-task-btn" onclick="event.stopPropagation(); deleteTask(${task.id})"></i>` : '';
+                    tasks.forEach(task => {
+                        const deleteBtnHtml = isUserStaff ? `<i class="bi bi-trash3 delete-task-btn" onclick="event.stopPropagation(); deleteTask(${task.id})"></i>` : '';
 
-        const cardHtml = `
-        <div class="kanban-card shadow-sm" data-task-id="${task.id}" onclick="openTaskModal(${task.id})">
-        ${task.title}
-        ${deleteBtnHtml}
-        </div>`;
+                        const cardHtml = `
+                        <div class="kanban-card shadow-sm" data-task-id="${task.id}" onclick="openTaskModal(${task.id})">
+                            ${task.title}
+                            ${deleteBtnHtml}
+                        </div>`;
 
-        const targetCol = document.getElementById(task.status);
-        if (targetCol) targetCol.insertAdjacentHTML('beforeend', cardHtml);
-        });
-        }
-        } catch (error) {
-        console.error("Görev yükleme hatası:", error);
-        }
+                        const targetCol = document.getElementById(task.status);
+                        if (targetCol) targetCol.insertAdjacentHTML('beforeend', cardHtml);
+                    });
+                }
+            } catch (error) {
+                console.error("Görev yükleme hatası:", error);
+            }
         }
 
         function initSortable() {
-        ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(colId => {
-        const el = document.getElementById(colId);
-        if (el) {
-        new Sortable(el, {
-        group: 'kanban',
-        animation: 150,
-        ghostClass: 'bg-secondary',
-        onEnd: function (evt) {
-        const taskId = evt.item.getAttribute('data-task-id');
-        const newStatus = evt.to.getAttribute('data-status');
-        const newOrderIndex = evt.newIndex;
+            ['ToDo', 'InProgress', 'InReview', 'Done'].forEach(colId => {
+                const el = document.getElementById(colId);
+                if (el) {
+                    new Sortable(el, {
+                        group: 'kanban',
+                        animation: 150,
+                        ghostClass: 'bg-secondary',
+                        onEnd: function (evt) {
+                            const taskId = evt.item.getAttribute('data-task-id');
+                            const newStatus = evt.to.getAttribute('data-status');
+                            const newOrderIndex = evt.newIndex;
 
-        if (evt.from !== evt.to) {
-        updateTaskPosition(taskId, newStatus, newOrderIndex);
-        }
-        }
-        });
-        }
-        });
+                            if (evt.from !== evt.to) {
+                                updateTaskPosition(taskId, newStatus, newOrderIndex);
+                            }
+                        }
+                    });
+                }
+            });
         }
 
         async function updateTaskPosition(taskId, newStatus, newOrderIndex) {
-        try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/move`, {
-        method: 'PUT',
-        headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-        taskId: parseInt(taskId, 10),
-        newStatus: newStatus,
-        newOrderIndex: newOrderIndex
-        })
-        });
+            try {
+                const payload = {
+                    taskId: parseInt(taskId, 10),
+                    id: parseInt(taskId, 10),
+                    newStatus: newStatus,
+                    status: newStatus,
+                    newOrderIndex: newOrderIndex,
+                    orderIndex: newOrderIndex
+                };
 
-        if (!response.ok) {
-        throw new Error("Sunucu güncellemeyi reddetti.");
-        }
+                const response = await fetch(`${API_URL}/api/KanbanTasks/move`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
 
-        } catch (error) {
-        console.error("Taşıma hatası:", error);
-        loadTasks();
-        }
+                if (!response.ok) {
+                    throw new Error("Sunucu güncellemeyi reddetti.");
+                }
+
+            } catch (error) {
+                console.error("Taşıma hatası:", error);
+                loadTasks();
+            }
         }
 
         async function loadTaskComments(taskId) {
-        const commentsList = document.getElementById('commentsList');
-        commentsList.innerHTML = '<div class="text-center text-muted mt-5"><div class="spinner-border spinner-border-sm me-2"></div>Yorumlar Yükleniyor...</div>';
+            const commentsList = document.getElementById('commentsList');
+            commentsList.innerHTML = '<div class="text-center text-muted mt-5"><div class="spinner-border spinner-border-sm me-2"></div>Yorumlar Yükleniyor...</div>';
 
-        const myUserId = getUserIdFromToken(token);
+            const myUserId = getUserIdFromToken(token);
 
-        try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/comments`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-        });
+            try {
+                const response = await fetch(`${API_URL}/api/TaskComments/task/${taskId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
-        if (response.ok) {
-        const comments = await response.json();
-        commentsList.innerHTML = '';
+                if (response.ok) {
+                    const comments = await response.json();
+                    commentsList.innerHTML = '';
 
-        if (comments.length === 0) {
-        commentsList.innerHTML = `
-        <div class="text-center text-muted mt-5" id="noCommentText" style="font-size: 0.9rem;">
-        <i class="bi bi-chat-square-dots fs-1 mb-2 d-block opacity-50"></i>
-        Henüz yorum yapılmamış.
-        </div>`;
-        return;
+                    if (comments.length === 0) {
+                        commentsList.innerHTML = `
+                        <div class="text-center text-muted mt-5" id="noCommentText" style="font-size: 0.9rem;">
+                            <i class="bi bi-chat-square-dots fs-1 mb-2 d-block opacity-50"></i>
+                            Henüz yorum yapılmamış.
+                        </div>`;
+                        return;
+                    }
+
+                    comments.forEach(c => {
+                        let deleteButtonHtml = '';
+
+
+                        const commenterName = c.userName || c.UserName || c.userFullName || c.UserFullName || c.name || c.Name || "Bilinmeyen Kullanıcı";
+                        const commentDate = c.createdAt || c.CreatedAt || c.createdDate || c.CreatedDate || "Tarih Belirsiz";
+                        const commentText = c.content || c.Content || c.text || c.Text || "";
+                        const commenterId = c.userId || c.UserId;
+                        const commentId = c.id || c.Id;
+
+                        if (commenterId === myUserId) {
+                            deleteButtonHtml = `
+                            <i class="bi bi-trash3 text-muted ms-2"
+                                style="cursor: pointer; transition: color 0.2s;"
+                                onmouseover="this.classList.remove('text-muted'); this.classList.add('text-danger');"
+                                onmouseout="this.classList.remove('text-danger'); this.classList.add('text-muted');"
+                                onclick="deleteTaskComment(${commentId})"
+                                title="Yorumu Sil"></i>
+                            `;
+                        }
+
+                        const commentHtml = `
+                        <div class="comment-item mb-3 p-3 rounded-3" style="background-color: var(--input-bg); border: 1px solid var(--input-border); animation: fadeIn 0.3s ease;">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <strong style="color: var(--text-main); font-size: 0.9rem;">${commenterName}</strong>
+                                    <small class="text-muted ms-2" style="font-size: 0.75rem;">${commentDate}</small>
+                                </div>
+                                ${deleteButtonHtml}
+                            </div>
+                            <p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${commentText}</p>
+                        </div>`;
+                        commentsList.insertAdjacentHTML('beforeend', commentHtml);
+                    });
+
+                    commentsList.scrollTop = commentsList.scrollHeight;
+                }
+            } catch (error) {
+                commentsList.innerHTML = '<div class="text-center text-danger mt-5">Yorumlar yüklenirken bir hata oluştu.</div>';
+            }
         }
 
-        comments.forEach(c => {
-        let deleteButtonHtml = '';
-        if (c.userId === myUserId) {
-        deleteButtonHtml = `
-        <i class="bi bi-trash3 text-muted ms-2"
-        style="cursor: pointer; transition: color 0.2s;"
-        onmouseover="this.classList.remove('text-muted'); this.classList.add('text-danger');"
-        onmouseout="this.classList.remove('text-danger'); this.classList.add('text-muted');"
-        onclick="deleteTaskComment(${c.id})"
-        title="Yorumu Sil"></i>
-        `;
-        }
+        async function loadTaskHistory(taskId) {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '<div class="text-center text-muted mt-5"><div class="spinner-border spinner-border-sm me-2"></div>Geçmiş Yükleniyor...</div>';
 
-        const commentHtml = `
-        <div class="comment-item mb-3 p-3 rounded-3" style="background-color: var(--input-bg); border: 1px solid var(--input-border); animation: fadeIn 0.3s ease;">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-        <div>
-        <strong style="color: var(--text-main); font-size: 0.9rem;">${c.userName}</strong>
-        <small class="text-muted ms-2" style="font-size: 0.75rem;">${c.createdAt}</small>
-        </div>
-        ${deleteButtonHtml}
-        </div>
-        <p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${c.text}</p>
-        </div>`;
-        commentsList.insertAdjacentHTML('beforeend', commentHtml);
-        });
+            try {
+                const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/logs`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
-        commentsList.scrollTop = commentsList.scrollHeight;
-        }
-        } catch (error) {
-        commentsList.innerHTML = '<div class="text-center text-danger mt-5">Yorumlar yüklenirken bir hata oluştu.</div>';
-        }
+                if (response.ok) {
+                    const logs = await response.json();
+                    historyList.innerHTML = '';
+
+                    if (logs.length === 0) {
+                        historyList.innerHTML = `
+                        <div class="text-center text-muted mt-5" style="font-size: 0.9rem;">
+                            <i class="bi bi-journal-x fs-1 mb-2 d-block opacity-50"></i>
+                            Kayıtlı işlem bulunmuyor.
+                        </div>`;
+                        return;
+                    }
+
+                    logs.forEach(log => {
+                        const logHtml = `
+                        <div class="mb-3 pb-3 border-bottom" style="border-color: var(--input-border) !important;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong style="color: var(--text-main); font-size: 0.85rem;"><i class="bi bi-person-fill me-1"></i>${log.userName}</strong>
+                                <small class="text-muted" style="font-size: 0.75rem;">${log.createdAt}</small>
+                            </div>
+                            <div class="badge bg-secondary text-light mb-1" style="font-size: 0.7rem;">${log.actionType}</div>
+                            <p class="m-0 text-muted" style="font-size: 0.85rem;">${log.details}</p>
+                        </div>`;
+                        historyList.insertAdjacentHTML('beforeend', logHtml);
+                    });
+                }
+            } catch (error) {
+                historyList.innerHTML = '<div class="text-center text-danger mt-5">Geçmiş yüklenirken hata oluştu.</div>';
+            }
         }
 
         function openTaskModal(taskId) {
-        const task = globalTasksData.find(t => t.id === taskId);
-        if (!task) return;
+            const task = globalTasksData.find(t => t.id === taskId);
+            if (!task) return;
 
-        document.getElementById('currentOpenTaskId').value = taskId;
-        document.getElementById('taskDetailModalLabel').innerHTML = `<i class="bi bi-card-checklist me-2"></i>${task.title}`;
+            document.getElementById('currentOpenTaskId').value = taskId;
+            document.getElementById('taskDetailModalLabel').innerHTML = `<i class="bi bi-card-checklist me-2"></i>${task.title}`;
 
-        quillEditor.root.innerHTML = task.description || '';
+            quillEditor.root.innerHTML = task.description || '';
 
-        const badge = document.getElementById('taskStatusBadge');
-        badge.innerText = task.status;
-        badge.className = `badge text-dark px-3 py-2 bg-${task.status === 'Done' ? 'success' : 'warning'}`;
+            const badge = document.getElementById('taskStatusBadge');
+            badge.innerText = task.status;
+            badge.className = `badge text-dark px-3 py-2 bg-${task.status === 'Done' ? 'success' : 'warning'}`;
 
-        loadTaskComments(taskId);
+            loadTaskComments(taskId);
+            loadTaskHistory(taskId);
 
-        const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
-        modal.show();
+            const commentsTabBtn = document.getElementById('comments-tab');
+            if (commentsTabBtn) {
+                const tabInstance = new bootstrap.Tab(commentsTabBtn);
+                tabInstance.show();
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
+            modal.show();
         }
 
         async function saveTaskDescription() {
-        const taskId = document.getElementById('currentOpenTaskId').value;
-        const newDescription = quillEditor.root.innerHTML.trim();
+            const taskId = document.getElementById('currentOpenTaskId').value;
+            const newDescription = quillEditor.root.innerHTML.trim();
 
-        try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/description`, {
-        method: 'PUT',
-        headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ description: newDescription })
-        });
+            try {
+                const response = await fetch(`${API_URL}/api/KanbanTasks/update-description/${taskId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ description: newDescription })
+                });
 
-        if (response.ok) {
-        Swal.fire({ icon: 'success', title: 'Açıklama kaydedildi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
-        loadTasks();
-        } else {
-        Swal.fire('Hata', 'Açıklama kaydedilemedi.', 'error');
-        }
-        } catch (error) {
-        console.error("Kaydetme hatası:", error);
-        }
+                if (response.ok) {
+                    Swal.fire({ icon: 'success', title: 'Açıklama kaydedildi', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+                    loadTasks();
+                } else {
+                    Swal.fire('Hata', 'Açıklama kaydedilemedi.', 'error');
+                }
+            } catch (error) {
+                console.error("Kaydetme hatası:", error);
+            }
         }
 
         async function addComment() {
-        const taskId = document.getElementById('currentOpenTaskId').value;
-        const input = document.getElementById('newCommentInput');
-        const commentText = input.value.trim();
+            const taskId = document.getElementById('currentOpenTaskId').value;
+            const input = document.getElementById('newCommentInput');
+            const commentText = input.value.trim();
 
-        if (!commentText || !taskId) return;
+            if (!commentText || !taskId) return;
 
-        input.disabled = true;
+            input.disabled = true;
+            const myUserId = getUserIdFromToken(token);
 
-        try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/comments`, {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ text: commentText })
-        });
+            try {
+                const response = await fetch(`${API_URL}/api/TaskComments/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ taskId: parseInt(taskId), content: commentText, userId: myUserId })
+                });
 
-        if (response.ok) {
-        const newComment = await response.json();
-
-        const commentsList = document.getElementById('commentsList');
-        const noCommentText = document.getElementById('noCommentText');
-        if (noCommentText) noCommentText.style.display = 'none';
-
-        const myUserId = getUserIdFromToken(token);
-        let deleteButtonHtml = '';
-        if (newComment.userId === myUserId) {
-        deleteButtonHtml = `
-        <i class="bi bi-trash3 text-muted ms-2"
-        style="cursor: pointer; transition: color 0.2s;"
-        onmouseover="this.classList.remove('text-muted'); this.classList.add('text-danger');"
-        onmouseout="this.classList.remove('text-danger'); this.classList.add('text-muted');"
-        onclick="deleteTaskComment(${newComment.id})"
-        title="Yorumu Sil"></i>
-        `;
-        }
-
-        const commentHtml = `
-        <div class="comment-item mb-3 p-3 rounded-3" style="background-color: var(--input-bg); border: 1px solid var(--input-border); animation: fadeIn 0.3s ease;">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-        <div>
-        <strong style="color: var(--text-main); font-size: 0.9rem;">${newComment.userName}</strong>
-        <small class="text-muted ms-2" style="font-size: 0.75rem;">${newComment.createdAt}</small>
-        </div>
-        ${deleteButtonHtml}
-        </div>
-        <p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${newComment.text}</p>
-        </div>`;
-
-        commentsList.insertAdjacentHTML('beforeend', commentHtml);
-        input.value = '';
-        commentsList.scrollTop = commentsList.scrollHeight;
-        } else {
-        Swal.fire('Hata', 'Yorum gönderilirken bir sorun oluştu.', 'error');
-        }
-        } catch (error) {
-        console.error("Yorum gönderme hatası:", error);
-        Swal.fire('Bağlantı Hatası', 'Sunucuya ulaşılamadı.', 'error');
-        } finally {
-        input.disabled = false;
-        input.focus();
-        }
+                if (response.ok) {
+                    loadTaskComments(taskId);
+                    input.value = '';
+                } else {
+                    Swal.fire('Hata', 'Yorum gönderilirken bir sorun oluştu.', 'error');
+                }
+            } catch (error) {
+                console.error("Yorum gönderme hatası:", error);
+                Swal.fire('Bağlantı Hatası', 'Sunucuya ulaşılamadı.', 'error');
+            } finally {
+                input.disabled = false;
+                input.focus();
+            }
         }
 
         async function deleteTaskComment(commentId) {
-        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const myUserId = getUserIdFromToken(token);
 
-        const result = await Swal.fire({
-        title: 'Yorum Silinecek!',
-        text: "Bu yorumu silmek istediğinize emin misiniz?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Evet, Sil',
-        cancelButtonText: 'İptal',
-        background: isDark ? '#1e1e1e' : '#fff',
-        color: isDark ? '#fff' : '#000',
-        customClass: { confirmButton: 'btn btn-danger px-4 me-2', cancelButton: 'btn btn-secondary px-4' },
-        buttonsStyling: false
-        });
+            const result = await Swal.fire({
+                title: 'Yorum Silinecek!',
+                text: "Bu yorumu silmek istediğinize emin misiniz?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Evet, Sil',
+                cancelButtonText: 'İptal',
+                background: isDark ? '#1e1e1e' : '#fff',
+                color: isDark ? '#fff' : '#000',
+                customClass: { confirmButton: 'btn btn-danger px-4 me-2', cancelButton: 'btn btn-secondary px-4' },
+                buttonsStyling: false
+            });
 
-        if (result.isConfirmed) {
-        try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/comments/${commentId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-        });
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`${API_URL}/api/TaskComments/delete/${commentId}?userId=${myUserId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
 
-        if (response.ok) {
-        const currentTaskId = document.getElementById('currentOpenTaskId').value;
-        loadTaskComments(currentTaskId);
-        } else {
-        const err = await response.json();
-        Swal.fire('Hata', err.message || 'Yorum silinemedi.', 'error');
-        }
-        } catch (error) {
-        console.error("Yorum silme hatası:", error);
-        }
-        }
+                    if (response.ok) {
+                        const currentTaskId = document.getElementById('currentOpenTaskId').value;
+                        loadTaskComments(currentTaskId);
+                    } else {
+                        const err = await response.json();
+                        Swal.fire('Hata', err.message || 'Yorum silinemedi.', 'error');
+                    }
+                } catch (error) {
+                    console.error("Yorum silme hatası:", error);
+                }
+            }
         }
 
         window.showMentorInfo = async function() {
-        const modalElement = document.getElementById('mentorInfoModal');
-        if (!modalElement) return;
+            const modalElement = document.getElementById('mentorInfoModal');
+            if (!modalElement) return;
 
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
 
-        document.getElementById('mentorNameDisplay').innerText = "Aranıyor...";
-        document.getElementById('mentorExpertiseDisplay').innerText = "...";
-        document.getElementById('mentorEmailDisplay').innerText = "...";
-        document.getElementById('mentorSocialsDisplay').innerHTML = "";
+            document.getElementById('mentorNameDisplay').innerText = "Aranıyor...";
+            document.getElementById('mentorExpertiseDisplay').innerText = "...";
+            document.getElementById('mentorEmailDisplay').innerText = "...";
+            document.getElementById('mentorSocialsDisplay').innerHTML = "";
 
-        try {
-        if (!currentInternId) return;
+            try {
+                if (!currentInternId) return;
 
-        const meRes = await fetch(`${API_URL}/api/Users/get-by-id/${currentInternId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const meData = await meRes.json();
+                const meRes = await fetch(`${API_URL}/api/Users/get-by-id/${currentInternId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const meData = await meRes.json();
 
-        if (!meData.mentorId || meData.mentorId === "00000000-0000-0000-0000-000000000000") {
-        document.getElementById('mentorNameDisplay').innerText = "Mentör Atanmamış";
-        document.getElementById('mentorExpertiseDisplay').innerText = "Şu an için bir mentörünüz bulunmuyor.";
-        document.getElementById('mentorEmailDisplay').innerText = "-";
-        return;
-        }
+                if (!meData.mentorId || meData.mentorId === "00000000-0000-0000-0000-000000000000") {
+                    document.getElementById('mentorNameDisplay').innerText = "Mentör Atanmamış";
+                    document.getElementById('mentorExpertiseDisplay').innerText = "Şu an için bir mentörünüz bulunmuyor.";
+                    document.getElementById('mentorEmailDisplay').innerText = "-";
+                    return;
+                }
 
-        const mentorRes = await fetch(`${API_URL}/api/Users/get-by-id/${meData.mentorId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const mentorData = await mentorRes.json();
+                const mentorRes = await fetch(`${API_URL}/api/Users/get-by-id/${meData.mentorId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const mentorData = await mentorRes.json();
 
-        document.getElementById('mentorNameDisplay').innerText = `${mentorData.name} ${mentorData.surname}`;
-        document.getElementById('mentorExpertiseDisplay').innerText = mentorData.expertise || "Uzmanlık alanı belirtilmemiş";
-        document.getElementById('mentorEmailDisplay').innerHTML = `<a href="mailto:${mentorData.email}" class="text-decoration-none fw-bold mentor-email-link" style="letter-spacing: 0.5px;">${mentorData.email}</a>`;
+                document.getElementById('mentorNameDisplay').innerText = `${mentorData.name} ${mentorData.surname}`;
+                document.getElementById('mentorExpertiseDisplay').innerText = mentorData.expertise || "Uzmanlık alanı belirtilmemiş";
+                document.getElementById('mentorEmailDisplay').innerHTML = `<a href="mailto:${mentorData.email}" class="text-decoration-none fw-bold mentor-email-link" style="letter-spacing: 0.5px;">${mentorData.email}</a>`;
 
-        let socialsHtml = "";
-        if (mentorData.socialAccounts && mentorData.socialAccounts.length > 0) {
-        mentorData.socialAccounts.forEach(acc => {
-        let platform = acc.platformName.toLowerCase();
+                let socialsHtml = "";
+                if (mentorData.socialAccounts && mentorData.socialAccounts.length > 0) {
+                    mentorData.socialAccounts.forEach(acc => {
+                        let platform = acc.platformName.toLowerCase();
 
-        if (platform.includes("github")) {
-        socialsHtml += `
-        <a href="${acc.profileUrl}" target="_blank" class="btn btn-outline-secondary rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-        <i class="bi bi-github fs-5" style="color: var(--text-main);"></i>
-        </a>`;
-        }
+                        if (platform.includes("github")) {
+                            socialsHtml += `
+                            <a href="${acc.profileUrl}" target="_blank" class="btn btn-outline-secondary rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                <i class="bi bi-github fs-5" style="color: var(--text-main);"></i>
+                            </a>`;
+                        }
 
-        else if (platform.includes("linkedin")) {
-        socialsHtml += `
-        <a href="${acc.profileUrl}" target="_blank" class="btn btn-outline-secondary rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-        <i class="bi bi-linkedin fs-5" style="color: var(--text-main);"></i>
-        </a>`;
-        }
-        });
-        }
+                        else if (platform.includes("linkedin")) {
+                            socialsHtml += `
+                            <a href="${acc.profileUrl}" target="_blank" class="btn btn-outline-secondary rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                <i class="bi bi-linkedin fs-5" style="color: var(--text-main);"></i>
+                            </a>`;
+                        }
+                    });
+                }
 
-        if (socialsHtml === "") {
-        socialsHtml = `<span class="text-muted" style="font-size: 0.85rem;"><i class="bi bi-info-circle me-1"></i>Ekli sosyal medya hesabı bulunamadı.</span>`;
-        }
+                if (socialsHtml === "") {
+                    socialsHtml = `<span class="text-muted" style="font-size: 0.85rem;"><i class="bi bi-info-circle me-1"></i>Ekli sosyal medya hesabı bulunamadı.</span>`;
+                }
 
-        document.getElementById('mentorSocialsDisplay').innerHTML = socialsHtml;
+                document.getElementById('mentorSocialsDisplay').innerHTML = socialsHtml;
 
-        } catch (error) {
-        console.error("Mentör bilgisi çekilemedi:", error);
-        document.getElementById('mentorNameDisplay').innerText = "Bir Hata Oluştu";
-        document.getElementById('mentorExpertiseDisplay').innerText = "Bağlantı sorunu.";
-        }
+            } catch (error) {
+                console.error("Mentör bilgisi çekilemedi:", error);
+                document.getElementById('mentorNameDisplay').innerText = "Bir Hata Oluştu";
+                document.getElementById('mentorExpertiseDisplay').innerText = "Bağlantı sorunu.";
+            }
         };
     </script>
 }

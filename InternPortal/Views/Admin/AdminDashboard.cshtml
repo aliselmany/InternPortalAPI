@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Personel Paneli - Kanban";
+    ViewData["Title"] = "Admin Paneli - Stajyer Kanban";
     ViewData["HideNavbar"] = true;
 }
 
@@ -33,7 +33,7 @@
             overflow-x: auto;
             overflow-y: hidden;
         }
-            
+
         .kanban-col {
             min-width: 340px;
             max-width: 340px;
@@ -313,15 +313,18 @@
             font-style: normal;
         }
 
-        .comments-container::-webkit-scrollbar {
+        .comments-container::-webkit-scrollbar,
+        .history-container::-webkit-scrollbar {
             width: 6px;
         }
 
-        .comments-container::-webkit-scrollbar-track {
+        .comments-container::-webkit-scrollbar-track,
+        .history-container::-webkit-scrollbar-track {
             background: transparent;
         }
 
-        .comments-container::-webkit-scrollbar-thumb {
+        .comments-container::-webkit-scrollbar-thumb,
+        .history-container::-webkit-scrollbar-thumb {
             background-color: var(--input-border);
             border-radius: 10px;
         }
@@ -337,14 +340,70 @@
                 transform: translateY(0);
             }
         }
+
+        body.swal2-shown .swal2-popup {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--input-border) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 15px 35px var(--shadow) !important;
+        }
+
+        body.swal2-shown .swal2-title {
+            color: var(--text-main) !important;
+        }
+
+        body.swal2-shown .swal2-html-container {
+            color: var(--text-muted) !important;
+        }
+
+        body.swal2-shown .swal2-input,
+        body.swal2-shown .swal2-textarea {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--input-border) !important;
+            border-radius: 8px !important;
+            resize: none !important;
+            font-size: 0.95rem !important;
+            padding: 0.8rem !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-popup .swal2-confirm.btn-theme-custom {
+            background-color: #2b3035 !important;
+            color: #f8f9fa !important;
+            border-color: #495057 !important;
+        }
+
+            [data-bs-theme="dark"] .swal2-popup .swal2-confirm.btn-theme-custom:hover {
+                background-color: #343a40 !important;
+                border-color: #6c757d !important;
+            }
+
+        [data-bs-theme="dark"] .swal2-popup .swal2-cancel.btn-secondary {
+            background-color: #495057 !important;
+            color: #fff !important;
+            border-color: #495057 !important;
+        }
+
+            [data-bs-theme="dark"] .swal2-popup .swal2-cancel.btn-secondary:hover {
+                background-color: #343a40 !important;
+                border-color: #495057 !important;
+            }
+
+        /* SUCCESS ICON BOZUK ÇEMBER DÜZELTMESİ */
+        .swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=-left],
+        .swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=-right],
+        .swal2-icon.swal2-success .swal2-success-fix {
+            background-color: transparent !important;
+        }
     </style>
 }
 
-<partial name="_StaffNavbarPartial" />
+<partial name="_AdminNavbarPartial" />
 
 <div class="board-wrapper">
     <div class="kanban-canvas" id="kanbanBoard">
-      
+
         <div class="kanban-col">
             <div class="kanban-col-header"><span>Yapılacaklar</span><i class="bi bi-three-dots"></i></div>
             <div class="kanban-cards" id="ToDo" data-status="ToDo"></div>
@@ -359,7 +418,6 @@
             <button class="add-card-btn" id="addBtn-ToDo" onclick="showAddCardForm('ToDo')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
         </div>
 
-    
         <div class="kanban-col">
             <div class="kanban-col-header"><span>Yapılıyor</span><i class="bi bi-three-dots"></i></div>
             <div class="kanban-cards" id="InProgress" data-status="InProgress"></div>
@@ -374,7 +432,6 @@
             <button class="add-card-btn" id="addBtn-InProgress" onclick="showAddCardForm('InProgress')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
         </div>
 
-      
         <div class="kanban-col">
             <div class="kanban-col-header"><span>İnceleniyor</span><i class="bi bi-three-dots"></i></div>
             <div class="kanban-cards" id="InReview" data-status="InReview"></div>
@@ -389,7 +446,6 @@
             <button class="add-card-btn" id="addBtn-InReview" onclick="showAddCardForm('InReview')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
         </div>
 
-       
         <div class="kanban-col">
             <div class="kanban-col-header"><span>Tamamlandı</span><i class="bi bi-three-dots"></i></div>
             <div class="kanban-cards" id="Done" data-status="Done"></div>
@@ -404,7 +460,9 @@
             <button class="add-card-btn" id="addBtn-Done" onclick="showAddCardForm('Done')"><i class="bi bi-plus-lg me-1"></i> Kart ekle</button>
         </div>
     </div>
-</div><div class="modal fade custom-task-modal" id="taskDetailModal" tabindex="-1" aria-hidden="true">
+</div>
+
+<div class="modal fade custom-task-modal" id="taskDetailModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
 
@@ -459,22 +517,46 @@
                     </div>
 
                     <div class="col-lg-4 ps-4 d-flex flex-column" style="max-height: 460px;">
-                        <h5 class="text-uppercase text-muted fw-bold m-0 mb-3" style="letter-spacing: 1px;">
-                            <i class="bi bi-chat-left-text me-2"></i>Yorumlar
-                        </h5>
 
-                        <div class="comments-container flex-grow-1 overflow-auto mb-3 pe-2" id="commentsList">
-                            <div class="text-center text-muted mt-5" id="noCommentText" style="font-size: 0.9rem;">
-                                <i class="bi bi-chat-square-dots fs-1 mb-2 d-block opacity-50"></i>
-                                Henüz yorum yapılmamış.
+                        <ul class="nav nav-pills mb-3 border-bottom pb-2" id="taskTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold px-3 py-1" id="comments-tab" data-bs-toggle="pill" data-bs-target="#commentsPanel" type="button" role="tab" style="color: var(--text-main);">
+                                    <i class="bi bi-chat-left-text me-1"></i> Yorumlar
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold px-3 py-1" id="history-tab" data-bs-toggle="pill" data-bs-target="#historyPanel" type="button" role="tab" style="color: var(--text-muted);">
+                                    <i class="bi bi-clock-history me-1"></i> Geçmiş
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content flex-grow-1 overflow-auto pe-2 d-flex flex-column" id="taskTabsContent">
+
+                            <div class="tab-pane fade show active d-flex flex-column h-100" id="commentsPanel" role="tabpanel">
+                                <div class="comments-container flex-grow-1 overflow-auto mb-3" id="commentsList">
+                                    <div class="text-center text-muted mt-5" id="noCommentText" style="font-size: 0.9rem;">
+                                        <i class="bi bi-chat-square-dots fs-1 mb-2 d-block opacity-50"></i>
+                                        Henüz yorum yapılmamış.
+                                    </div>
+                                </div>
+
+                                <div class="add-comment-box mt-auto pt-2 border-top" style="border-color: var(--input-border) !important;">
+                                    <textarea id="newCommentInput" class="form-control mb-2 shadow-none" rows="2" placeholder="Admin olarak yorum yazın..." style="background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 8px; resize: none; font-size: 0.95rem;"></textarea>
+                                    <button class="btn btn-theme-custom w-100 fw-bold py-2" onclick="addComment()" style="border-radius: 8px;">
+                                        Gönder
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="add-comment-box mt-auto pt-2 border-top" style="border-color: var(--input-border) !important;">
-                            <textarea id="newCommentInput" class="form-control mb-2 shadow-none" rows="2" placeholder="Admin olarak yorum yazın..." style="background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); border-radius: 8px; resize: none; font-size: 0.95rem;"></textarea>
-                            <button class="btn btn-theme-custom w-100 fw-bold py-2" onclick="addComment()" style="border-radius: 8px;">
-                                Gönder
-                            </button>
+                            <div class="tab-pane fade" id="historyPanel" role="tabpanel">
+                                <div class="history-container overflow-auto" id="historyList">
+                                    <div class="text-center text-muted mt-5" style="font-size: 0.9rem;">
+                                        <div class="spinner-border spinner-border-sm me-2"></div> Yükleniyor...
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -516,6 +598,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
     <script>
         const token = localStorage.getItem('token');
@@ -524,7 +607,7 @@
         const API_URL = "https://localhost:7166";
 
         let globalTasksData = [];
-        let globalInternData = null; 
+        let globalInternData = null;
         let quillEditor;
 
         function getUserIdFromToken(jwt) {
@@ -537,7 +620,60 @@
         const currentInternId = "@ViewBag.InternId";
         const currentAdminId = getUserIdFromToken(token);
 
+        const connection = new signalR.HubConnectionBuilder()
+        .withUrl(`${API_URL}/kanbanHub?access_token=${token}`)
+        .withAutomaticReconnect()
+        .build();
+
+        connection.on("BoardUpdated", function () {
+        console.log("Panoda değişiklik algılandı, veriler güncelleniyor...");
+        loadTasks();
+
+        const openTaskId = document.getElementById('currentOpenTaskId').value;
+        if (openTaskId) {
+        loadTaskComments(openTaskId);
+        loadTaskHistory(openTaskId);
+        }
+        });
+
+        let notificationCount = 0;
+        connection.on("ReceiveNotification", function (message) {
+        const badge = document.getElementById('inboxBadge');
+        if (badge) {
+        notificationCount++;
+        badge.innerText = notificationCount;
+        badge.classList.remove('d-none');
+        }
+
+        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'info',
+        title: 'Yeni Bildirim',
+        text: message,
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+        background: isDark ? '#2b3035' : '#ffffff',
+        color: isDark ? '#f8f9fa' : '#212529'
+        });
+        });
+
+        async function startSignalR() {
+        try {
+        await connection.start();
+        if (currentInternId) {
+        await connection.invoke("JoinInternBoard", currentInternId);
+        }
+        } catch (err) {
+        setTimeout(startSignalR, 5000);
+        }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+
+        startSignalR();
 
         const profileLink = document.querySelector('a[href="/Staff/StaffProfile"]');
         if (profileLink) {
@@ -594,7 +730,7 @@
 
         document.addEventListener('click', function(e) {
         if (e.target && e.target.classList.contains('delete-task-btn')) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         const taskId = e.target.getAttribute('data-delete-id');
         if (taskId) {
         deleteTask(taskId);
@@ -606,7 +742,7 @@
         if (!currentInternId) return;
 
         try {
-             const response = await fetch(`${API_URL}/api/Users/get-by-id/${currentInternId}`, {
+        const response = await fetch(`${API_URL}/api/Users/get-by-id/${currentInternId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -682,7 +818,7 @@
         async function loadTasks() {
         if (!currentInternId) return;
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/intern/${currentInternId}`, {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/by-intern/${currentInternId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -730,8 +866,7 @@
         if (!taskTitle) { inputElement.focus(); return; }
 
         try {
-   
-        const response = await fetch(`${API_URL}/api/KanbanTasks`, {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ title: taskTitle, internId: currentInternId, staffId: currentAdminId, status: status })
@@ -764,7 +899,7 @@
 
         if (result.isConfirmed) {
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}`, {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/delete/${taskId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -796,7 +931,7 @@
 
         if (result.isConfirmed) {
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}`, {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/delete/${taskId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -833,10 +968,19 @@
 
         async function updateTaskPosition(taskId, newStatus, newOrderIndex) {
         try {
+        const payload = {
+        taskId: parseInt(taskId),
+        id: parseInt(taskId),
+        newStatus: newStatus,
+        status: newStatus,
+        newOrderIndex: newOrderIndex,
+        orderIndex: newOrderIndex
+        };
+
         await fetch(`${API_URL}/api/KanbanTasks/move`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ taskId: parseInt(taskId), newStatus, newOrderIndex })
+        body: JSON.stringify(payload)
         });
         } catch (error) { loadTasks(); }
         }
@@ -846,7 +990,7 @@
         commentsList.innerHTML = '<div class="text-center text-muted mt-5"><div class="spinner-border spinner-border-sm me-2"></div>Yorumlar Yükleniyor...</div>';
 
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/comments`, {
+        const response = await fetch(`${API_URL}/api/TaskComments/task/${taskId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -866,13 +1010,19 @@
         comments.forEach(c => {
         let deleteButtonHtml = '';
 
-        if (c.userId === currentAdminId) {
+        const commenterName = c.userName || c.UserName || c.userFullName || c.UserFullName || c.name || c.Name || "Bilinmeyen Kullanıcı";
+        const commentDate = c.createdAt || c.CreatedAt || c.createdDate || c.CreatedDate || "Tarih Belirsiz";
+        const commentText = c.content || c.Content || c.text || c.Text || "";
+        const commenterId = c.userId || c.UserId;
+        const commentId = c.id || c.Id;
+
+        if (commenterId === currentAdminId) {
         deleteButtonHtml = `
         <i class="bi bi-trash3 text-muted ms-2"
         style="cursor: pointer; transition: color 0.2s;"
         onmouseover="this.classList.remove('text-muted'); this.classList.add('text-danger');"
         onmouseout="this.classList.remove('text-danger'); this.classList.add('text-muted');"
-        onclick="deleteTaskComment(${c.id})"
+        onclick="deleteTaskComment(${commentId})"
         title="Yorumu Sil"></i>
         `;
         }
@@ -881,12 +1031,12 @@
         <div class="comment-item mb-3 p-3 rounded-3" style="background-color: var(--input-bg); border: 1px solid var(--input-border); animation: fadeIn 0.3s ease;">
         <div class="d-flex justify-content-between align-items-start mb-2">
         <div>
-        <strong style="color: var(--text-main); font-size: 0.9rem;">${c.userName}</strong>
-        <small class="text-muted ms-2" style="font-size: 0.75rem;">${c.createdAt}</small>
+        <strong style="color: var(--text-main); font-size: 0.9rem;">${commenterName}</strong>
+        <small class="text-muted ms-2" style="font-size: 0.75rem;">${commentDate}</small>
         </div>
         ${deleteButtonHtml}
         </div>
-        <p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${c.text}</p>
+        <p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${commentText}</p>
         </div>`;
         commentsList.insertAdjacentHTML('beforeend', commentHtml);
         });
@@ -895,6 +1045,46 @@
         }
         } catch (error) {
         commentsList.innerHTML = '<div class="text-center text-danger mt-5">Yorumlar yüklenirken bir hata oluştu.</div>';
+        }
+        }
+
+        async function loadTaskHistory(taskId) {
+        const historyList = document.getElementById('historyList');
+        historyList.innerHTML = '<div class="text-center text-muted mt-5"><div class="spinner-border spinner-border-sm me-2"></div>Geçmiş Yükleniyor...</div>';
+
+        try {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/logs`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+        const logs = await response.json();
+        historyList.innerHTML = '';
+
+        if (logs.length === 0) {
+        historyList.innerHTML = `
+        <div class="text-center text-muted mt-5" style="font-size: 0.9rem;">
+        <i class="bi bi-journal-x fs-1 mb-2 d-block opacity-50"></i>
+        Kayıtlı işlem bulunmuyor.
+        </div>`;
+        return;
+        }
+
+        logs.forEach(log => {
+        const logHtml = `
+        <div class="mb-3 pb-3 border-bottom" style="border-color: var(--input-border) !important;">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+        <strong style="color: var(--text-main); font-size: 0.85rem;"><i class="bi bi-person-fill me-1"></i>${log.userName}</strong>
+        <small class="text-muted" style="font-size: 0.75rem;">${log.createdAt}</small>
+        </div>
+        <div class="badge bg-secondary text-light mb-1" style="font-size: 0.7rem;">${log.actionType}</div>
+        <p class="m-0 text-muted" style="font-size: 0.85rem;">${log.details}</p>
+        </div>`;
+        historyList.insertAdjacentHTML('beforeend', logHtml);
+        });
+        }
+        } catch (error) {
+        historyList.innerHTML = '<div class="text-center text-danger mt-5">Geçmiş yüklenirken hata oluştu.</div>';
         }
         }
 
@@ -912,6 +1102,13 @@
         badge.className = `badge bg-warning text-dark px-3 py-2 bg-${task.status === 'Done' ? 'success' : 'warning'}`;
 
         loadTaskComments(taskId);
+        loadTaskHistory(taskId);
+
+        const commentsTabBtn = document.getElementById('comments-tab');
+        if (commentsTabBtn) {
+        const tabInstance = new bootstrap.Tab(commentsTabBtn);
+        tabInstance.show();
+        }
 
         const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
         modal.show();
@@ -922,7 +1119,7 @@
         const newDescription = quillEditor.root.innerHTML.trim();
 
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/description`, {
+        const response = await fetch(`${API_URL}/api/KanbanTasks/update-description/${taskId}`, {
         method: 'PUT',
         headers: {
         'Content-Type': 'application/json',
@@ -950,49 +1147,18 @@
         input.disabled = true;
 
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/${taskId}/comments`, {
+        const response = await fetch(`${API_URL}/api/TaskComments/add`, {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ text: commentText })
+        body: JSON.stringify({ taskId: parseInt(taskId), content: commentText, userId: currentAdminId })
         });
 
         if (response.ok) {
-        const newComment = await response.json();
-
-        const commentsList = document.getElementById('commentsList');
-        const noCommentText = document.getElementById('noCommentText');
-        if (noCommentText) noCommentText.style.display = 'none';
-
-        let deleteButtonHtml = '';
-        if (newComment.userId === currentAdminId) {
-        deleteButtonHtml = `
-        <i class="bi bi-trash3 text-muted ms-2"
-        style="cursor: pointer; transition: color 0.2s;"
-        onmouseover="this.classList.remove('text-muted'); this.classList.add('text-danger');"
-        onmouseout="this.classList.remove('text-danger'); this.classList.add('text-muted');"
-        onclick="deleteTaskComment(${newComment.id})"
-        title="Yorumu Sil"></i>
-        `;
-        }
-
-        const commentHtml = `
-        <div class="comment-item mb-3 p-3 rounded-3" style="background-color: var(--input-bg); border: 1px solid var(--input-border); animation: fadeIn 0.3s ease;">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-        <div>
-        <strong style="color: var(--text-main); font-size: 0.9rem;">${newComment.userName}</strong>
-        <small class="text-muted ms-2" style="font-size: 0.75rem;">${newComment.createdAt}</small>
-        </div>
-        ${deleteButtonHtml}
-        </div>
-        <p class="m-0" style="color: var(--text-main); font-size: 0.95rem;">${newComment.text}</p>
-        </div>`;
-
-        commentsList.insertAdjacentHTML('beforeend', commentHtml);
+        loadTaskComments(taskId);
         input.value = '';
-        commentsList.scrollTop = commentsList.scrollHeight;
         } else {
         Swal.fire('Hata', 'Yorum gönderilirken bir sorun oluştu.', 'error');
         }
@@ -1023,7 +1189,7 @@
 
         if (result.isConfirmed) {
         try {
-        const response = await fetch(`${API_URL}/api/KanbanTasks/comments/${commentId}`, {
+        const response = await fetch(`${API_URL}/api/TaskComments/delete/${commentId}?userId=${currentAdminId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
         });
