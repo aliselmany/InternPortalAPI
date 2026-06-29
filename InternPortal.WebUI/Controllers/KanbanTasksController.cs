@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using InternPortal.Domain.Entities;
 using InternPortal.Application.Dtos;
 using InternPortal.Infrastructure.Persistence;
-using System.Threading.Tasks;
-using System.Linq;
-using System;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 using InternPortalAPI.Hubs;
+using System.Threading.Tasks;
+using System.Linq;
+using System;
 
 namespace InternPortalAPI.Controllers
 {

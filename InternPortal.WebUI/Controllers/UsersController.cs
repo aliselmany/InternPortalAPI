@@ -236,11 +236,18 @@ public class UsersController : ControllerBase
         try
         {
             var allUsers = await _userService.GetAllUsersAsync(new GetUserFilterDto());
-
             if (allUsers == null) return Ok(new List<object>());
+
+            var allApplications = await _applicationService.GetAllAsync(new ApplicationFilterQuery());
+
+            var approvedUserIds = allApplications
+    .Where(a => (int)a.Status == 1 || a.Status.ToString() == "Approved" || a.Status.ToString() == "Onaylandı")
+    .Select(a => a.UserId)
+    .ToList();
 
             var result = allUsers
                 .Where(u => u.Roles != null && (u.Roles.Contains("Stajyer") || u.Roles.Contains("Intern")))
+                .Where(u => approvedUserIds.Contains(u.Id))
                 .Select(u => new
                 {
                     Id = u.Id,

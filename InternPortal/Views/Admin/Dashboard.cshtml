@@ -784,8 +784,6 @@
         });
         }
 
-   
-
         async function updateInboxBadge() {
         try {
         const response = await fetch('https://localhost:7166/api/InternTransfers/pending-requests', {
@@ -898,13 +896,10 @@
         }
         }, 300);
         }
-
   
         updateInboxBadge();
 
-     
         fetchApplications();
-
    
         Swal.fire({
         icon: 'success',

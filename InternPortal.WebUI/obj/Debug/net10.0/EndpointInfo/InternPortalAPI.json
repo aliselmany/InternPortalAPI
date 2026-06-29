@@ -35,6 +35,10 @@
                     "type": "string",
                     "format": "uuid"
                   },
+                  "UserId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
                   "Name": {
                     "type": "string"
                   },
@@ -105,6 +109,9 @@
                   "style": "form"
                 },
                 "Id": {
+                  "style": "form"
+                },
+                "UserId": {
                   "style": "form"
                 },
                 "Name": {

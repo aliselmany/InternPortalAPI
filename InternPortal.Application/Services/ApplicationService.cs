@@ -103,7 +103,6 @@ namespace InternPortal.Application.Services
 
             if (!string.IsNullOrEmpty(dto.PhoneNumber)) application.PhoneNumber = dto.PhoneNumber;
 
-            // DÜZELTİLEN KISIM BURASI: TryParse silindi, doğrudan atama yapıldı.
             if (!string.IsNullOrEmpty(dto.EducationLevel))
             {
                 application.EducationLevel = dto.EducationLevel;
@@ -218,7 +217,6 @@ namespace InternPortal.Application.Services
                 .OrderByDescending(x => x.AppliedDate)
                 .ToListAsync();
 
-
             return applications.Select(MapToDto).ToList();
         }
 
@@ -236,10 +234,10 @@ namespace InternPortal.Application.Services
             return new ApplicationDto
             {
                 Id = x.Id,
+                UserId = x.UserId, 
 
                 Name = x.User?.Name ?? "İsimsiz",
                 Surname = x.User?.Surname ?? "Aday",
-
 
                 EducationLevel = x.EducationLevel,
 
