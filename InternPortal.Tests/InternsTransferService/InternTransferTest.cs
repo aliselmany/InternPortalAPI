@@ -34,13 +34,11 @@ public class InternTransferTest
             HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) }
         };
     }
-
-  
+ 
 
     [Fact]
     public async Task RequestTransfer_WhenSuccess_ReturnsOkWithMessage()
-    {
-     
+    {     
         var staffId = Guid.NewGuid();
         MockUser(staffId);
 

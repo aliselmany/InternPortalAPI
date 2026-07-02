@@ -235,15 +235,20 @@ public class UsersController : ControllerBase
     {
         try
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized();
+
+            var currentUserId = Guid.Parse(userIdClaim.Value);
+
             var allUsers = await _userService.GetAllUsersAsync(new GetUserFilterDto());
             if (allUsers == null) return Ok(new List<object>());
 
-            var allApplications = await _applicationService.GetAllAsync(new ApplicationFilterQuery());
+            var allApplications = await _applicationService.GetAllAsync(new ApplicationFilterQuery(), currentUserId);
 
             var approvedUserIds = allApplications
-    .Where(a => (int)a.Status == 1 || a.Status.ToString() == "Approved" || a.Status.ToString() == "Onaylandı")
-    .Select(a => a.UserId)
-    .ToList();
+                .Where(a => (int)a.Status == 1 || a.Status.ToString() == "Approved" || a.Status.ToString() == "Onaylandı")
+                .Select(a => a.UserId)
+                .ToList();
 
             var result = allUsers
                 .Where(u => u.Roles != null && (u.Roles.Contains("Stajyer") || u.Roles.Contains("Intern")))
@@ -251,12 +256,10 @@ public class UsersController : ControllerBase
                 .Select(u => new
                 {
                     Id = u.Id,
-                    FullName = !string.IsNullOrEmpty(u.Surname) ? $"{u.Name} {u.Surname}" : u.Name,
-
+                    FullName = string.IsNullOrEmpty(u.Surname) ? $"{u.Name}" : $"{u.Name} {u.Surname}",
                     MentorName = u.MentorId.HasValue
                         ? allUsers.FirstOrDefault(m => m.Id == u.MentorId.Value)?.Name + " " + allUsers.FirstOrDefault(m => m.Id == u.MentorId.Value)?.Surname
                         : "Atanmadı",
-
                     StartDate = u.StartDate,
                     EndDate = u.EndDate
                 })
@@ -266,7 +269,7 @@ public class UsersController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Aktif panolar listelenirken sunucu hatası oluştu.", error = ex.Message });
+            return StatusCode(500, $"Sunucu hatası: {ex.Message}");
         }
     }
 

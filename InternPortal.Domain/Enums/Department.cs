@@ -8,6 +8,8 @@ namespace InternPortal.Domain.Enums
     {
         Yazılım  = 0,
         Elektronik = 1,
-        Proje = 2
+        Proje = 2,
+        Satış = 3,
+        İK = 4  
     }
 }       

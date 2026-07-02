@@ -8,7 +8,8 @@ namespace InternPortal.Domain.Enums
     {
         Beklemede,
         Onaylandı,
-        Reddedildi
+        Reddedildi,
+        HrOnayladı
     }
 }
  

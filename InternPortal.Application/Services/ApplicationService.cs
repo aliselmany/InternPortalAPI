@@ -26,7 +26,7 @@ namespace InternPortal.Application.Services
 
             if (lastApplication != null)
             {
-                if (lastApplication.Status == ApplicationStatus.Beklemede)
+                if (lastApplication.Status == ApplicationStatus.Beklemede || lastApplication.Status == ApplicationStatus.HrOnayladı)
                 {
                     return ServiceResult<Guid>.Failure("Beklemede olan bir başvurunuz zaten var. Lütfen sonuçlanmasını bekleyin.");
                 }
@@ -169,14 +169,46 @@ namespace InternPortal.Application.Services
                 .OrderByDescending(x => x.AppliedDate)
                 .ToListAsync();
 
-            return applications.Select(MapToDto).ToList();
+            var dtos = applications.Select(MapToDto).ToList();
+
+            foreach (var dto in dtos)
+            {
+                if (dto.Status == ApplicationStatus.HrOnayladı)
+                {
+                    dto.Status = ApplicationStatus.Beklemede;
+                }
+            }
+
+            return dtos;
         }
 
-        public async Task<List<ApplicationDto>> GetAllAsync(ApplicationFilterQuery filter)
+        public async Task<List<ApplicationDto>> GetAllAsync(ApplicationFilterQuery filter, Guid currentUserId)
         {
             var query = _context.Applications
                 .Include(x => x.User)
                 .AsQueryable();
+
+            var currentUser = await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Id == currentUserId);
+
+            if (currentUser != null)
+            {
+                var roles = currentUser.UserRoles.Select(ur => ur.Role.Name).ToList();
+
+                if (!roles.Contains("HR") && roles.Contains("Admin"))
+                {
+                    if (currentUser.ManagedDepartment.HasValue)
+                    {
+                        query = query.Where(a => a.Department == currentUser.ManagedDepartment.Value);
+                    }
+                    else
+                    {
+                        return new List<ApplicationDto>();
+                    }
+                }
+            }
 
             if (filter != null)
             {
@@ -205,7 +237,6 @@ namespace InternPortal.Application.Services
 
                 if (!string.IsNullOrWhiteSpace(filter.Status))
                 {
-
                     if (Enum.TryParse<ApplicationStatus>(filter.Status, true, out var parsedStatus))
                     {
                         query = query.Where(a => a.Status == parsedStatus);
@@ -229,12 +260,23 @@ namespace InternPortal.Application.Services
             return application == null ? null : MapToDto(application);
         }
 
+        public async Task<List<ApplicationDto>> GetPendingManagerApprovalsAsync(Department department)
+        {
+            var applications = await _context.Applications
+                .Include(x => x.User)
+                .Where(x => x.Status == ApplicationStatus.HrOnayladı && x.Department == department)
+                .OrderByDescending(x => x.AppliedDate)
+                .ToListAsync();
+
+            return applications.Select(MapToDto).ToList();
+        }
+
         private static ApplicationDto MapToDto(InternPortal.Domain.Entities.Application x)
         {
             return new ApplicationDto
             {
                 Id = x.Id,
-                UserId = x.UserId, 
+                UserId = x.UserId,
 
                 Name = x.User?.Name ?? "İsimsiz",
                 Surname = x.User?.Surname ?? "Aday",

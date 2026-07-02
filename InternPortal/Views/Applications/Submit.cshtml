@@ -251,7 +251,7 @@
 
                 <div class="col-md-6 mt-4">
                     <label asp-for="Department" class="form-label">Staj Yapılacak Departman (Şirket İçi)</label>
-                    <select asp-for="Department" name="Department" class="form-select" asp-items="Html.GetEnumSelectList<Department>()"></select>
+                    <select asp-for="Department" id="Department" name="Department" class="form-select" asp-items="Html.GetEnumSelectList<Department>()"></select>
                 </div>
 
                 <div class="col-md-6 mt-4">
@@ -334,6 +334,28 @@
 
     <script>
         const token = localStorage.getItem('token');
+
+        function appendCustomDepartments() {
+        const deptSelect = document.getElementById('Department');
+        if (!deptSelect) return;
+
+        let hasSales = false;
+        let hasHR = false;
+
+        Array.from(deptSelect.options).forEach(opt => {
+        if (opt.text === "Satış" || opt.value == "3") hasSales = true;
+        if (opt.text === "İnsan Kaynakları" || opt.value == "4") hasHR = true;
+        });
+
+        if (!hasSales) {
+        const salesOpt = new Option("Satış", "3");
+        deptSelect.add(salesOpt);
+        }
+        if (!hasHR) {
+        const hrOpt = new Option("İnsan Kaynakları", "4");
+        deptSelect.add(hrOpt);
+        }
+        }
 
         async function checkAuthAndRedirect() {
         if (!token) {
@@ -441,6 +463,7 @@
         const savedTheme = localStorage.getItem('theme') || 'light';
         updateUI(savedTheme);
         toggleFormSections();
+        appendCustomDepartments(); 
 
         const todayObj = new Date();
         todayObj.setMinutes(todayObj.getMinutes() - todayObj.getTimezoneOffset());

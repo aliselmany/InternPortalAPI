@@ -144,7 +144,7 @@
         confirmButtonText: 'Tamam',
         background: isDark ? '#2b3035' : '#ffffff',
         color: isDark ? '#f8f9fa' : '#212529',
-        confirmButtonColor: isDark ? '#ffffff' : '#000000' 
+        confirmButtonColor: isDark ? '#ffffff' : '#000000'
         }).then(() => {
         if (redirectUrl) {
         window.location.href = redirectUrl;
@@ -186,9 +186,15 @@
 
         if (userRole === 'Admin') {
         redirectTarget = '/Admin/Dashboard';
-        } else if (userRole === 'Staff') {
+        }
+        
+        else if (userRole === 'HR') {
+        redirectTarget = '/Hr/HrDashboard';
+        }
+        else if (userRole === 'Staff') {
         redirectTarget = '/Staff/StaffDashboardIndex';
-        } else if (userRole === 'Intern') {
+        }
+        else if (userRole === 'Intern') {
         try {
         const [userRes, appRes] = await Promise.all([
         fetch(`${API_URL}/api/Users/get-by-id/${userId}`, { headers: { 'Authorization': `Bearer ${token}` } }),

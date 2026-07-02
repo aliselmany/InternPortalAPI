@@ -53,7 +53,6 @@ namespace InternPortal.WebUI.Controllers
                 var result = await _applicationService.SubmitAsync(userId, dto);
                 if (!result.IsSuccess) return BadRequest(new { message = result.Message });
 
-
                 return Ok(new { message = "Başvuru başarıyla kaydedildi.", id = result.Data });
             }
             catch (Exception ex)
@@ -72,13 +71,16 @@ namespace InternPortal.WebUI.Controllers
             var result = await _applicationService.GetByUserIdAsync(userId);
             return Ok(result);
         }
-
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,HR")]
         [HttpGet("Applications/api/all")]
         public async Task<IActionResult> GetAllApplications([FromQuery] ApplicationFilterQuery filter)
         {
-         
-            var result = await _applicationService.GetAllAsync(filter);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized();
+
+            var currentUserId = Guid.Parse(userIdClaim.Value);
+
+            var result = await _applicationService.GetAllAsync(filter, currentUserId);
             return Ok(result);
         }
 
@@ -90,7 +92,7 @@ namespace InternPortal.WebUI.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,HR")]
         [HttpPut("Applications/update/api/{id}")]
         public async Task<IActionResult> UpdateApplication(Guid id, [FromBody] ApplicationUpdateDto updateData)
         {
@@ -101,7 +103,6 @@ namespace InternPortal.WebUI.Controllers
 
             try
             {
-                
                 var result = await _applicationService.UpdateAsync(id, updateData);
 
                 if (result.IsSuccess)
@@ -114,8 +115,8 @@ namespace InternPortal.WebUI.Controllers
                 return StatusCode(500, new { message = "Güncelleme sırasında bir hata oluştu.", error = ex.Message });
             }
         }
-            
-        [Authorize(Roles = "Admin")]
+
+        [Authorize(Roles = "Admin,HR")]
         [HttpPut("Applications/api/{id}/status")]
         public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] ApplicationStatus status)
         {
@@ -138,7 +139,5 @@ namespace InternPortal.WebUI.Controllers
             }
             return $"/uploads/{subFolder}/{fileName}";
         }
-
-
     }
 }

@@ -890,7 +890,8 @@
               "enum": [
                 "Admin",
                 "Intern",
-                "Staff"
+                "Staff",
+                "HR"
               ],
               "type": "string"
             }
@@ -1360,7 +1361,8 @@
               "enum": [
                 "Admin",
                 "Intern",
-                "Staff"
+                "Staff",
+                "HR"
               ],
               "type": "string",
               "format": "uuid"
@@ -1461,7 +1463,8 @@
               "enum": [
                 "Admin",
                 "Intern",
-                "Staff"
+                "Staff",
+                "HR"
               ],
               "type": "string"
             }
@@ -1863,7 +1866,8 @@
         "enum": [
           "Beklemede",
           "Onaylandı",
-          "Reddedildi"
+          "Reddedildi",
+          "HrOnayladı"
         ],
         "type": "string"
       },
@@ -1871,7 +1875,9 @@
         "enum": [
           "Yazılım",
           "Elektronik",
-          "Proje"
+          "Proje",
+          "Satış",
+          "İK"
         ],
         "type": "string"
       },

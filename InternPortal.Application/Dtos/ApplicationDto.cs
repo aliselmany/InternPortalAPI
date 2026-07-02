@@ -48,6 +48,7 @@ public class ApplicationDto : IValidatableObject
     public IFormFile? TranscriptFile { get; set; }
 
     public string? CvPath { get; set; }
+
     public string? TranscriptPath { get; set; }
 
     public ApplicationStatus Status { get; set; }
