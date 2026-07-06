@@ -18,13 +18,11 @@ public class InternTransfersController : ControllerBase
     {
         _transferService = transferService;
     }
-
   
     [HttpPost("request-transfer")]
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize(Roles = "DepartmanAdmin,Staff")]
     public async Task<IActionResult> RequestTransfer([FromBody] CreateTransferRequestDto dto)
-    {
-       
+    {       
         var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
         if (currentUserIdClaim == null) return Unauthorized(new { message = "Yetkisiz erişim." });
 
@@ -38,7 +36,7 @@ public class InternTransfersController : ControllerBase
     }
 
     [HttpPost("respond-transfer")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "DepartmanAdmin")]
     public async Task<IActionResult> RespondTransfer([FromBody] RespondTransferRequestDto dto)
     {
         var result = await _transferService.RespondToTransferRequestAsync(dto);
@@ -50,7 +48,7 @@ public class InternTransfersController : ControllerBase
     }
     
     [HttpGet("pending-requests")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "DepartmanAdmin")]
     public async Task<IActionResult> GetPendingRequests()
     {
         var result = await _transferService.GetPendingRequestsAsync();

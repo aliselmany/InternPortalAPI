@@ -197,7 +197,7 @@ namespace InternPortal.Application.Services
             {
                 var roles = currentUser.UserRoles.Select(ur => ur.Role.Name).ToList();
 
-                if (!roles.Contains("HR") && roles.Contains("Admin"))
+                if (!roles.Contains("HR") && roles.Contains("DepartmanAdmin"))
                 {
                     if (currentUser.ManagedDepartment.HasValue)
                     {

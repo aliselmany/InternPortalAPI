@@ -50,11 +50,11 @@ public class RolesControllerTests
     {
     
         var userId = Guid.NewGuid();
-        MockUser(userId, "Admin");
+        MockUser(userId, "DepartmanAdmin");
 
         var mockRoles = new List<RoleResponse>
         {
-            new RoleResponse { Id = Guid.NewGuid(), Name = "Admin" },
+            new RoleResponse { Id = Guid.NewGuid(), Name = "DepartmanAdmin" },
             new RoleResponse { Id = Guid.NewGuid(), Name = "Mentor" },
             new RoleResponse { Id = Guid.NewGuid(), Name = "Intern" }
         };

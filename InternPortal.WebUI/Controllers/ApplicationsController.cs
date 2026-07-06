@@ -71,7 +71,8 @@ namespace InternPortal.WebUI.Controllers
             var result = await _applicationService.GetByUserIdAsync(userId);
             return Ok(result);
         }
-        [Authorize(Roles = "Admin,HR")]
+
+        [Authorize(Roles = "DepartmanAdmin,HR")]
         [HttpGet("Applications/api/all")]
         public async Task<IActionResult> GetAllApplications([FromQuery] ApplicationFilterQuery filter)
         {
@@ -92,7 +93,7 @@ namespace InternPortal.WebUI.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = "DepartmanAdmin,HR")]
         [HttpPut("Applications/update/api/{id}")]
         public async Task<IActionResult> UpdateApplication(Guid id, [FromBody] ApplicationUpdateDto updateData)
         {
@@ -116,7 +117,7 @@ namespace InternPortal.WebUI.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = "DepartmanAdmin,HR")]
         [HttpPut("Applications/api/{id}/status")]
         public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] ApplicationStatus status)
         {

@@ -351,6 +351,102 @@
         }
       }
     },
+    "/api/Departments/create": {
+      "post": {
+        "tags": [
+          "Departments"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { }
+            },
+            "text/json": {
+              "schema": { }
+            },
+            "application/*+json": {
+              "schema": { }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Departments/all": {
+      "get": {
+        "tags": [
+          "Departments"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Departments/update/{id}": {
+      "put": {
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { }
+            },
+            "text/json": {
+              "schema": { }
+            },
+            "application/*+json": {
+              "schema": { }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Departments/delete/{id}": {
+      "delete": {
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/InternTransfers/request-transfer": {
       "post": {
         "tags": [
@@ -888,9 +984,10 @@
             "in": "query",
             "schema": {
               "enum": [
-                "Admin",
+                "DepartmanAdmin",
                 "Intern",
                 "Staff",
+                "Admin",
                 "HR"
               ],
               "type": "string"
@@ -961,6 +1058,42 @@
               "format": "uuid"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SystemAdmin/summary": {
+      "get": {
+        "tags": [
+          "SystemAdmin"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SystemAdmin/calendar-events": {
+      "get": {
+        "tags": [
+          "SystemAdmin"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SystemAdmin/global-logs": {
+      "get": {
+        "tags": [
+          "SystemAdmin"
         ],
         "responses": {
           "200": {
@@ -1359,9 +1492,10 @@
             "in": "query",
             "schema": {
               "enum": [
-                "Admin",
+                "DepartmanAdmin",
                 "Intern",
                 "Staff",
+                "Admin",
                 "HR"
               ],
               "type": "string",
@@ -1461,9 +1595,10 @@
             "required": true,
             "schema": {
               "enum": [
-                "Admin",
+                "DepartmanAdmin",
                 "Intern",
                 "Staff",
+                "Admin",
                 "HR"
               ],
               "type": "string"

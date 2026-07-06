@@ -16,20 +16,20 @@
     }
 </style>
 
-<nav class="admin-nav d-flex w-100 justify-content-between align-items-center" style="height: 85px !important; min-height: 85px !important; padding: 0 3.5rem !important; background: var(--card-bg); border-bottom: 1px solid var(--input-border); transition: background-color 0.3s ease, border-color 0.3s ease; box-sizing: border-box;">
+<nav class="d-flex justify-content-between align-items-center" style="position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 85px !important; min-height: 85px !important; padding: 0 3.5rem !important; background: var(--card-bg) !important; border-bottom: 1px solid var(--input-border) !important; z-index: 1050 !important; box-sizing: border-box !important;">
 
     <div class="d-flex align-items-center">
-        <img id="authLogo" src="/assets/trex-logo-light.png" alt="Logo" style="height: 50px !important; width: auto !important; object-fit: contain;" />
+        <a href="#">
+            <img id="authLogo" src="/assets/trex-logo-light.png" alt="Logo" style="height: 50px !important; width: auto !important; object-fit: contain;" />
+        </a>
     </div>
 
     <div class="d-flex align-items-center gap-4">
 
-        <div class="d-flex align-items-center gap-4">
-            <a href="/Admin/Interns" id="nav-interns" class="text-decoration-none d-flex align-items-center gap-2 nav-link">
-                <i class="bi bi-people-fill" style="font-size: 1.8rem !important; color: var(--text-main);"></i>
-                <span class="fw-semibold" style="font-size: 1.1rem; color: var(--text-main);">Stajyerler</span>
-            </a>
-        </div>
+        <a href="/Admin/Interns" id="nav-interns" class="text-decoration-none d-flex align-items-center gap-2 nav-link" style="margin-right: 0.5rem;">
+            <i class="bi bi-people-fill" style="font-size: 1.8rem !important; color: var(--text-main);"></i>
+            <span class="fw-semibold" style="font-size: 1.1rem; color: var(--text-main);">Stajyerler</span>
+        </a>
 
         <div style="height: 30px; width: 1px; background-color: var(--input-border);"></div>
 
@@ -38,13 +38,9 @@
         </div>
 
         <div class="dropdown">
-
-            <div class="position-relative d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; margin-right: 5px;">
+            <div class="position-relative d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
                 <i class="bi bi-person-circle" id="profileIcon" style="font-size: 2rem !important; color: var(--text-main); transition: color 0.3s ease;"></i>
-
-                <span id="inboxBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.65rem; padding: 0.35em 0.5em; border: 2px solid var(--card-bg);">
-                    
-                </span>
+                <span id="inboxBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.65rem; padding: 0.35em 0.5em; border: 2px solid var(--card-bg);"></span>
             </div>
 
             <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="background-color: var(--card-bg); border-color: var(--input-border);">
@@ -53,19 +49,13 @@
                         <i class="bi bi-person fs-5"></i> Profil
                     </a>
                 </li>
-
                 <li>
                     <a class="dropdown-item d-flex align-items-center justify-content-between gap-3 py-2 dropdown-text" href="#" onclick="openInboxModal()">
-                        <div class="d-flex align-items-center gap-3">
-                            <i class="bi bi-envelope fs-5"></i> Gelen Kutusu
-                        </div>
-                     
+                        <div class="d-flex align-items-center gap-3"><i class="bi bi-envelope fs-5"></i> Gelen Kutusu</div>
                         <span id="dropdownInboxBadge" class="badge bg-danger rounded-pill d-none" style="font-size: 0.75rem;">0</span>
                     </a>
                 </li>
-
                 <li><hr class="dropdown-divider" style="border-color: var(--input-border);"></li>
-
                 <li>
                     <a class="dropdown-item d-flex align-items-center gap-3 py-2 text-danger" href="#" onclick="logout()">
                         <i class="bi bi-box-arrow-right fs-5"></i> Çıkış Yap

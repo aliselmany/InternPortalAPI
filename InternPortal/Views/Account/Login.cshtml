@@ -14,10 +14,11 @@
             transition: opacity 0.2s;
         }
 
-            .text-custom-register:hover {
-                opacity: 0.8;
-                text-decoration: underline !important;
-            }
+        .text-custom-register:hover {
+            opacity: 0.8;
+            text-decoration: underline !important;
+        }
+
 
         .swal2-confirm {
             font-weight: 600 !important;
@@ -87,6 +88,12 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+ 
+        window.history.pushState(null, null, window.location.href);
+        window.addEventListener('popstate', function () {
+        window.history.pushState(null, null, window.location.href);
+        });
+
         const API_URL = "https://localhost:7166";
 
         function applyTheme(theme) {
@@ -129,7 +136,7 @@
         passwordInput.type = 'password';
         this.classList.replace('bi-eye', 'bi-eye-slash');
         }
-        });
+        }); 
 
         function showThemedAlert(title, text, icon, timer = null, redirectUrl = null) {
         const currentTheme = document.documentElement.getAttribute('data-bs-theme');
@@ -147,7 +154,7 @@
         confirmButtonColor: isDark ? '#ffffff' : '#000000'
         }).then(() => {
         if (redirectUrl) {
-        window.location.href = redirectUrl;
+        window.location.replace(redirectUrl); 
         }
         });
         }
@@ -185,9 +192,11 @@
         let redirectTarget = '/Home/Index';
 
         if (userRole === 'Admin') {
-        redirectTarget = '/Admin/Dashboard';
+        redirectTarget = '/SystemAdmin/Dashboard'; 
         }
-        
+        else if (userRole === 'DepartmanAdmin') {
+        redirectTarget = '/Admin/Dashboard'; 
+        }
         else if (userRole === 'HR') {
         redirectTarget = '/Hr/HrDashboard';
         }

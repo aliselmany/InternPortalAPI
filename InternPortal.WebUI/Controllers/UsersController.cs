@@ -154,7 +154,7 @@ public class UsersController : ControllerBase
         return Ok(new { message = "Şifreniz başarıyla güncellendi. Yeni şifrenizle giriş yapabilirsiniz." });
     }
 
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize(Roles = "DepartmanAdmin,Staff")]
     [HttpPost("assign-mentor")]
     public async Task<IActionResult> AssignMentor([FromBody] AssignMentorRequest request)
     {
@@ -185,14 +185,14 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("my-interns/{staffId}")]
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize(Roles = "DepartmanAdmin,Staff")]
     public async Task<IActionResult> GetMyInterns(Guid staffId)
     {
         var interns = await _userService.GetMyInternsAsync(staffId);
         return Ok(interns);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "DepartmanAdmin")]
     [HttpGet("all-users")]
     public async Task<IActionResult> GetAllUsers([FromQuery] GetUserFilterDto filter)
     {
@@ -229,7 +229,7 @@ public class UsersController : ControllerBase
         return Ok(usersByName);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "DepartmanAdmin")]
     [HttpGet("active-boards")]
     public async Task<IActionResult> GetActiveKanbanBoards()
     {
@@ -273,7 +273,7 @@ public class UsersController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize(Roles = "DepartmanAdmin,Staff")]
     [HttpPut("update-mentor-profile")]
     public async Task<IActionResult> MentorStaffProfile([FromBody] MentorProfileUpdateDto dto, [FromQuery] Guid? targetUserId = null)
     {
@@ -293,7 +293,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("delete/{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "DepartmanAdmin")]
     public async Task<IActionResult> DeleteUser(Guid id)
     {
         var success = await _userService.DeleteUserAsync(id);

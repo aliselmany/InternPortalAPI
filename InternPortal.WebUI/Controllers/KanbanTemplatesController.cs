@@ -10,7 +10,7 @@ namespace InternPortal.WebUI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Staff")] 
+[Authorize(Roles = "DepartmanAdmin,Staff")] 
 public class KanbanTemplatesController : ControllerBase
 {
     private readonly IKanbanTemplateService _templateService;

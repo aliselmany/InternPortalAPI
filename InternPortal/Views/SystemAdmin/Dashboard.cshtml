@@ -1,0 +1,900 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistem Yönetimi - InternPortal</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2/theme-dark@5/dark.css" rel="stylesheet">
+
+    <style>
+            /* === GLOBAL TEMA & TREX YEŞİLİ DEĞİŞKENLERİ === */
+            :root, [data-bs-theme="light"] {
+                --bg-gradient: radial-gradient(circle at center, #ffffff 0%, #ebedee 100%);
+                --card-bg: #ffffff;
+                --text-main: #1a1d20;
+                --text-muted: #495057;
+                --input-bg: #fdfdfd;
+                --input-border: #e9ecef;
+                --shadow: rgba(0, 0, 0, 0.08);
+                --sidebar-width: 290px;
+                --topbar-height: 85px;
+                --trex-green: #8cc63f;
+                --trex-green-hover: #7ab033;
+                --trex-green-faded: rgba(140, 198, 63, 0.15);
+            }
+
+            [data-bs-theme="dark"] {
+                --bg-gradient: radial-gradient(circle at center, #1a1d20 0%, #000000 100%);
+                --card-bg: #212529;
+                --text-main: #f8f9fa;
+                --text-muted: #adb5bd;
+                --input-bg: #2b3035;
+                --input-border: #373b3e;
+                --shadow: rgba(0, 0, 0, 0.4);
+            }
+
+            /* === STANDART SAYFA SIFIRLAMASI === */
+            * {
+                box-sizing: border-box;
+            }
+
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                background: var(--bg-gradient);
+                background-attachment: fixed;
+                color: var(--text-main);
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                transition: background 0.3s ease, color 0.3s ease;
+            }
+
+            /* ----- SIDEBAR (SOL MENÜ) ----- */
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: var(--sidebar-width);
+                background-color: var(--card-bg);
+                border-right: 1px solid var(--input-border);
+                z-index: 1060;
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+                transition: background-color 0.3s ease, border-color 0.3s ease;
+            }
+
+                .sidebar::-webkit-scrollbar {
+                    width: 4px;
+                }
+
+                .sidebar::-webkit-scrollbar-thumb {
+                    background: var(--input-border);
+                    border-radius: 4px;
+                }
+
+            .brand-section {
+                height: var(--topbar-height);
+                display: flex;
+                align-items: center;
+                padding: 0 2rem;
+                border-bottom: 1px solid var(--input-border);
+                flex-shrink: 0;
+            }
+
+            .nav-section {
+                padding: 1.5rem 1rem;
+                flex-grow: 1;
+            }
+
+            .nav-label {
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
+                color: var(--text-muted);
+                font-weight: 800;
+                margin: 1.5rem 0 0.5rem 1rem;
+            }
+
+            .nav-item {
+                margin-bottom: 0.2rem;
+            }
+
+            .nav-link-custom {
+                display: flex;
+                align-items: center;
+                padding: 0.85rem 1rem;
+                color: var(--text-muted);
+                text-decoration: none;
+                border-radius: 12px;
+                font-weight: 600;
+                transition: all 0.2s;
+                cursor: pointer;
+            }
+
+                .nav-link-custom:hover, .nav-link-custom[aria-expanded="true"] {
+                    background-color: var(--input-bg);
+                    color: var(--text-main);
+                }
+
+                .nav-link-custom.active {
+                    background-color: var(--trex-green-faded) !important;
+                    color: var(--trex-green) !important;
+                }
+
+                .nav-link-custom i {
+                    font-size: 1.25rem;
+                    margin-right: 1rem;
+                    width: 24px;
+                    text-align: center;
+                }
+
+                .nav-link-custom .chevron {
+                    margin-left: auto;
+                    font-size: 0.85rem;
+                    transition: transform 0.3s;
+                }
+
+                .nav-link-custom[aria-expanded="true"] .chevron {
+                    transform: rotate(90deg);
+                }
+
+            .submenu {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+                .submenu .nav-link-custom {
+                    padding: 0.6rem 1rem 0.6rem 3.5rem;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                }
+
+            /* ----- TOPBAR (ÜST BAR & ARAMA) ----- */
+            .topbar {
+                position: fixed;
+                top: 0;
+                right: 0;
+                left: var(--sidebar-width);
+                height: var(--topbar-height);
+                background-color: var(--card-bg);
+                border-bottom: 1px solid var(--input-border);
+                z-index: 1050;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 3rem;
+                transition: background-color 0.3s ease, border-color 0.3s ease;
+            }
+
+            .global-search {
+                position: relative;
+                width: 100%;
+                max-width: 650px;
+            }
+
+            .global-search-input {
+                width: 100%;
+                height: 52px;
+                background-color: var(--input-bg);
+                border: 2px solid var(--input-border);
+                border-radius: 16px;
+                padding: 0 4rem 0 3.5rem;
+                color: var(--text-main);
+                font-size: 1.05rem;
+                transition: all 0.3s;
+            }
+
+                .global-search-input:focus {
+                    outline: none;
+                    border-color: var(--trex-green);
+                    box-shadow: 0 0 0 4px var(--trex-green-faded);
+                    background-color: var(--card-bg);
+                }
+
+                .global-search-input::placeholder {
+                    color: var(--text-muted);
+                    opacity: 0.7;
+                }
+
+            .global-search-icon {
+                position: absolute;
+                left: 1.2rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--text-muted);
+                font-size: 1.3rem;
+            }
+
+            .search-shortcut {
+                position: absolute;
+                right: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+                background-color: var(--card-bg);
+                border: 1px solid var(--input-border);
+                color: var(--text-muted);
+                padding: 0.3rem 0.6rem;
+                border-radius: 8px;
+                font-size: 0.75rem;
+                font-weight: bold;
+                pointer-events: none;
+            }
+
+            /* ----- MAIN CONTENT & SECTIONS ----- */
+            .main-content {
+                position: absolute;
+                top: var(--topbar-height);
+                left: var(--sidebar-width);
+                right: 0;
+                bottom: 0;
+                padding: 2.5rem 3.5rem;
+                overflow-y: auto;
+            }
+
+            .content-section {
+                display: none;
+                animation: fadeIn 0.4s ease;
+            }
+
+                .content-section.active-section {
+                    display: block;
+                }
+            @@keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .stat-card {
+                background-color: var(--card-bg);
+                border: 1px solid var(--input-border);
+                border-radius: 20px;
+                padding: 1.5rem;
+                height: 100%;
+                transition: all 0.3s;
+                box-shadow: 0 10px 20px var(--shadow);
+            }
+
+            .dropdown-menu {
+                background-color: var(--card-bg);
+                border: 1px solid var(--input-border);
+                border-radius: 12px;
+            }
+
+            .dropdown-item {
+                color: var(--text-main);
+                font-weight: 500;
+                transition: 0.2s;
+            }
+
+                .dropdown-item:hover {
+                    background-color: var(--input-bg);
+                    color: var(--trex-green);
+                }
+
+            .custom-scroll::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .custom-scroll::-webkit-scrollbar-thumb {
+                background-color: var(--input-border);
+                border-radius: 10px;
+            }
+
+            .calendar-grid {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 5px;
+                text-align: center;
+            }
+
+            .calendar-day-header {
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: var(--text-muted);
+                margin-bottom: 10px;
+            }
+
+            .calendar-cell {
+                aspect-ratio: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                cursor: pointer;
+                position: relative;
+                font-size: 0.95rem;
+                font-weight: 500;
+                transition: all 0.2s;
+                color: var(--text-main);
+            }
+
+                .calendar-cell:hover {
+                    background-color: var(--input-border);
+                }
+
+                .calendar-cell.muted {
+                    color: var(--text-muted);
+                    opacity: 0.4;
+                }
+
+                .calendar-cell.active-day {
+                    background-color: var(--trex-green);
+                    color: #ffffff;
+                    font-weight: 700;
+                    box-shadow: 0 4px 10px var(--trex-green-faded);
+                }
+
+            .event-dot-container {
+                position: absolute;
+                bottom: 4px;
+                display: flex;
+                gap: 2px;
+            }
+
+            .event-dot {
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+            }
+
+            .dot-success {
+                background-color: #198754;
+            }
+
+            .dot-danger {
+                background-color: #dc3545;
+            }
+
+            .dot-warning {
+                background-color: #ffc107;
+            }
+
+    
+            .filter-container-row {
+                display: flex;
+                gap: 15px;
+                width: 100%;
+                margin-bottom: 1.5rem;
+                flex-shrink: 0;
+            }
+
+            .form-view-control {
+                background: var(--input-bg) !important;
+                border: 2px solid var(--input-border) !important;
+                border-radius: 12px !important;
+                padding: 0 15px !important;
+                color: var(--text-main) !important;
+                height: 50px !important;
+                width: 100% !important;
+                transition: 0.3s;
+            }
+
+                .form-view-control:focus {
+                    border-color: var(--trex-green) !important;
+                    box-shadow: 0 0 0 4px var(--trex-green-faded) !important;
+                    outline: none;
+                }
+
+            .table-custom {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0 10px;
+                margin-top: 0;
+            }
+
+                .table-custom thead th {
+                    padding: 1.2rem 1.5rem;
+                    color: var(--text-muted);
+                    font-size: 0.8rem;
+                    text-transform: uppercase;
+                    font-weight: 700;
+                    border-bottom: 1px solid var(--input-border);
+                }
+
+                .table-custom tbody tr {
+                    background-color: var(--card-bg);
+                    transition: 0.2s;
+                    box-shadow: 0 5px 15px var(--shadow);
+                }
+
+                    .table-custom tbody tr:hover {
+                        transform: scale(1.01);
+                    }
+
+                .table-custom td {
+                    padding: 1.2rem 1.5rem;
+                    border-top: 1px solid var(--input-border);
+                    border-bottom: 1px solid var(--input-border);
+                    vertical-align: middle;
+                }
+
+                    .table-custom td:first-child {
+                        border-left: 1px solid var(--input-border);
+                        border-radius: 12px 0 0 12px;
+                    }
+
+                    .table-custom td:last-child {
+                        border-right: 1px solid var(--input-border);
+                        border-radius: 0 12px 12px 0;
+                    }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand-section">
+            <img id="authLogo" src="/assets/trex-logo-light.png" alt="Trex Logo" style="height: 40px; object-fit: contain;" />
+        </div>
+
+        <div class="nav-section" id="sidebarMenu">
+            <a href="#" onclick="switchSection('section-dashboard', this)" class="nav-link-custom active">
+                <i class="bi bi-grid-1x2-fill"></i> Genel Bakış
+            </a>
+
+            <div class="nav-label">Kullanıcı & Organizasyon</div>
+            <div class="nav-item">
+                <a class="nav-link-custom" data-bs-toggle="collapse" href="#collapseUsers" aria-expanded="false">
+                    <i class="bi bi-people-fill"></i> Kullanıcı Yönetimi <i class="bi bi-chevron-right chevron"></i>
+                </a>
+                <div class="collapse" id="collapseUsers">
+                    <ul class="submenu">
+                        <li><a href="#" onclick="switchSection('section-interns', this)" class="nav-link-custom">Stajyerler</a></li>
+                        <li><a href="#" onclick="switchSection('section-staff', this)" class="nav-link-custom">Mentörler / Personel</a></li>
+                        <li><a href="#" onclick="switchSection('section-admins', this)" class="nav-link-custom">Sistem Yöneticileri</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <a class="nav-link-custom" data-bs-toggle="collapse" href="#collapseOrg" aria-expanded="false">
+                    <i class="bi bi-buildings-fill"></i> Organizasyon <i class="bi bi-chevron-right chevron"></i>
+                </a>
+                <div class="collapse" id="collapseOrg">
+                    <ul class="submenu">
+                        <li><a href="#" onclick="switchSection('section-departments', this)" class="nav-link-custom">Departmanları Yönet</a></li>
+                        <li><a href="#" onclick="switchSection('section-assignments', this)" class="nav-link-custom">Mentör Atamaları</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="nav-label">Operasyon & Güvenlik</div>
+            <div class="nav-item">
+                <a href="#" onclick="switchSection('section-applications', this)" class="nav-link-custom">
+                    <i class="bi bi-inbox-fill"></i> Başvuru Merkezi
+                </a>
+            </div>
+
+            <div class="nav-item mt-2">
+                <a class="nav-link-custom" data-bs-toggle="collapse" href="#collapseSystem" aria-expanded="false">
+                    <i class="bi bi-shield-lock-fill"></i> Sistem & Güvenlik <i class="bi bi-chevron-right chevron"></i>
+                </a>
+                <div class="collapse" id="collapseSystem">
+                    <ul class="submenu">
+                        <li><a href="#" onclick="switchSection('section-logs', this)" class="nav-link-custom">Sistem Logları</a></li>
+                        <li><a href="#" id="menu-roles" onclick="switchSection('section-roles', this)" class="nav-link-custom">Rol ve İzinler</a></li>
+                        <li><a href="#" onclick="switchSection('section-settings', this)" class="nav-link-custom">Portal Ayarları</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+
+    <header class="topbar">
+        <div class="global-search">
+            <i class="bi bi-search global-search-icon"></i>
+            <input type="text" id="searchInput" class="global-search-input" placeholder="Sistemde kullanıcı, departman veya menü ara..." autocomplete="off">
+            <div class="search-shortcut">Ctrl + K</div>
+        </div>
+
+        <div class="d-flex align-items-center gap-4">
+            <div onclick="toggleTheme()" style="cursor:pointer;" class="d-flex align-items-center justify-content-center">
+                <i class="bi bi-moon-fill" id="themeIcon" style="font-size: 1.5rem; color: var(--text-main); transition: 0.3s;"></i>
+            </div>
+            <div style="height: 30px; width: 1px; background-color: var(--input-border);"></div>
+            <div class="dropdown">
+                <div class="d-flex align-items-center gap-3" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                    <div class="text-end d-none d-md-block">
+                        <h6 class="mb-0 fw-bold" style="font-size: 0.9rem; color: var(--text-main);">Sistem Yöneticisi</h6>
+                        <small class="text-muted" style="font-size: 0.75rem;">Tam Yetkili Erişim</small>
+                    </div>
+                    <i class="bi bi-person-circle" style="font-size: 2.2rem; color: var(--text-main);"></i>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg mt-2 pt-2 pb-2">
+                    <li><a class="dropdown-item text-danger" href="/Account/Login" onclick="logout()"><i class="bi bi-power fs-5 me-2"></i> Güvenli Çıkış</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+ 
+    <main class="main-content">
+
+        <div id="section-dashboard" class="content-section active-section">
+            <div class="d-flex justify-content-between align-items-end mb-4 pb-2 border-bottom" style="border-color: var(--input-border) !important;">
+                <div>
+                    <h3 class="fw-bold mb-1" style="color: var(--text-main);">Sistem Genel Bakış</h3>
+                    <p class="text-muted mb-0">Tüm organizasyonun ve altyapının anlık durumu.</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-lg-8 col-md-12">
+                    <div class="stat-card">
+                        <div class="row h-100">
+    
+                            <div class="col-md-6 border-end pe-4" style="border-color: var(--input-border) !important;">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 id="calendarMonthYear" class="fw-bold mb-0" style="color: var(--text-main);">Ay Yıl</h5>
+                                    <div>
+                                        <button class="btn btn-sm text-muted" onclick="changeMonth(-1)"><i class="bi bi-chevron-up"></i></button>
+                                        <button class="btn btn-sm text-muted" onclick="changeMonth(1)"><i class="bi bi-chevron-down"></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="calendar-grid">
+                                    <div class="calendar-day-header">Pt</div>
+                                    <div class="calendar-day-header">Sa</div>
+                                    <div class="calendar-day-header">Ça</div>
+                                    <div class="calendar-day-header">Pe</div>
+                                    <div class="calendar-day-header">Cu</div>
+                                    <div class="calendar-day-header">Ct</div>
+                                    <div class="calendar-day-header">Pa</div>
+                                </div>
+                                <div id="calendarDays" class="calendar-grid">
+          
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 ps-4 d-flex flex-column">
+                                <h6 class="fw-bold mb-3 text-muted" id="eventListTitle">Seçili Gün Etkinlikleri</h6>
+                                <div id="eventListContainer" class="flex-grow-1 custom-scroll" style="max-height: 250px; overflow-y: auto;">
+             
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+       
+                <div class="col-lg-4 col-md-12">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-end mb-4">
+                            <div>
+                                <h5 class="fw-bold mb-1" style="color: var(--text-main);">Sistem Logları</h5>
+                                <p class="text-muted small mb-0">Son aktiviteler.</p>
+                            </div>
+                        </div>
+
+                        <div class="position-relative px-2 custom-scroll" style="max-height: 280px; overflow-y: auto;">
+   
+                            <div class="position-absolute h-100" style="left: 14px; top: 0; border-left: 2px dashed var(--input-border); z-index: 1;"></div>
+
+                            <div class="position-relative mb-4" style="z-index: 2;">
+                                <div class="d-flex align-items-start">
+                                    <div class="rounded-circle d-flex justify-content-center align-items-center mt-1" style="width: 24px; height: 24px; margin-left: -5px; background: var(--card-bg);">
+                                        <div class="rounded-circle bg-success" style="width: 12px; height: 12px; box-shadow: 0 0 0 4px var(--card-bg);"></div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <span class="d-block small text-muted mb-1">Bugün, 14:30</span>
+                                        <h6 class="fw-bold mb-1" style="font-size: 0.95rem; color: var(--text-main);">Yeni Stajyer Kaydı</h6>
+                                        <p class="text-muted small mb-0">Ahmet Yılmaz sisteme eklendi.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="position-relative mb-4" style="z-index: 2;">
+                                <div class="d-flex align-items-start">
+                                    <div class="rounded-circle d-flex justify-content-center align-items-center mt-1" style="width: 24px; height: 24px; margin-left: -5px; background: var(--card-bg);">
+                                        <div class="rounded-circle bg-warning" style="width: 12px; height: 12px; box-shadow: 0 0 0 4px var(--card-bg);"></div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <span class="d-block small text-muted mb-1">Bugün, 11:15</span>
+                                        <h6 class="fw-bold mb-1" style="font-size: 0.95rem; color: var(--text-main);">Rol Değişikliği</h6>
+                                        <p class="text-muted small mb-0">Ayşe Kaya Mentör yapıldı.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="position-relative mb-4" style="z-index: 2;">
+                                <div class="d-flex align-items-start">
+                                    <div class="rounded-circle d-flex justify-content-center align-items-center mt-1" style="width: 24px; height: 24px; margin-left: -5px; background: var(--card-bg);">
+                                        <div class="rounded-circle bg-info" style="width: 12px; height: 12px; box-shadow: 0 0 0 4px var(--card-bg);"></div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <span class="d-block small text-muted mb-1">Dün, 09:00</span>
+                                        <h6 class="fw-bold mb-1" style="font-size: 0.95rem; color: var(--text-main);">Departman Eklendi</h6>
+                                        <p class="text-muted small mb-0">Pazarlama departmanı eklendi.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div id="section-interns" class="content-section">
+            <div class="d-flex justify-content-between align-items-end mb-4 pb-2 border-bottom" style="border-color: var(--input-border) !important;">
+                <div>
+                    <h3 class="fw-bold mb-1" style="color: var(--text-main);">Stajyer Yönetimi</h3>
+                    <p class="text-muted mb-0">Sistemdeki stajyerleri görüntüleyin.</p>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table-custom">
+                    <thead><tr><th>Kullanıcı Bilgisi</th><th>Durum</th><th class="text-center">İşlemler</th></tr></thead>
+                    <tbody id="internsBody"><tr><td colspan="3" class="text-center text-muted">Yükleniyor...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="section-staff" class="content-section">
+            <div class="d-flex justify-content-between align-items-end mb-4 pb-2 border-bottom" style="border-color: var(--input-border) !important;">
+                <div><h3 class="fw-bold mb-1" style="color: var(--text-main);">Mentör & Personel Yönetimi</h3><p class="text-muted mb-0">Sistemdeki personelleri görüntüleyin.</p></div>
+            </div>
+            <div class="table-responsive"><table class="table-custom"><thead><tr><th>Kullanıcı Bilgisi</th><th>Durum</th><th class="text-center">İşlemler</th></tr></thead><tbody id="staffBody"><tr><td colspan="3" class="text-center text-muted">Yükleniyor...</td></tr></tbody></table></div>
+        </div>
+
+        <div id="section-admins" class="content-section">
+            <div class="d-flex justify-content-between align-items-end mb-4 pb-2 border-bottom" style="border-color: var(--input-border) !important;">
+                <div><h3 class="fw-bold mb-1" style="color: var(--text-main);">Sistem Yöneticileri</h3><p class="text-muted mb-0">Sistemdeki adminleri görüntüleyin.</p></div>
+            </div>
+            <div class="table-responsive"><table class="table-custom"><thead><tr><th>Kullanıcı Bilgisi</th><th>Durum</th><th class="text-center">İşlemler</th></tr></thead><tbody id="adminsBody"><tr><td colspan="3" class="text-center text-muted">Yükleniyor...</td></tr></tbody></table></div>
+        </div>
+
+        <div id="section-applications" class="content-section">
+            <div class="d-flex justify-content-between align-items-end mb-4 pb-2 border-bottom" style="border-color: var(--input-border) !important;">
+                <div><h3 class="fw-bold mb-1" style="color: var(--text-main);">Başvuru Merkezi</h3><p class="text-muted mb-0">Sisteme yapılan tüm başvurular.</p></div>
+            </div>
+            <div class="table-responsive"><table class="table-custom"><thead><tr><th>Ad Soyad</th><th>Okul/Bölüm</th><th>Durum</th><th class="text-center">İşlemler</th></tr></thead><tbody id="applicationsBody"><tr><td colspan="4" class="text-center text-muted">Yükleniyor...</td></tr></tbody></table></div>
+        </div>
+
+        <div id="section-departments" class="content-section"><h3 class="fw-bold" style="color: var(--text-main);">Departman Yönetimi</h3><hr style="border-color: var(--input-border);"><p class="text-muted">Yakında Eklenecek...</p></div>
+        <div id="section-assignments" class="content-section"><h3 class="fw-bold" style="color: var(--text-main);">Mentör Atamaları</h3><hr style="border-color: var(--input-border);"><p class="text-muted">Yakında Eklenecek...</p></div>
+        <div id="section-logs" class="content-section"><h3 class="fw-bold" style="color: var(--text-main);">Sistem Logları</h3><hr style="border-color: var(--input-border);"><p class="text-muted">Yakında Eklenecek...</p></div>
+        <div id="section-roles" class="content-section"><h3 class="fw-bold" style="color: var(--text-main);">Rol ve İzinler</h3><hr style="border-color: var(--input-border);"><p class="text-muted">Yakında Eklenecek...</p></div>
+        <div id="section-settings" class="content-section"><h3 class="fw-bold" style="color: var(--text-main);">Portal Ayarları</h3><hr style="border-color: var(--input-border);"><p class="text-muted">Yakında Eklenecek...</p></div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const apiBase = 'https://localhost:7166';
+        const months = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+        let currentDate = new Date();
+        let displayMonth = currentDate.getMonth();
+        let displayYear = currentDate.getFullYear();
+
+        const systemEvents = [
+        { day: 6, month: 6, year: 2026, title: "Ahmet Yılmaz - Staj Başlangıcı", type: "success" },
+        { day: 12, month: 6, year: 2026, title: "Merve Kaya - Mülakat", type: "warning" },
+        { day: 15, month: 6, year: 2026, title: "Caner Türk - Staj Bitişi", type: "danger" }
+        ];
+
+        function renderCalendar() {
+        const calendarDays = document.getElementById("calendarDays");
+        const monthYearText = document.getElementById("calendarMonthYear");
+        calendarDays.innerHTML = "";
+        monthYearText.innerText = `${months[displayMonth]} ${displayYear}`;
+        const firstDayIndex = new Date(displayYear, displayMonth, 1).getDay();
+        const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+        const daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
+        const daysInPrevMonth = new Date(displayYear, displayMonth, 0).getDate();
+
+    
+        for (let i = startDay; i > 0; i--) {
+        calendarDays.innerHTML += `<div class="calendar-cell muted">${daysInPrevMonth - i + 1}</div>`;
+        }
+
+        for (let i = 1; i <= daysInMonth; i++) {
+        let cellClass = "calendar-cell";
+        let dotsHtml = "";
+
+   
+        if (i === currentDate.getDate() && displayMonth === currentDate.getMonth() && displayYear === currentDate.getFullYear()) {
+        cellClass += " active-day";
+        }
+
+   
+        const dayEvents = systemEvents.filter(e => e.day === i && e.month === displayMonth && e.year === displayYear);
+        if (dayEvents.length > 0) {
+        dotsHtml = `<div class="event-dot-container">`;
+        dayEvents.forEach(ev => {
+        dotsHtml += `<div class="event-dot dot-${ev.type}"></div>`;
+        });
+        dotsHtml += `</div>`;
+        }
+
+  
+        calendarDays.innerHTML += `<div class="${cellClass}" onclick="showEvents(${i}, ${displayMonth}, ${displayYear})">${i}${dotsHtml}</div>`;
+        }
+
+        const totalCells = startDay + daysInMonth;
+        const remainingCells = 42 - totalCells;
+        for (let i = 1; i <= remainingCells; i++) {
+        calendarDays.innerHTML += `<div class="calendar-cell muted">${i}</div>`;
+        }
+
+        showMonthlyEvents();
+        }
+
+        function changeMonth(direction) {
+        displayMonth += direction;
+        if (displayMonth < 0) { displayMonth = 11; displayYear--; }
+        if (displayMonth > 11) { displayMonth = 0; displayYear++; }
+        renderCalendar();
+        }
+
+        function showEvents(day, month, year) {
+        const container = document.getElementById("eventListContainer");
+        const title = document.getElementById("eventListTitle");
+        title.innerText = `${day} ${months[month]} Etkinlikleri`;
+
+        const dayEvents = systemEvents.filter(e => e.day === day && e.month === month && e.year === year);
+        container.innerHTML = "";
+
+        if (dayEvents.length === 0) {
+        container.innerHTML = `<p class="text-muted small text-center mt-4">Bu tarihte planlı etkinlik yok.</p>`;
+        return;
+        }
+
+        dayEvents.forEach(ev => {
+        let iconColor = ev.type === 'success' ? 'var(--trex-green)' : (ev.type === 'danger' ? '#dc3545' : '#ffc107');
+        container.innerHTML += `
+        <div class="d-flex align-items-center p-3 rounded-3 mb-2" style="background: var(--input-bg); border: 1px solid var(--input-border);">
+        <div style="width: 10px; height: 10px; border-radius: 50%; background: ${iconColor};" class="me-3 flex-shrink-0"></div>
+        <span class="fw-bold" style="font-size: 0.9rem; color: var(--text-main);">${ev.title}</span>
+        </div>
+        `;
+        });
+        }
+
+        function showMonthlyEvents() {
+        const container = document.getElementById("eventListContainer");
+        const title = document.getElementById("eventListTitle");
+        title.innerText = `${months[displayMonth]} Ayı Etkinlikleri`;
+        container.innerHTML = "";
+
+        const monthEvents = systemEvents.filter(e => e.month === displayMonth && e.year === displayYear);
+
+        if (monthEvents.length === 0) {
+        container.innerHTML = `<p class="text-muted small text-center mt-4">Bu aya ait planlı etkinlik bulunmuyor.</p>`;
+        return;
+        }
+
+        monthEvents.sort((a,b) => a.day - b.day).forEach(ev => {
+        let iconColor = ev.type === 'success' ? 'var(--trex-green)' : (ev.type === 'danger' ? '#dc3545' : '#ffc107');
+        container.innerHTML += `
+        <div class="d-flex align-items-center p-3 rounded-3 mb-2" style="background: var(--input-bg); border: 1px solid var(--input-border);">
+        <div class="text-center me-3 border-end pe-3" style="min-width: 40px; border-color: var(--input-border) !important;">
+        <span class="d-block fw-bold" style="color: ${iconColor}; font-size: 1.1rem;">${ev.day}</span>
+        </div>
+        <span class="fw-bold" style="font-size: 0.9rem; color: var(--text-main);">${ev.title}</span>
+        </div>
+        `;
+        });
+        }
+
+    
+        function switchSection(sectionId, clickedElement) {
+        const allSections = document.querySelectorAll('.content-section');
+        allSections.forEach(sec => sec.classList.remove('active-section'));
+
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) targetSection.classList.add('active-section');
+
+        const allNavLinks = document.querySelectorAll('.nav-link-custom');
+        allNavLinks.forEach(link => link.classList.remove('active'));
+
+        if (clickedElement) {
+        let parentCollapse = clickedElement.closest('.collapse');
+        if(parentCollapse && !parentCollapse.classList.contains('show')) {
+        new bootstrap.Collapse(parentCollapse, { toggle: true });
+        }
+        clickedElement.classList.add('active');
+        }
+
+        if (sectionId === 'section-dashboard') renderCalendar();
+        else if (sectionId === 'section-interns') fetchUsersByRole('Intern', 'internsBody');
+        else if (sectionId === 'section-staff') fetchUsersByRole('Staff', 'staffBody');
+        else if (sectionId === 'section-admins') fetchUsersByRole('SystemAdmin', 'adminsBody');
+        else if (sectionId === 'section-applications') fetchApplications();
+        }
+
+        async function fetchUsersByRole(roleName, tbodyId) {
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Yükleniyor...</td></tr>';
+        try {
+        const res = await fetch(`${apiBase}/api/Users/get-by-role/${roleName}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.ok) {
+        const users = await res.json();
+        tbody.innerHTML = '';
+        if (!users || users.length === 0) { tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Listelenecek kullanıcı yok.</td></tr>'; return; }
+        users.forEach(u => {
+        tbody.insertAdjacentHTML('beforeend', `<tr><td class="fw-bold"><div class="d-flex align-items-center gap-3"><div class="p-2 rounded-circle" style="background: var(--trex-green-faded); color: var(--trex-green);"><i class="bi bi-person-fill"></i></div><div>${u.firstName || u.name || '-'} ${u.lastName || u.surname || ''}<br><small class="text-muted fw-normal">${u.email || '-'}</small></div></div></td><td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">Aktif</span></td><td class="text-center"><button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Detay</button></td></tr>`);
+        });
+        } else tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Kullanıcı bulunamadı veya yetkisiz erişim.</td></tr>';
+        } catch (err) { tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Bağlantı hatası oluştu.</td></tr>'; }
+        }
+
+        async function fetchApplications() {
+        const tbody = document.getElementById('applicationsBody');
+        if (!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Yükleniyor...</td></tr>';
+        try {
+        const res = await fetch(`${apiBase}/Applications/api/all`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.ok) {
+        const apps = await res.json();
+        tbody.innerHTML = '';
+        if(apps.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Başvuru bulunamadı.</td></tr>'; return; }
+        apps.forEach(app => {
+        tbody.insertAdjacentHTML('beforeend', `<tr><td class="fw-bold">${app.name || '-'} ${app.surname || '-'}</td><td>${app.schoolName || '-'} <br> <small class="text-muted">${app.departmentOfStudy || '-'}</small></td><td><span class="badge bg-warning text-dark rounded-pill px-3 py-2">${app.status || 'Beklemede'}</span></td><td class="text-center"><button class="btn btn-sm btn-outline-secondary rounded-pill px-3">İncele</button></td></tr>`);
+        });
+        }
+        } catch (err) { tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Bağlantı hatası.</td></tr>'; }
+        }
+
+     
+        document.addEventListener('DOMContentLoaded', () => {
+        applyTheme(localStorage.getItem('portal-theme') || 'dark');
+        renderCalendar(); 
+        });
+
+        function applyTheme(theme) {
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        const authLogo = document.getElementById('authLogo');
+        const themeIcon = document.getElementById('themeIcon');
+        const version = new Date().getTime();
+        if (theme === 'dark') {
+        if(themeIcon) themeIcon.className = 'bi bi-moon-fill';
+        if(authLogo) authLogo.src = `/assets/trex-logo-light.png?v=${version}`;
+        } else {
+        if(themeIcon) themeIcon.className = 'bi bi-sun-fill';
+        if(authLogo) authLogo.src = `/assets/trex-logo-dark.png?v=${version}`;
+        }
+        }
+
+        function toggleTheme() {
+        const current = document.documentElement.getAttribute('data-bs-theme');
+        const target = current === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('portal-theme', target);
+        applyTheme(target);
+        }
+
+        document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+        });
+
+        function logout() {
+        localStorage.removeItem('token');
+        window.location.href = '/Account/Login';
+        }
+    </script>
+</body>
+</html>

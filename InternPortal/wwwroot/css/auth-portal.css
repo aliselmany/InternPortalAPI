@@ -171,7 +171,6 @@ body {
     box-sizing: border-box;
 }
 
-
 .intern-dashboard-wrapper {
     width: 100vw !important;
     height: 100vh !important;
@@ -182,6 +181,7 @@ body {
     box-sizing: border-box;
     overflow-y: auto;
 }
+
 .admin-nav-custom {
     position: fixed !important;
     top: 0;
