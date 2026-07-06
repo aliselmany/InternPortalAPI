@@ -8,9 +8,11 @@ namespace InternPortal.Domain.Entities
         public int Id { get; set; }
         public string Title { get; set; }
         public string? Description { get; set; }
+        //TODO: Burası enum olacak. Enum folderına taşıyıp oradan çağır.
+        //Statuses: Todo, InProgress, Under Review, Done
         public string Status { get; set; }
         public int OrderIndex { get; set; }
-        public Guid InternId { get; set; }
+        public Guid InternId { get; set; } 
         public Guid StaffId { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public bool IsDeleted { get; set; } = false;

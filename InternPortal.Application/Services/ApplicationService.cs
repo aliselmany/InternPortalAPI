@@ -5,6 +5,7 @@ using InternPortal.Infrastructure.Persistence;
 using InternPortal.Domain.Entities;
 using InternPortal.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using InternPortal.Application.Mappers;
 
 namespace InternPortal.Application.Services
 {
@@ -17,41 +18,55 @@ namespace InternPortal.Application.Services
             _context = context;
         }
 
-        public async Task<ServiceResult<Guid>> SubmitAsync(Guid userId, ApplicationDto dto)
+        private async Task<string> _CheckUserApplication(Guid userId)
         {
-            var lastApplication = await _context.Applications
-                .Where(x => x.UserId == userId)
-                .OrderByDescending(x => x.AppliedDate)
-                .FirstOrDefaultAsync();
+            var entity = await _context.Applications
+               .Where(x => x.UserId == userId)
+               .OrderByDescending(x => x.AppliedDate)
+               .FirstOrDefaultAsync();
 
-            if (lastApplication != null)
+            if (entity != null)
             {
-                if (lastApplication.Status == ApplicationStatus.Beklemede || lastApplication.Status == ApplicationStatus.HrOnayladı)
+                if (entity.Status == ApplicationStatus.Beklemede || entity.Status == ApplicationStatus.HrOnayladı)
                 {
-                    return ServiceResult<Guid>.Failure("Beklemede olan bir başvurunuz zaten var. Lütfen sonuçlanmasını bekleyin.");
+                    return "Beklemede olan bir başvurunuz zaten var. Lütfen sonuçlanmasını bekleyin.";
                 }
 
-                if (lastApplication.Status == ApplicationStatus.Onaylandı)
+                if (entity.Status == ApplicationStatus.Onaylandı)
                 {
-                    if (DateTime.UtcNow <= lastApplication.EndDate)
+                    if (DateTime.UtcNow <= entity.EndDate)
                     {
-                        return ServiceResult<Guid>.Failure($"Aktif stajınız {lastApplication.EndDate:yyyy-MM-dd} tarihine kadar devam ediyor.");
+                        return $"Aktif stajınız {entity.EndDate:yyyy-MM-dd} tarihine kadar devam ediyor.";
                     }
                 }
+            }
+
+            return string.Empty;
+        }
+
+        public async Task<ServiceResult<Guid>> SubmitAsync(Guid userId, ApplicationDto dto)
+        {
+            var errorMessage = await _CheckUserApplication(userId);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return ServiceResult<Guid>.Failure(errorMessage);
             }
 
             var user = await _context.Users
                 .Include(u => u.UserRoles)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
-            if (user == null) return ServiceResult<Guid>.Failure("Kullanıcı bulunamadı.");
+            if (user == null)
+            {
+                return ServiceResult<Guid>.Failure("Kullanıcı bulunamadı.");
+            }
 
             if (user.UserRoles == null || !user.UserRoles.Any())
             {
                 var internRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Intern");
                 if (internRole != null)
                 {
-                    _context.UserRoleMappings.Add(new UserRoleMapping
+                    _context.UserRoleMappings.Add(new UserRole
                     {
                         UserId = userId,
                         RoleId = internRole.Id
@@ -59,16 +74,13 @@ namespace InternPortal.Application.Services
                 }
             }
 
-            var application = new InternPortal.Domain.Entities.Application
+            var application = new Domain.Entities.Application
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
-
                 EducationLevel = dto.EducationLevel,
-
                 SchoolName = dto.SchoolName,
                 DepartmentOfStudy = dto.DepartmentOfStudy,
-
                 Grade = dto.Grade,
                 Department = dto.Department,
                 InternshipType = dto.InternshipType,
@@ -77,9 +89,7 @@ namespace InternPortal.Application.Services
                 EndDate = dto.EndDate,
                 Description = dto.Description,
                 CvUrl = dto.CvPath ?? string.Empty,
-
                 TranscriptFile = dto.TranscriptPath,
-
                 AppliedDate = DateTime.UtcNow,
                 Status = ApplicationStatus.Beklemede,
                 Reference = dto.Reference,
@@ -89,76 +99,30 @@ namespace InternPortal.Application.Services
 
             _context.Applications.Add(application);
             await _context.SaveChangesAsync();
+
             return ServiceResult<Guid>.Success(application.Id);
         }
 
         public async Task<ServiceResult<bool>> UpdateAsync(Guid id, ApplicationUpdateDto dto)
         {
-            var application = await _context.Applications.FindAsync(id);
-
-            if (application == null)
-            {
-                return ServiceResult<bool>.Failure("Güncellenmek istenen başvuru bulunamadı.");
-            }
-
-            if (!string.IsNullOrEmpty(dto.PhoneNumber)) application.PhoneNumber = dto.PhoneNumber;
-
-            if (!string.IsNullOrEmpty(dto.EducationLevel))
-            {
-                application.EducationLevel = dto.EducationLevel;
-            }
-
-            if (!string.IsNullOrEmpty(dto.SchoolName)) application.SchoolName = dto.SchoolName;
-            if (!string.IsNullOrEmpty(dto.DepartmentOfStudy)) application.DepartmentOfStudy = dto.DepartmentOfStudy;
-            if (!string.IsNullOrEmpty(dto.Grade)) application.Grade = dto.Grade;
-
-            if (dto.Department.HasValue)
-                application.Department = dto.Department.Value;
-
-            if (dto.InternshipType.HasValue)
-                application.InternshipType = dto.InternshipType.Value;
-
-            if (dto.StartDate.HasValue)
-                application.StartDate = dto.StartDate.Value;
-
-            if (dto.EndDate.HasValue)
-                application.EndDate = dto.EndDate.Value;
-
-            if (dto.Description != null) application.Description = dto.Description;
-            if (dto.Reference != null) application.Reference = dto.Reference;
-            if (dto.ReferenceGsm != null) application.ReferenceGsm = dto.ReferenceGsm;
-
-            _context.Applications.Update(application);
-            await _context.SaveChangesAsync();
-
-            return ServiceResult<bool>.Success(true);
+            throw new NotImplementedException();
         }
 
         public async Task<ServiceResult<bool>> UpdateStatusAsync(Guid applicationId, ApplicationStatus newStatus)
         {
             var application = await _context.Applications
-                .Include(a => a.User)
-                    .ThenInclude(u => u.UserRoles)
+                .Include(a => a.User).ThenInclude(u => u.UserRoles)
                 .FirstOrDefaultAsync(a => a.Id == applicationId);
 
-            if (application == null) return ServiceResult<bool>.Failure("Başvuru bulunamadı.");
-
-            if (newStatus == ApplicationStatus.Onaylandı && application.User != null && !application.User.UserRoles.Any())
+            if (application == null)
             {
-                var internRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Intern");
-                if (internRole != null)
-                {
-                    _context.UserRoleMappings.Add(new UserRoleMapping
-                    {
-                        UserId = application.UserId,
-                        RoleId = internRole.Id
-                    });
-                }
+                return ServiceResult<bool>.Failure("Başvuru bulunamadı.");
             }
 
             application.Status = newStatus;
-            var saved = await _context.SaveChangesAsync() > 0;
-            return ServiceResult<bool>.Success(saved);
+            await _context.SaveChangesAsync();
+
+            return ServiceResult<bool>.Success(true);
         }
 
         public async Task<List<ApplicationDto>> GetByUserIdAsync(Guid userId)
@@ -169,16 +133,7 @@ namespace InternPortal.Application.Services
                 .OrderByDescending(x => x.AppliedDate)
                 .ToListAsync();
 
-            var dtos = applications.Select(MapToDto).ToList();
-
-            foreach (var dto in dtos)
-            {
-                if (dto.Status == ApplicationStatus.HrOnayladı)
-                {
-                    dto.Status = ApplicationStatus.Beklemede;
-                }
-            }
-
+            var dtos = applications.Select(ApplicationAutoMapper.ApplicationToApplicationDto).ToList();
             return dtos;
         }
 
@@ -248,7 +203,7 @@ namespace InternPortal.Application.Services
                 .OrderByDescending(x => x.AppliedDate)
                 .ToListAsync();
 
-            return applications.Select(MapToDto).ToList();
+            return applications.Select(ApplicationAutoMapper.ApplicationToApplicationDto).ToList();
         }
 
         public async Task<ApplicationDto?> GetByIdAsync(Guid id)
@@ -256,10 +211,15 @@ namespace InternPortal.Application.Services
             var application = await _context.Applications
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Id == id);
+                
+            if (application == null) {
+                throw new InvalidOperationException("Application not found");
+            }
 
-            return application == null ? null : MapToDto(application);
+            return ApplicationAutoMapper.ApplicationToApplicationDto(application);
         }
 
+        //TODO: Buna gerek yok
         public async Task<List<ApplicationDto>> GetPendingManagerApprovalsAsync(Department department)
         {
             var applications = await _context.Applications
@@ -268,39 +228,7 @@ namespace InternPortal.Application.Services
                 .OrderByDescending(x => x.AppliedDate)
                 .ToListAsync();
 
-            return applications.Select(MapToDto).ToList();
-        }
-
-        private static ApplicationDto MapToDto(InternPortal.Domain.Entities.Application x)
-        {
-            return new ApplicationDto
-            {
-                Id = x.Id,
-                UserId = x.UserId,
-
-                Name = x.User?.Name ?? "İsimsiz",
-                Surname = x.User?.Surname ?? "Aday",
-
-                EducationLevel = x.EducationLevel,
-
-                SchoolName = x.SchoolName,
-                DepartmentOfStudy = x.DepartmentOfStudy,
-                Grade = x.Grade,
-                Department = x.Department,
-                InternshipType = x.InternshipType,
-                PhoneNumber = x.PhoneNumber,
-                StartDate = x.StartDate,
-                EndDate = x.EndDate,
-                Description = x.Description,
-                CvPath = x.CvUrl,
-                TranscriptPath = x.TranscriptFile,
-                Reference = x.Reference,
-                ReferenceGsm = x.ReferenceGsm,
-                ReferenceClosenessStatus = x.ReferenceClosenessStatus,
-                Status = x.Status,
-                CvFile = null!,
-                TranscriptFile = null
-            };
+            return applications.Select(ApplicationAutoMapper.ApplicationToApplicationDto).ToList();
         }
     }
 }

@@ -14,6 +14,7 @@ public class KanbanComment
     public string UserId { get; set; } 
 
     [Required]
+    //TODO: UserName'ı User entity'sinden alabiliriz.
     public string UserName { get; set; } 
 
     [Required]

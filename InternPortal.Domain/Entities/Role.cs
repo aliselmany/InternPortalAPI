@@ -7,8 +7,8 @@ namespace InternPortal.Domain.Entities
     public class Role
     {
         public Guid Id { get; set; }
+        // TODO: Roller enum olacak, namei kaldır.
         public string Name { get; set; } = string.Empty; 
-
-        public ICollection<UserRoleMapping> UserRoles { get; set; } = new List<UserRoleMapping>();
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
 }

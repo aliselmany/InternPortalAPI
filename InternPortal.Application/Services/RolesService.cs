@@ -69,7 +69,7 @@ public class RolesService : IRolesService
         if (role == null) return ServiceResult<bool>.Failure("Role not found.");
 
         user.UserRoles.Clear();
-        user.UserRoles.Add(new UserRoleMapping { UserId = userId, RoleId = role.Id });
+        user.UserRoles.Add(new UserRole { UserId = userId, RoleId = role.Id });
 
         await _context.SaveChangesAsync();
         return ServiceResult<bool>.Success(true);

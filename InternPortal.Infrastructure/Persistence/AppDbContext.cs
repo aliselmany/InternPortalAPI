@@ -9,7 +9,7 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
-    public DbSet<UserRoleMapping> UserRoleMappings { get; set; }
+    public DbSet<UserRole> UserRoleMappings { get; set; }
     public DbSet<InternPortal.Domain.Entities.Application> Applications { get; set; }
     public DbSet<UserSocialAccount> UserSocialAccounts { get; set; }
     public DbSet<KanbanTask> KanbanTasks { get; set; }
@@ -44,16 +44,16 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<UserSocialAccount>().HasQueryFilter(s => !s.IsDeleted);
         modelBuilder.Entity<TaskComment>().HasQueryFilter(tc => !tc.IsDeleted);
 
-        modelBuilder.Entity<UserRoleMapping>().ToTable("UserRoleMappings");
-        modelBuilder.Entity<UserRoleMapping>()
+        modelBuilder.Entity<UserRole>().ToTable("UserRoleMappings");
+        modelBuilder.Entity<UserRole>()
             .HasKey(ur => new { ur.UserId, ur.RoleId });
 
-        modelBuilder.Entity<UserRoleMapping>()
+        modelBuilder.Entity<UserRole>()
             .HasOne(ur => ur.User)
             .WithMany(u => u.UserRoles)
             .HasForeignKey(ur => ur.UserId);
 
-        modelBuilder.Entity<UserRoleMapping>()
+        modelBuilder.Entity<UserRole>()
             .HasOne(ur => ur.Role)
             .WithMany(r => r.UserRoles)
             .HasForeignKey(ur => ur.RoleId);

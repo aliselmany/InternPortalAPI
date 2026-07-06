@@ -24,6 +24,7 @@ public class InternTransferRequest
     public DateTime? ResolvedAt { get; set; }
 }
 
+//TODO: enum folderına taşı
 public enum TransferRequestStatus
 {
     Pending = 0,

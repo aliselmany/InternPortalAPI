@@ -57,6 +57,6 @@ public class User
 
     public virtual ICollection<User> Interns { get; set; } = new List<User>();
     public virtual ICollection<UserSocialAccount> SocialAccounts { get; set; } = new List<UserSocialAccount>();
-    public virtual ICollection<UserRoleMapping> UserRoles { get; set; } = new List<UserRoleMapping>();
+    public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     public virtual Application? Application { get; set; }
 }

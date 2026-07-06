@@ -4,7 +4,7 @@ using System.Text;
 
 namespace InternPortal.Domain.Entities
 {
-    public class UserRoleMapping
+    public class UserRole
     {
         public Guid UserId { get; set; }
         public User User { get; set; } = null!;

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace InternPortal.Domain.Enums
 {
+    //TODO: İngilizce
     public enum InternshipType
     {
         Gönüllü = 0,

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace InternPortal.Domain.Enums
 {
+    //TODO: İngilizce
     public enum Department
     {
         Yazılım  = 0,

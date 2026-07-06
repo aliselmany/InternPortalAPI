@@ -27,6 +27,11 @@ public class UserService : IUserService
         _emailService = emailService;
     }
 
+    private async Task _CheckUserInformations()
+    {
+
+    }
+
     public async Task<ServiceResult> RegisterAsync(CreateUserDto dto)
     {
         if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
@@ -49,7 +54,7 @@ public class UserService : IUserService
 
         var internRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Intern");
         if (internRole != null)
-            user.UserRoles.Add(new UserRoleMapping { RoleId = internRole.Id });
+            user.UserRoles.Add(new UserRole { RoleId = internRole.Id });
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
@@ -420,7 +425,7 @@ public class UserService : IUserService
         if (role == null) return ServiceResult<bool>.Failure("Rol bulunamadı.");
 
         user.UserRoles.Clear();
-        user.UserRoles.Add(new UserRoleMapping { UserId = userId, RoleId = role.Id });
+        user.UserRoles.Add(new UserRole { UserId = userId, RoleId = role.Id });
 
         await _context.SaveChangesAsync();
         return ServiceResult<bool>.Success(true);
